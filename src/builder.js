@@ -68,10 +68,20 @@ export class Builder {
 
 
   buildAndroid () {
-    console.log('build android');
+    const ROOT = process.cwd();
+    const PROJECTPATH = path.resolve(ROOT,'android');
+    const BUILDPATH = path.resolve(ROOT, '.build','android');
+
+    console.info('Start building Android package...'.green);
+    return packAndorid.sync(PROJECTPATH, BUILDPATH)
+    .then(() => packAndorid.pack(BUILDPATH, false));
   }
 
   buildIos () {
+    if (process.platform === 'win32') {
+      process.stdout.write('cannot build iOS package in Windows'.red);
+      process.exit(1);
+    }
     console.info('build ios...');
   }
 
