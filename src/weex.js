@@ -1,3 +1,5 @@
+import {Builder} from "../build/builder.js"
+
 const fs = require('fs'),
     fse = require('fs-extra'),
     path = require('path'),
@@ -16,7 +18,10 @@ const fs = require('fs'),
     debuggerServer =  require('../build/debugger-server'),
     weFileCreate = require('../build/create'),
     generator = require('../build/generator'),
-    commands= require('../build/commands')
+    commands= require('../build/commands'),
+    htmlserver = require('./libs/html5-server'),
+    Emulator = require('./emulater')
+
 
 const VERSION = require('../package.json').version
 const WEEX_FILE_EXT = "we"
@@ -358,6 +363,58 @@ var argv = yargs
         npmlog.warn('\nSorry, "weex create" is no longer supported, we recommand you please try "weex init" instead.')
         return
     }
+
+
+    if (argv._[0] === "build") {
+        // weex build
+        var builder = new Builder();
+
+        if (argv._[1] === "init") {
+            builder.init();
+        } else {
+            try {
+                // TODO 判断更多东西
+                fs.accessSync(path.join(process.cwd(), 'manifest.json'), fs.F_OK);
+            } catch (e) {
+                npmlog.info('进行 build 初始化工作');
+                builder.init();
+                npmlog.info( 'check your manifest.json and build angain' );
+                return;
+            }
+        }
+
+        let inputPath = path.join('.', 'src');
+        let outputPath = path.join('.', 'dist', 'js');
+
+        if (!fs.existsSync(outputPath)) {
+            if (!fs.existsSync('dist')) {
+                fs.mkdirSync('dist');
+            }
+            fs.mkdirSync(outputPath);
+        }
+
+        new Previewer(inputPath , outputPath);
+        const buildPlatform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
+
+        if (buildPlatform === 'android') {
+            builder.buildAndroid();
+        } else if (buildPlatform === 'ios') {
+            builder.buildIos();
+        } else if (buildPlatform === 'all')  {
+            builder.buildAll();
+        } else {
+            builder.buildHtml();
+            // htmlserver();
+        }
+
+        return;
+    }
+
+    if (argv._[0] === "emulate") {
+        emulateAndroid.runApp('com.tiou.pakeex', "/Users/xuxinxin/Developer/seals/weex-cli/weex-toolkit/hello_signed.apk");
+        return;
+    }
+
     if(argv._[0]&&commands.exec(argv._[0],process.argv.slice(3))){
         return
     }
@@ -401,7 +458,7 @@ var argv = yargs
         npmlog.info("must specify output path ")
         process.exit(1)    
     }
-    var transformWatch =  argv.watch
+    var transformWatch =  argv.watch;
     new Previewer(inputPath , outputPath , transformWatch, host , shouldOpenBrowser , displayQR ,  transformServerPath)
 
 })()

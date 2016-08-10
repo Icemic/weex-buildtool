@@ -82,7 +82,7 @@ function getMd5(p){
 }
 
 /**
- * 同步工程目录的文件到构建目录
+ * 同步工程目录的文件到构建目录, 在修改配置之前执行
  * @param  {absolutePath} projectPath [description]
  * @param  {absolutePath} buildPath   [description]
  * @param  {String | RegExp} excludes    [description]
