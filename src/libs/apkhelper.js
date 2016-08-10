@@ -16,7 +16,7 @@ export function checkSDK() {
 
   return new Promise((resolve, reject) => {
 
-    let sdkPath = process.env.ANDROID_SDK;
+    let sdkPath = process.env.ANDROID_HOME;
     if (sdkPath) {
       console.info('已安装'.green);
 
