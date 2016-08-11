@@ -115,9 +115,10 @@ export class Builder {
     console.log('我是release:', this.isRelease);
 
     let ip = nwUtils.getPublicIP();
-    let port = '8081';
+    let port = '8083';
     let debugPath = `http://${ip}:${port}/main.we`;
     console.log(debugPath);
+    fs.removeSync('dist/ios/dist');
     iosConfig(this.isRelease, IOSPATH, debugPath);//处理配置
     packIos(PROJECTPATH, this.isRelease, 'sim');
     glob(`${IOSPATH}/**/*.app`, function(er, files) {
