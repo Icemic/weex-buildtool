@@ -1,13 +1,16 @@
 var path = require('path'),
-    fs = require('fs');
+    fs = require('fs-extra');
 
-var home = path.join(getUserHome(), '/.simctl/');
+if (process.platform !== 'win32') {
 
-if (!fs.existsSync(home)) {
-  try {
-    fs.mkdirSync(home, 0o777);
-  } catch (e) {
-    throw null;
+  var home = path.join(getUserHome(), '/.simctl/');
+
+  if (!fs.existsSync(home)) {
+    try {
+      fs.mkdirSync(home, 0o777);
+    } catch (e) {
+      throw e;
+    }
   }
 }
 

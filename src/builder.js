@@ -81,11 +81,9 @@ export class Builder {
     console.info('Start building Android package...'.green);
 
     return folderSync(PROJECTPATH, BUILDPATH)
-    .then(() => {
-      icons.android(BUILDPATH);
-      androidConfig(false, BUILDPATH);//处理配置
-      return packAndorid.pack(BUILDPATH, this.isRelease);
-    })
+    .then(() => icons.android(BUILDPATH))
+    .then(() => androidConfig(false, BUILDPATH))
+    .then(() => packAndorid.pack(BUILDPATH, this.isRelease))
       .then(function() {
 
         glob(`${BUILDPATH}/**/*.apk`, function(er, files) {
@@ -93,9 +91,7 @@ export class Builder {
             npmlog.error("打包发生错误")
             process.exit(1);
           } else {
-            console.log(files);
             let pathDir = path.resolve(files[0], '..');
-            console.log(pathDir);
             fs.copySync(pathDir, 'dist/android/dist/');
           }
         })
