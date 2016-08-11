@@ -351,6 +351,17 @@ var argv = yargs
   .argv;
 
 
+// 调试热部署服务器
+function serveForLoad() {
+  const curPath = process.cwd();
+  let transformPath = path.resolve(path.join(curPath, 'src'));
+
+  HTTP_PORT = '8083';
+  new Previewer(null,null,false, DEFAULT_HOST, false, false, transformPath);
+
+}
+
+
 (function argvProcess() {
 
   HTTP_PORT = argv.port
@@ -379,7 +390,8 @@ var argv = yargs
     var isRelease = argv.r;
     var outputPath = process.cwd();
 
-    var builder = new Builder(outputPath, isRelease);
+    // build 命令打 release 包
+    var builder = new Builder(outputPath, true);
 
     if (argv._[1] === "init") {
       return builder.init();
@@ -434,18 +446,13 @@ var argv = yargs
           // If the `nonull` option is set, and nothing
           // was found, then files is ["**/*.js"]
           // er is an error object or null.
-          let transformPath = path.resolve(path.join(curPath, 'src'));
-
-          let ip = nwUtils.getPublicIP();
-          let dfWe = "main.we";
-          HTTP_PORT = '8083';
-          new Previewer(null,null,false, DEFAULT_HOST, false, false, transformPath);
 
           if( er || files.length === 0 ){
             npmlog.error("目标路径没有文件!")
             process.exit(1);
           }
           console.log('emulate', files[0]);
+          serveForLoad();
           let emulater = new Emulator(files[0]);
           emulater.emulateIos();
         });
@@ -474,7 +481,9 @@ var argv = yargs
   } else if (argv._[0] === "run") {
     const platform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
     let curPath = process.cwd();
-    let builder = new Builder(curPath, argv.r);
+
+    // run 命令打 debug 包
+    let builder = new Builder(curPath, true);
     // TODO builde.checkInit();
     switch (platform) {
       case "ios":
@@ -491,7 +500,7 @@ var argv = yargs
           }
           let emulater = new Emulator(files[0]);
           npmlog.info("正在寻找模拟器...");
-
+          serveForLoad();
           emulater.emulateIos();
         });
         break;

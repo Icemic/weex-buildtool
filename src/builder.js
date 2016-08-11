@@ -18,7 +18,7 @@ import folderSync from './libs/folderSync';
 
 
 export class Builder {
-  constructor (outputPath, isRelease = false) {
+  constructor (outputPath, isRelease = true) {
     this.outputPath = outputPath || process.cwd() ;
     this.outputPath = path.resolve(this.outputPath);
     this.isRelease = isRelease;
@@ -112,16 +112,22 @@ export class Builder {
     const PROJECTPATH = path.resolve(ROOT,'ios', 'playground');
     const IOSPATH = path.resolve(ROOT,'ios');
     icons.ios(IOSPATH);//处理icon
-    console.log('我是release:', this.isRelease);
-
     let ip = nwUtils.getPublicIP();
     let port = '8083';
     let debugPath = `http://${ip}:${port}/main.we`;
     console.log(debugPath);
     fs.removeSync('dist/ios/dist');
     iosConfig(this.isRelease, IOSPATH, debugPath);//处理配置
-    let pack = this.isRelease ? "normal" : "sim";
-    packIos(PROJECTPATH, this.isRelease, pack);
+    let pack = "sim";
+    let info;
+    if (this.isRelease) {
+      pack = "normal";
+      let configPath = process.cwd() + '/config';
+      let config = require(path.resolve(configPath,'config.ios.js'))();
+      info = config.certificate;
+    }
+
+    packIos(PROJECTPATH, this.isRelease, pack, info);
     glob(`${IOSPATH}/**/*.app`, function(er, files) {
       if( er || files.length === 0 ){
         npmlog.error("打包发生错误")
