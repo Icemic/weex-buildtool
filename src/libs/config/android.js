@@ -16,7 +16,7 @@ const configPath = process.cwd() + '/config';
  * @param  {[bool]} debug 是否debug模式
  * @return {[type]}           [description]
  */
-module.exports = function (release,curPath,debugPath) {
+module.exports = function (release, curPath, debugPath) {
   curPath = curPath ? curPath : process.cwd() + '/android';
   var config = require(path.resolve(configPath,'config.android.js'))();
   return Promise.resolve()
@@ -26,13 +26,14 @@ module.exports = function (release,curPath,debugPath) {
     try {
       data = fs.readFileSync(path.resolve(curPath,'playground/local.properties'),{encoding: 'utf8'});
 
-let sdkPath = process.env.ANDROID_HOME;
-            if (!config.sdkdir &&  sdkPath) {
-              config.sdkdir = sdkPath;
-            }else if (!config.sdkdir) {
-              console.log('请配置 Android SDK 地址');
-              process.exit();
-            }
+      // let sdkPath = process.env.ANDROID_HOME;
+      // if (!config.sdkdir &&  sdkPath) {
+      //   config.sdkdir = sdkPath;
+      // } else if (!config.sdkdir) {
+      //   console.log('请配置 Android SDK 地址');
+      //   process.exit();
+      // }
+
       let outString = data.replace(/sdk\.dir.*/,'sdk.dir=' + path.resolve(configPath,config.sdkdir).replace(/\\/g, '/'));
       fs.writeFileSync(path.resolve(curPath,'playground/local.properties'), outString);
 
@@ -52,7 +53,7 @@ let sdkPath = process.env.ANDROID_HOME;
       data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'),{encoding: 'utf8'});
 
       var launch_path = config.launch_path;
-      if(debug){
+      if(!release){
         launch_path = debugPath;
       }
       data = data.replace(/android:versionCode=".*"/,'android:versionCode="' + config.version.code + '"')
@@ -130,16 +131,58 @@ let sdkPath = process.env.ANDROID_HOME;
      *    可能会因用户自行编辑原始工程而失效，是否会导致问题未知
      */
     return new Promise((resolve, reject) => {
-      let keytool = childProcess.exec(`keytool -list -keystore ${config.keystore}`, (err, stdout, stderr) => {
-        let origin = stdout;
-        origin = origin.replace(/\r\n/g, '\n')
-                       .replace(/\r/g, '\n');
-        console.log(origin)
-        let re = new RegExp(`^${config.aliasname}.+?$\n^.*?([0-9A-F]{2}(:)*)+$`, 'gm');
-        console.log(re.exec(origin));
+      let keytool = childProcess.exec(`keytool -list -keystore ${path.resolve(configPath, config.keystore).replace(/\\/g, '/')}`, (err, stdout, stderr) => {
+        if (err) {
+          reject(err);
+        } else {
+          let origin = stdout;
+          origin = origin.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+          let re = new RegExp(`^${config.aliasname}.+?$\n^.*?(([0-9A-F]{2}(:)*){20})$`, 'gm');
+          let r = re.exec(origin);
+          let sha1 = '';
+          if (r && r.length) {
+            sha1 = r[1].replace(/:/g, '');
+          } else {
+            reject('证书读取错误，可能是密码或别名有误。');
+            return;
+          }
 
-        resolve();
+          // 插入防反编译代码
+          let data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/WXApplication.java'), 'utf8');
+          let insert = `
+            if (mSpUtils.isFirstInstall()) {
+                try {
+                    if (!SignCheck.checkSign(this, this.getPackageName(), TAG)) {
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                        System.exit(-1);
+                    }
+                } catch (CertificateEncodingException e) {
+                    e.printStackTrace();
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                    System.exit(-1);
+                }
+
+                if ((getApplicationInfo().flags &=
+                        ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                }
+
+                mSpUtils.setInstalled();
+            }
+          `;
+          data = data.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+          .replace(/\/\*\* weex package prevent decompile head \*\/.*?($\n^)*([\S\s]*)$\n^.*?\/\*\* weex package prevent decompile tail \*\//m,
+                  `\/\*\* weex package prevent decompile head \*\/\n ${insert} \n\/\*\* weex package prevent decompile tail \*\/`);
+
+          // 插入原始签名指纹（sha1，不区分大小写）
+          data = data
+          .replace(/\/\*\* weex tag head \*\/.*?($\n^)*([\S\s]*)$\n^.*?\/\*\* weex tag tail \*\//m,
+                  `\/\*\* weex tag head \*\/\n    private static final String TAG = "${sha1}"; \n\/\*\* weex tag tail \*\/`);
+          console.log(data)
+          resolve();
+        }
       });
+      keytool.stdin.write(`${config.storePassword}\n`);
     })
   })
 };
