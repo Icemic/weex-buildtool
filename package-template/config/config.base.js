@@ -14,7 +14,7 @@ module.exports = function () {
         "name": "",/*可选，开发者邮箱地址*/
         "url": ""/*可选，开发者自定义地址*/
     },
-    "icon": "assets/icon/ic_launcher.png",
+    "icon": "../assets/icon/ic_launcher.png",
     // "orientation": ["portrait-primary", "landscape-primary", "portrait-secondary", "landscape-secondary"],/*必选*/
 };
 };
