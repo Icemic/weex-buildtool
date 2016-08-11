@@ -24,8 +24,8 @@ export function checkSDK() {
       if (!fs.existsSync(path.resolve(sdkPath, 'platforms/android-24'))) {
         lack.push('android-24');
       }
-      if (!fs.existsSync(path.resolve(sdkPath, 'build-tools/24.0.1'))) {
-        lack.push('build-tools-24.0.1');
+      if (!fs.existsSync(path.resolve(sdkPath, 'build-tools/23.0.2'))) {
+        lack.push('build-tools-23.0.2');
       }
       if (lack.length) {
         console.info('检测到以下内容尚未安装：'.yellow);
@@ -160,8 +160,8 @@ export function pack(buildPath, release) {
       console.info('正在启动 Gradle...'.green);
 
       let gradlew = childProcess.execFile(path.join(buildPath,
-        `gradlew${process.platform === 'win32' ? '.bat' : ''}`), [arg],
-        {cwd: buildPath});
+        'playground',`gradlew${process.platform === 'win32' ? '.bat' : ''}`), [arg],
+        {cwd: path.join(buildPath, 'playground')});
 
       gradlew.stdout.on('data', data => process.stdout.write(data.grey));
       gradlew.stderr.on('data', data => process.stdout.write(data.red));
@@ -173,7 +173,7 @@ export function pack(buildPath, release) {
         } else {
           console.info('Android 打包完成'.green);
           console.info('生成的文件位于：'.yellow,
-            path.resolve(buildPath, 'app/build/outputs/apk/'));
+            path.resolve(buildPath, 'playground','app/build/outputs/apk/'));
           resolve();
         }
       });

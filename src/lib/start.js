@@ -23,9 +23,11 @@ function run(params, devicePolymer) {
       iOSDevices = devicePolymer.iOSDevice;
 
     // 选择模拟器
+    console.log(1);
     iOSimulatorSelect(iOSCurrentDeviceInfo, iOSDevices, params)
     .then(function(currentDevice) {
       // 打开模拟器
+      console.log(currentDevice);
       debug(':::iOS simulator start open :::');
       iOSCurrentDeviceInfo = currentDevice;
       return iOSimulatorOpen(currentDevice, params);

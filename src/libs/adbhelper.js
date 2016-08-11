@@ -62,7 +62,7 @@ export function getDeviceList() {
  * @param  {String} activityName 要启动的 Activity 名称
  * @return {[type]}           [description]
  */
-export default function runApp(apkFile, packageName, activityName) {
+export function runApp(apkFile, packageName, activityName) {
   return getDeviceList()
   .then(r => {
     if (!r.length) {

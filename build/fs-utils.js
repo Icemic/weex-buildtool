@@ -64,9 +64,9 @@ function getTransformerWraper(rootPath, transformerFunc) {
                 }
 
                 var wePath = path.join(rootPath, filePath);
-                //console.log(`file ${filePath}`)                                                 
-                //console.log(`root  ${rootPath}`)         
-                //console.log(`we ${wePath}`)                             
+                //console.log(`file ${filePath}`)                                                  
+                //console.log(`root  ${rootPath}`)          
+                //console.log(`we ${wePath}`)                              
                 var filename = path.basename(wePath).replace(/\..+/, '');
                 var tmpdir = os.tmpdir();
                 var jsPath = path.join(tmpdir, filename + '.js');

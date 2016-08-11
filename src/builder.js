@@ -3,10 +3,13 @@ const fs = require('fs');
 const fse = require('fs-extra');
 const path = require('path');
 const npmlog = require('npmlog');
+const packIos = require('./libs/pack-ios');
+const glob = require("glob");
 
 import * as packAndorid from "./libs/apkhelper";
 import packHtml from "./libs/html5";
 import serveHtml from "./libs/html5-server";
+
 
 export class Builder {
   constructor (outputPath, buildPlatform = "h5") {
@@ -74,7 +77,21 @@ export class Builder {
 
     console.info('Start building Android package...'.green);
     return packAndorid.sync(PROJECTPATH, BUILDPATH)
-    .then(() => packAndorid.pack(BUILDPATH, false));
+    .then(() => packAndorid.pack(BUILDPATH, false))
+      .then(function() {
+
+        glob(`${BUILDPATH}/**/*.apk`, function(er, files) {
+          if( er || files.length === 0 ){
+            npmlog.error("打包发生错误")
+            process.exit(1);
+          } else {
+            console.log(files);
+            let pathDir = path.resolve(files[0], '..');
+            console.log(pathDir);
+            fse.copySync(pathDir, 'dist/android/dist/');
+          }
+        })
+      });
   }
 
   buildIos () {
@@ -82,6 +99,10 @@ export class Builder {
       process.stdout.write('cannot build iOS package in Windows'.red);
       process.exit(1);
     }
+    const ROOT = process.cwd();
+    const PROJECTPATH = path.resolve(ROOT,'ios', 'playground');
+    console.log(PROJECTPATH);
+    packIos(PROJECTPATH);
     console.info('build ios...');
   }
 

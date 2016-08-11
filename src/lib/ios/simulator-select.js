@@ -1,24 +1,23 @@
 'use strict';
 
-var Promise = require('promise'),
-    inquirer = require('inquirer'),
-    devicesList = require('./devices-list'),
-    debug = require('debug')('devices');
+var Promise = require('bluebird'),
+  inquirer = require('inquirer'),
+  devicesList = require('./devices-list'),
+  debug = require('debug')('devices');
 
 function simulatorSelect(currentDeviceParam, device, params) {
   return new Promise(function(resolve, reject) {
-    if(currentDeviceParam){
+    if (currentDeviceParam) {
       resolve(currentDeviceParam);
       return;
     }
+    console.log(2);
 
     devicesList(device, params)
       .then(function(device) {
         debug(JSON.stringify(device.devices, null, 2));
         // 选择模拟器
-        selectDevices(device, params, function(currentDevice) {
-          resolve(currentDevice);
-        });
+        return selectDevices(device, params).then(resolve);
       }, function(err) {
         reject(err);
       });
@@ -27,7 +26,7 @@ function simulatorSelect(currentDeviceParam, device, params) {
 
 function selectDevices(device, params, callback) {
   var currentDevice,
-      defaultType;
+    defaultType;
   // 过滤设备
   var devicesType = selected(device.devicesType, [
     'iPhone 4s',
@@ -42,9 +41,9 @@ function selectDevices(device, params, callback) {
     'iPad 2'
   ]);
 
-  for(var i = 0; i < devicesType.length; i++){
+  for (var i = 0; i < devicesType.length; i++) {
 
-    if(devicesType[i].indexOf('iPhone 5s') > -1){
+    if (devicesType[i].indexOf('iPhone 5s') > -1) {
       defaultType = devicesType[i];
       break;
     }
@@ -58,11 +57,11 @@ function selectDevices(device, params, callback) {
     'default': defaultType || ''
   }];
 
-  inquirer.prompt(questions, function(answers) {
-    currentDevice = device.devices[answers.type];
-
-    callback(currentDevice || {});
-  });
+  return inquirer.prompt(questions)
+    .then(answers => {
+      currentDevice = device.devices[answers.type];
+      return currentDevice || {};
+    })
 }
 
 function selected(devicesType, names) {

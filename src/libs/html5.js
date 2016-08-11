@@ -2,7 +2,7 @@
 var curPath = process.cwd();
 const path = require('path');
 const fs = require('fs');
-const manifest = require(curPath + '/config/config.base.js');
+const manifest = require(curPath + '/config/config.base.js')();
 const fse = require('fs-extra');
 
 var buildHtml = function() {

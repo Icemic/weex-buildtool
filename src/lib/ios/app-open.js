@@ -1,6 +1,6 @@
 'use strict';
 
-var Promise = require('promise'),
+var Promise = require('bluebird'),
     exec = require('../util/sync-exec');
 
 function appOpen(currentDeviceInfo, params) {

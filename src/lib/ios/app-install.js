@@ -1,6 +1,6 @@
 'use strict';
 
-var Promise = require('promise'),
+var Promise = require('bluebird'),
     // exec = require('../util/exec-as-promised'),
     exec = require('../util/sync-exec-promised'),
     path = require('path');

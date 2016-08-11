@@ -5,7 +5,7 @@
 
 'use strict';
 
-var Promise = require('promise'),
+var Promise = require('bluebird'),
     path = require('path'),
     exec = require('../util/sync-exec'),
     config = require('../config')(),
@@ -33,6 +33,7 @@ function iOSimulator(currentDevice, params) {
         std = exec(cmd),
         stdout = std.stdout,
         stderr = std.stderr;
+    console.log(cmd);
 
     if (stderr) {
       cmd = 'xcrun instruments -w ' + uuid;

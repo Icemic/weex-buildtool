@@ -1,7 +1,7 @@
 'use strict';
 
 var exec = require('./sync-exec'),
-    Promise = require('promise');
+    Promise = require('bluebird');
 
 module.exports = function(command) {
   return new Promise(function(resolve, reject) {

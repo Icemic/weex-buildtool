@@ -5,9 +5,9 @@ var home = path.join(getUserHome(), '/.simctl/');
 
 if (!fs.existsSync(home)) {
   try {
-    fs.mkdirSync(home, 0777);
+    fs.mkdirSync(home, 0o777);
   } catch (e) {
-    return null;
+    throw null;
   }
 }
 
