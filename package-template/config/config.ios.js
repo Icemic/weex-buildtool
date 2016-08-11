@@ -14,7 +14,11 @@ module.exports = function () {
         "Default-568h@2x~iphone.png": "../assets/splash/weex_splash.png", /*640*1136 4.0 英寸设备(iPhone5)启动图片*/
         "Default-667h.png": "../assets/splash/weex_splash.png", /*750*1134 启动图片*/
         "Default-736h.png": "../assets/splash/weex_splash.png" /*1242*2208 */
-    }  /*必选，启动图片*/
+    },
+    "certificate":{
+      codeSignIdentity: "iPhone Developer: zhuiqian wu (22RMUQ2DWW)",
+      provisionProfile: "603293e6-841f-4488-a720-94f399ecb07f"
+    }
   };
   return Object.assign(baseConfig,iosCfg);
 };

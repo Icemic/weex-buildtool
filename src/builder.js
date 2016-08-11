@@ -120,7 +120,8 @@ export class Builder {
     console.log(debugPath);
     fs.removeSync('dist/ios/dist');
     iosConfig(this.isRelease, IOSPATH, debugPath);//处理配置
-    packIos(PROJECTPATH, this.isRelease, 'sim');
+    let pack = this.isRelease ? "normal" : "sim";
+    packIos(PROJECTPATH, this.isRelease, pack);
     glob(`${IOSPATH}/**/*.app`, function(er, files) {
       if( er || files.length === 0 ){
         npmlog.error("打包发生错误")
