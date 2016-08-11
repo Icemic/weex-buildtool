@@ -14,6 +14,8 @@ const configPath = process.cwd() + '/config';
 /**
  * 配置处理
  * @param  {[bool]} debug 是否debug模式
+ * @param  {[string]} curPath 打包文件路径
+ * @param  {[string]} debugPath debug的路径
  * @return {[type]}           [description]
  */
 module.exports = function (release, curPath, debugPath) {
@@ -22,17 +24,20 @@ module.exports = function (release, curPath, debugPath) {
   return Promise.resolve()
   .then(function () {
     //playground/local
+
     let data;
     try {
       data = fs.readFileSync(path.resolve(curPath,'playground/local.properties'),{encoding: 'utf8'});
 
-      // let sdkPath = process.env.ANDROID_HOME;
-      // if (!config.sdkdir &&  sdkPath) {
-      //   config.sdkdir = sdkPath;
-      // } else if (!config.sdkdir) {
-      //   console.log('请配置 Android SDK 地址');
-      //   process.exit();
-      // }
+      let sdkPath = process.env.ANDROID_HOME;
+      if(config.sdkdir){
+        config.sdkdir = path.resolve(configPath, config.sdkdir).replace(/\\/g, '/');
+      } else if (sdkPath) {
+        config.sdkdir = sdkPath.replace(/\\/g, '/');
+      } else {
+        console.log('请配置 Android SDK 地址');
+        process.exit(1);
+      }
 
       let outString = data.replace(/sdk\.dir.*/,'sdk.dir=' + path.resolve(configPath,config.sdkdir).replace(/\\/g, '/'));
       fs.writeFileSync(path.resolve(curPath,'playground/local.properties'), outString);
@@ -64,67 +69,8 @@ module.exports = function (release, curPath, debugPath) {
     } catch (e) {
       npmlog.error(e);
     }
-
-
-    // return new Promise((resolve, reject) => {
-    //     async.waterfall([
-    //       function (callback) {
-    //         fs.readFile(path.resolve(curPath,'playground/local.properties'),{encoding: 'utf8'}, callback);
-    //       },
-    //       function(data,callback){
-    //         let outString = data.replace(/sdk\.dir.*/,'sdk.dir=' + path.resolve(configPath,config.sdkdir).replace(/\\/g, '/'));
-    //         // replace(/ndk.dir.*/,'ndk.dir=' + path.resolve(curPath,config.ndkdir));
-    //         fs.writeFile(path.resolve(curPath,'playground/local.properties'), outString, callback);
-    //       },
-    //       function(callback){
-    //         fs.readFile(path.resolve(curPath,'playground/app/build.gradle'),{encoding: 'utf8'}, callback);
-    //       },
-    //       function (data,callback) {
-    //         data = data.replace(/keyAlias.*/,'keyAlias \'' + config.aliasname + '\'')
-    //         .replace(/applicationId.*/,'applicationId \'' + config.packagename + '\'')
-    //         .replace(/keyPassword.*/,'keyPassword \'' + config.password + '\'')
-    //         .replace(/storePassword.*/,'storePassword \'' + config.storePassword + '\'')
-    //         .replace(/storeFile.*/,'storeFile file(\'' + path.resolve(configPath,config.keystore).replace(/\\/g, '/') + '\')');
-    //         fs.writeFile(path.resolve(curPath,'playground/app/build.gradle'), data, callback);
-    //       },
-    //       function (callback) {
-    //         fs.readFile(path.resolve(curPath,'playground/app/src/main/res/values/strings.xml'),{encoding: 'utf8'}, callback);
-    //       },
-    //       function (data,callback) {
-    //         data = data.replace(/<string name="app_name">.*</,'<string name="app_name">' + config.name + '<');
-    //         fs.writeFile(path.resolve(curPath,'playground/app/src/main/res/values/strings.xml'), data, callback);
-    //       },
-    //       function (callback) {
-    //         fs.readFile(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'),{encoding: 'utf8'}, callback);
-    //       },function (data,callback) {
-    //         var launch_path = config.launch_path;
-    //         if(debug){
-    //           launch_path = debugPath;
-    //         }
-    //         data = data.replace(/android:versionCode=".*"/,'android:versionCode="' + config.version.code + '"')
-    //         .replace(/android:versionName=".*"/,'android:versionName="' + config.version.name + '"')
-    //         .replace(/android:name="weex_index"\sandroid:value=".*"/,'android:name="weex_index" android:value="' + launch_path + '"');
-    //         fs.writeFile(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'), data, callback);
-    //       },
-    //
-    //       // function (callback) {
-    //       //   fs.readFile(path.resolve(curPath,'playground/app/src/main/java/com/weex/weexapp/MainActivity.java'),{encoding: 'utf8'}, callback);
-    //       // },
-    //       // function (data,callback) {
-    //       //   data = data.replace(/index\.js/m,config.launch_path);
-    //       //   fs.writeFile(path.resolve(curPath,'playground/app/src/main/java/com/weex/weexapp/MainActivity.java'), data, callback);
-    //       // }
-    //       ],
-    //       function (err) {
-    //         if (err) {
-    //           npmlog.error(err);
-    //           reject(err);
-    //         } else{
-    //           resolve();
-    //         }
-    //       });
-    //   });
   })
+
   .then(() => {
     /**
      * 为 WXApplication.java 添加签名数据，以实现签名校验
