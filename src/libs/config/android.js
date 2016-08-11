@@ -35,7 +35,7 @@ module.exports = function (release, curPath, debugPath) {
       } else if (sdkPath) {
         config.sdkdir = sdkPath.replace(/\\/g, '/');
       } else {
-        console.log('请配置 Android SDK 地址');
+        process.stderr.write('请配置 Android SDK 地址'.red);
         process.exit(1);
       }
 
@@ -124,7 +124,9 @@ module.exports = function (release, curPath, debugPath) {
           data = data
           .replace(/\/\*\* weex tag head \*\/.*?($\n^)*([\S\s]*)$\n^.*?\/\*\* weex tag tail \*\//m,
                   `\/\*\* weex tag head \*\/\n    private static final String TAG = "${sha1}"; \n\/\*\* weex tag tail \*\/`);
-          console.log(data)
+
+          fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/WXApplication.java'), data);
+
           resolve();
         }
       });
