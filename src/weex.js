@@ -376,15 +376,15 @@ var argv = yargs
     if (argv._[1] === "init") {
       return builder.init();
     } else {
-      try {
-        // TODO 判断更多东西
-        fs.accessSync(path.join(process.cwd(), 'manifest.json'), fs.F_OK);
-      } catch (e) {
-        npmlog.info('进行 build 初始化工作');
-        builder.init();
-        npmlog.info('check your manifest.json and build angain');
-        return;
-      }
+      // try {
+      //   // TODO 判断更多东西
+      //   fs.accessSync(path.join(process.cwd(), 'manifest.json'), fs.F_OK);
+      // } catch (e) {
+      //   npmlog.info('进行 build 初始化工作');
+      //   builder.init();
+      //   npmlog.info('check your manifest.json and build angain');
+      //   return;
+      // }
     }
 
     let inputPath = path.join('.', 'src');
