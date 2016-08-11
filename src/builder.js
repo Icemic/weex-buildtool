@@ -25,18 +25,23 @@ export class Builder {
     // this.download();
 
     // 建工程目录
-    let androidPath = path.join(this.outputPath, 'android');
+    let assetsPath = path.join(this.outputPath, 'package-template', 'assets');
+    fse.ensureDirSync(assetsPath);
+    fse.copySync(path.resolve(__dirname, '../package-template/assets'), assetsPath);
+
+    let androidPath = path.join(this.outputPath, 'package-template', 'android');
     fse.ensureDirSync(androidPath);
-    fse.copySync(path.resolve(__dirname, '../android-template'), androidPath);
+    fse.copySync(path.resolve(__dirname, '../package-template/android'), androidPath);
 
-    let iosPath = path.join(this.outputPath, 'ios');
+    let iosPath = path.join(this.outputPath, 'package-template', 'ios');
     fse.ensureDirSync(iosPath);
-    fse.copySync(path.resolve(__dirname, '../ios-template'), iosPath);
+    fse.copySync(path.resolve(__dirname, '../package-template/ios'), iosPath);
 
-    let configPath = path.join(this.outputPath, 'config');
+    let configPath = path.join(this.outputPath, 'package-template', 'config');
     fse.ensureDirSync(configPath);
-    fse.copySync(path.resolve(__dirname, '../config-template'), configPath);
+    fse.copySync(path.resolve(__dirname, '../package-template/config'), configPath);
 
+    // 建立发布目录
     let distPath = path.join(this.outputPath, 'dist');
     fse.ensureDirSync(distPath);
 
