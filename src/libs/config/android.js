@@ -4,6 +4,7 @@ const childProcess = require('child_process');
 const fs = require('fs-extra');
 const npmlog = require('npmlog');
 const path = require('path');
+const crypto = require('crypto');
 const validator = require('validator');
 const async = require('async');
 const icons = require('./icons.js');
@@ -93,6 +94,9 @@ module.exports = function (release, curPath, debugPath) {
             return;
           }
 
+          const hash = crypto.createHash('sha1');
+          hash.update(sha1);
+
           // 插入防反编译代码
           let data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/WXApplication.java'), 'utf8');
           let insert = `
@@ -123,7 +127,7 @@ module.exports = function (release, curPath, debugPath) {
           // 插入原始签名指纹（sha1，不区分大小写）
           data = data
           .replace(/\/\*\* weex tag head \*\/.*?($\n^)*([\S\s]*)$\n^.*?\/\*\* weex tag tail \*\//m,
-                  `\/\*\* weex tag head \*\/\n    private static final String TAG = "${sha1}"; \n\/\*\* weex tag tail \*\/`);
+                  `\/\*\* weex tag head \*\/\n    private static final String TAG = "${hash.digest('hex')}"; \n\/\*\* weex tag tail \*\/`);
 
           fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/WXApplication.java'), data);
 
