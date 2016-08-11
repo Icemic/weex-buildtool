@@ -74,6 +74,7 @@ export function installSDK(lack) {
       }
     });
     android.stdin.write('y\n');
+    android.stdin.write('y\n');
   })
 }
 
