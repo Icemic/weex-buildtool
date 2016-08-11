@@ -16,7 +16,7 @@ export function checkSDK() {
 
   return new Promise((resolve, reject) => {
 
-    let sdkPath = process.env.ANDROID_HOME;
+    let sdkPath = process.env.ANDROID_SDK;
     if (sdkPath) {
       console.info('installed'.green);
       process.stdout.write('Check SDK version...'.green);
@@ -43,6 +43,7 @@ export function checkSDK() {
         resolve();
       }
     } else {
+      process.stdout.write('\n');
       console.info(`未找到 Android SDK，请确定其已经正确安装并添加到系统环境变量，详见 http://xxxxx `.red);
       reject();
     }

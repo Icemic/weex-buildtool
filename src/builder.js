@@ -25,19 +25,19 @@ export class Builder {
     // this.download();
 
     // 建工程目录
-    let assetsPath = path.join(this.outputPath, 'package-template', 'assets');
+    let assetsPath = path.join(this.outputPath, 'assets');
     fse.ensureDirSync(assetsPath);
     fse.copySync(path.resolve(__dirname, '../package-template/assets'), assetsPath);
 
-    let androidPath = path.join(this.outputPath, 'package-template', 'android');
+    let androidPath = path.join(this.outputPath, 'android');
     fse.ensureDirSync(androidPath);
     fse.copySync(path.resolve(__dirname, '../package-template/android'), androidPath);
 
-    let iosPath = path.join(this.outputPath, 'package-template', 'ios');
+    let iosPath = path.join(this.outputPath, 'ios');
     fse.ensureDirSync(iosPath);
     fse.copySync(path.resolve(__dirname, '../package-template/ios'), iosPath);
 
-    let configPath = path.join(this.outputPath, 'package-template', 'config');
+    let configPath = path.join(this.outputPath, 'config');
     fse.ensureDirSync(configPath);
     fse.copySync(path.resolve(__dirname, '../package-template/config'), configPath);
 
@@ -45,8 +45,6 @@ export class Builder {
     let distPath = path.join(this.outputPath, 'dist');
     fse.ensureDirSync(distPath);
 
-    // 建配置文件
-    fse.ensureFileSync(path.join(this.outputPath, 'manifest.json'));
     npmlog.info('完成 ');
   }
 

@@ -76,8 +76,6 @@ var Builder = exports.Builder = function () {
       var distPath = path.join(this.outputPath, 'dist');
       fse.ensureDirSync(distPath);
 
-      // 建配置文件
-      fse.ensureFileSync(path.join(this.outputPath, 'manifest.json'));
       npmlog.info('完成 ');
     }
   }, {
