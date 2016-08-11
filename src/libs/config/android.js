@@ -28,9 +28,8 @@ module.exports = function (debug,curPath,debugPath) {
             fs.readFile(path.resolve(curPath,'playground/local.properties'),{encoding: 'utf8'}, callback);
           },
           function(data,callback){
-            let outString = data.replace(/sdk.dir.*/,'sdk.dir=' + path.resolve(configPath,config.sdkdir).replace(/\\/g, '/'));
+            let outString = data.replace(/sdk\.dir.*/,'sdk.dir=' + path.resolve(configPath,config.sdkdir).replace(/\\/g, '/'));
             // replace(/ndk.dir.*/,'ndk.dir=' + path.resolve(curPath,config.ndkdir));
-            console.log(path.resolve(curPath,'playground/local.properties'))
             fs.writeFile(path.resolve(curPath,'playground/local.properties'), outString, callback);
           },
           function(callback){
@@ -58,8 +57,7 @@ module.exports = function (debug,curPath,debugPath) {
             if(debug){
               launch_path = debugPath;
             }
-            data = data.replace(/package=".*"/,'package="' + config.packagename + '"')
-            .replace(/android:versionCode=".*"/,'android:versionCode="' + config.version.code + '"')
+            data = data.replace(/android:versionCode=".*"/,'android:versionCode="' + config.version.code + '"')
             .replace(/android:versionName=".*"/,'android:versionName="' + config.version.name + '"')
             .replace(/android:name="weex_index"\sandroid:value=".*"/,'android:name="weex_index" android:value="' + launch_path + '"');
             fs.writeFile(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'), data, callback);
