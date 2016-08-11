@@ -13,7 +13,6 @@ var fse = require('fs-extra');
 
 var buildHtml = function buildHtml() {
     var manifest = require(curPath + '/config/config.base.js')();
-
     if (!fs.existsSync('dist/html5/dist')) {
         if (!fs.existsSync('dist/html5')) {
             if (!fs.existsSync('dist')) {

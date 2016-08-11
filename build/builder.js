@@ -25,19 +25,20 @@ var _html5Server = require('./libs/html5-server');
 
 var _html5Server2 = _interopRequireDefault(_html5Server);
 
-var _folderSync = require('./libs/folderSync');
-
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var prompt = require('prompt');
-var fs = require('fs-extra');
+var fs = require('fs');
+var fse = require('fs-extra');
 var path = require('path');
 var npmlog = require('npmlog');
 var packIos = require('./libs/pack-ios');
 var glob = require("glob");
-var targz = require('tar.gz');
+var icons = require("./libs/config/icons.js");
+var androidConfig = require("./libs/config/android.js");
+var iosConfig = require("./libs/config/ios.js");
 
 var Builder = exports.Builder = function () {
   function Builder(outputPath) {
@@ -59,24 +60,24 @@ var Builder = exports.Builder = function () {
 
       // 建工程目录
       var assetsPath = path.join(this.outputPath, 'assets');
-      fs.ensureDirSync(assetsPath);
-      fs.copySync(path.resolve(__dirname, '../package-template/assets'), assetsPath);
+      fse.ensureDirSync(assetsPath);
+      fse.copySync(path.resolve(__dirname, '../package-template/assets'), assetsPath);
 
       var androidPath = path.join(this.outputPath, 'android');
-      fs.ensureDirSync(androidPath);
-      fs.createReadStream(path.resolve(__dirname, '../package-template/android.tar.gz')).pipe(targz().createWriteStream(androidPath));
+      fse.ensureDirSync(androidPath);
+      fse.copySync(path.resolve(__dirname, '../package-template/android'), androidPath);
 
       var iosPath = path.join(this.outputPath, 'ios');
-      fs.ensureDirSync(iosPath);
-      fs.createReadStream(path.resolve(__dirname, '../package-template/ios.tar.gz')).pipe(targz().createWriteStream(iosPath));
+      fse.ensureDirSync(iosPath);
+      fse.copySync(path.resolve(__dirname, '../package-template/ios'), iosPath);
 
       var configPath = path.join(this.outputPath, 'config');
-      fs.ensureDirSync(configPath);
-      fs.copySync(path.resolve(__dirname, '../package-template/config'), configPath);
+      fse.ensureDirSync(configPath);
+      fse.copySync(path.resolve(__dirname, '../package-template/config'), configPath);
 
       // 建立发布目录
       var distPath = path.join(this.outputPath, 'dist');
-      fs.ensureDirSync(distPath);
+      fse.ensureDirSync(distPath);
 
       npmlog.info('完成 ');
     }
@@ -111,8 +112,10 @@ var Builder = exports.Builder = function () {
       var BUILDPATH = path.resolve(ROOT, '.build', 'android');
 
       console.info('Start building Android package...'.green);
-      return (0, _folderSync.folderSync)(PROJECTPATH, BUILDPATH).then(function () {
-        return packAndorid.pack(BUILDPATH, false);
+      return packAndorid.sync(PROJECTPATH, BUILDPATH).then(function () {
+        icons.android(PROJECTPATH);
+        androidConfig(1, PROJECTPATH); //处理配置
+        packAndorid.pack(BUILDPATH, false);
       }).then(function () {
 
         glob(BUILDPATH + '/**/*.apk', function (er, files) {
@@ -123,7 +126,7 @@ var Builder = exports.Builder = function () {
             console.log(files);
             var pathDir = path.resolve(files[0], '..');
             console.log(pathDir);
-            fs.copySync(pathDir, 'dist/android/dist/');
+            fse.copySync(pathDir, 'dist/android/dist/');
           }
         });
       });
@@ -131,14 +134,28 @@ var Builder = exports.Builder = function () {
   }, {
     key: 'buildIos',
     value: function buildIos() {
-      if (process.platform === 'win32') {
-        process.stdout.write('cannot build iOS package in Windows'.red);
-        process.exit(1);
-      }
+      // if (process.platform === 'win32') {
+      //   process.stdout.write('cannot build iOS package in Windows'.red);
+      //   process.exit(1);
+      // }
       var ROOT = process.cwd();
       var PROJECTPATH = path.resolve(ROOT, 'ios', 'playground');
+      var IOSPATH = path.resolve(ROOT, 'ios');
       console.log(PROJECTPATH);
+      icons.ios(IOSPATH); //处理icon
+      iosConfig(1, IOSPATH); //处理配置
       packIos(PROJECTPATH);
+      glob(IOSPATH + '/**/*.app', function (er, files) {
+        if (er || files.length === 0) {
+          npmlog.error("打包发生错误");
+          process.exit(1);
+        } else {
+          console.log(files);
+          var pathDir = path.resolve(files[0], '..');
+          console.log(pathDir);
+          fse.copySync(pathDir, 'dist/ios/dist/');
+        }
+      });
       console.info('build ios...');
     }
   }, {

@@ -5,6 +5,10 @@ const npmlog = require('npmlog');
 const packIos = require('./libs/pack-ios');
 const glob = require("glob");
 const targz = require('tar.gz');
+const icons = require("./libs/config/icons.js");
+const androidConfig = require("./libs/config/android.js");
+const iosConfig = require("./libs/config/ios.js");
+
 
 import * as packAndorid from "./libs/apkhelper";
 import packHtml from "./libs/html5";
@@ -83,7 +87,11 @@ export class Builder {
 
     console.info('Start building Android package...'.green);
     return folderSync(PROJECTPATH, BUILDPATH)
-    .then(() => packAndorid.pack(BUILDPATH, false))
+    .then(() => {
+      icons.android(PROJECTPATH);
+      androidConfig(false,PROJECTPATH);//处理配置
+      packAndorid.pack(BUILDPATH, false);
+    })
       .then(function() {
 
         glob(`${BUILDPATH}/**/*.apk`, function(er, files) {
@@ -101,14 +109,28 @@ export class Builder {
   }
 
   buildIos () {
-    if (process.platform === 'win32') {
-      process.stdout.write('cannot build iOS package in Windows'.red);
-      process.exit(1);
-    }
+    // if (process.platform === 'win32') {
+    //   process.stdout.write('cannot build iOS package in Windows'.red);
+    //   process.exit(1);
+    // }
     const ROOT = process.cwd();
     const PROJECTPATH = path.resolve(ROOT,'ios', 'playground');
+    const IOSPATH = path.resolve(ROOT,'ios');
     console.log(PROJECTPATH);
+    icons.ios(IOSPATH);//处理icon
+    iosConfig(false,IOSPATH);//处理配置
     packIos(PROJECTPATH);
+    glob(`${IOSPATH}/**/*.app`, function(er, files) {
+      if( er || files.length === 0 ){
+        npmlog.error("打包发生错误")
+        process.exit(1);
+      } else {
+        console.log(files);
+        let pathDir = path.resolve(files[0], '..');
+        console.log(pathDir);
+        fse.copySync(pathDir, 'dist/ios/dist/');
+      }
+    })
     console.info('build ios...');
   }
 
