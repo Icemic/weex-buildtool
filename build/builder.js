@@ -56,19 +56,19 @@ var Builder = exports.Builder = function () {
       // this.download();
 
       // 建工程目录
-      var assetsPath = path.join(this.outputPath, 'package-template', 'assets');
+      var assetsPath = path.join(this.outputPath, 'assets');
       fse.ensureDirSync(assetsPath);
       fse.copySync(path.resolve(__dirname, '../package-template/assets'), assetsPath);
 
-      var androidPath = path.join(this.outputPath, 'package-template', 'android');
+      var androidPath = path.join(this.outputPath, 'android');
       fse.ensureDirSync(androidPath);
       fse.copySync(path.resolve(__dirname, '../package-template/android'), androidPath);
 
-      var iosPath = path.join(this.outputPath, 'package-template', 'ios');
+      var iosPath = path.join(this.outputPath, 'ios');
       fse.ensureDirSync(iosPath);
       fse.copySync(path.resolve(__dirname, '../package-template/ios'), iosPath);
 
-      var configPath = path.join(this.outputPath, 'package-template', 'config');
+      var configPath = path.join(this.outputPath, 'config');
       fse.ensureDirSync(configPath);
       fse.copySync(path.resolve(__dirname, '../package-template/config'), configPath);
 
