@@ -13,6 +13,8 @@ const fs = require('fs'),
 /**
  * 配置处理
  * @param  {[bool]} debug 是否debug模式
+ * @param  {[string]} curPath 打包文件路径
+ * @param  {[string]} debugPath debug的路径
  * @return {[type]}           [description]
  */
 module.exports = function (release,curPath,debugPath) {
@@ -29,13 +31,15 @@ module.exports = function (release,curPath,debugPath) {
           },
           function(data,callback){
             let sdkPath = process.env.ANDROID_HOME;
-            if (!config.sdkdir &&  sdkPath) {
-              config.sdkdir = sdkPath;
-            }else if (!config.sdkdir) {
+            if(config.sdkdir){
+              config.sdkdir = path.resolve(configPath,config.sdkdir).replace(/\\/g, '/');
+            }else if (sdkPath) {
+              config.sdkdir = sdkPath.replace(/\\/g, '/');
+            }else {
               console.log('请配置 Android SDK 地址');
               process.exit();
             }
-            let outString = data.replace(/sdk\.dir.*/,'sdk.dir=' + path.resolve(configPath,config.sdkdir).replace(/\\/g, '/'));
+            let outString = data.replace(/sdk\.dir.*/,'sdk.dir=' + config.sdkdir);
             // replace(/ndk.dir.*/,'ndk.dir=' + path.resolve(curPath,config.ndkdir));
             fs.writeFile(path.resolve(curPath,'playground/local.properties'), outString, callback);
           },
