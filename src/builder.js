@@ -26,24 +26,25 @@ export class Builder {
     // this.download();
 
     // 建工程目录
-    fse.mkdirs(path.join(this.outputPath, 'android'),  (err) => {
-      if (err) return console.error(err);
-      console.log("download android...");
-    });
+    let androidPath = path.join(this.outputPath, 'android');
+    fse.ensureDirSync(androidPath);
+    fse.copySync(path.resolve(__dirname, '../android-template'), androidPath);
 
-    fse.mkdirs(path.join(this.outputPath, 'ios'), () => {
-      console.log("download ios...");
-    });
+    let iosPath = path.join(this.outputPath, 'ios');
+    fse.ensureDirSync(iosPath);
+    fse.copySync(path.resolve(__dirname, '../ios-template'), iosPath);
 
-    fse.mkdirs(path.join(this.outputPath, 'dist'), () => {
-      console.log("create category...")
-    });
+    let configPath = path.join(this.outputPath, 'config');
+    fse.ensureDirSync(configPath);
+    fse.copySync(path.resolve(__dirname, '../config-template'), configPath);
+
+
+    let distPath = path.join(this.outputPath, 'dist');
+    fse.ensureDirSync(distPath);
 
     // 建配置文件
-    fse.mkdirs(path.join(this.outputPath, 'config'), () =>{
-      console.log("config");
-    });
-
+    fse.ensureFileSync(path.join(this.outputPath, 'manifest.json'));
+    npmlog.info('完成 ');
   }
 
   build () {

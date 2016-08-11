@@ -20,7 +20,7 @@ const fs = require('fs'),
   weFileCreate = require('../build/create'),
   generator = require('../build/generator'),
   commands = require('../build/commands'),
-  htmlserver = require('./libs/html5-server')
+  htmlserver = require('../build/libs/html5-server');
   // Emulator = require('../build/emulater')
 
 
@@ -374,8 +374,7 @@ var argv = yargs
     var builder = new Builder();
 
     if (argv._[1] === "init") {
-      builder.init();
-      return;
+      return builder.init();
     } else {
       try {
         // TODO 判断更多东西

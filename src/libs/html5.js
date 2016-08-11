@@ -5,7 +5,7 @@ const fs = require('fs');
 const fse = require('fs-extra');
 
 var buildHtml = function() {
-const manifest = require(curPath + '/config/config.base.js')();
+    const manifest = require(curPath + '/config/config.base.js')();
     if (!fs.existsSync('dist/html5/dist')) {
         if (!fs.existsSync('dist/html5')) {
             if (!fs.existsSync('dist')) {

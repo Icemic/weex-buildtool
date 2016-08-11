@@ -57,23 +57,24 @@ var Builder = exports.Builder = function () {
       // this.download();
 
       // 建工程目录
-      fse.mkdirs(path.join(this.outputPath, 'android'), function (err) {
-        if (err) return console.error(err);
-        console.log("download android...");
-      });
+      var androidPath = path.join(this.outputPath, 'android');
+      fse.ensureDirSync(androidPath);
+      fse.copySync(path.resolve(__dirname, '../android-template'), androidPath);
 
-      fse.mkdirs(path.join(this.outputPath, 'ios'), function () {
-        console.log("download ios...");
-      });
+      var iosPath = path.join(this.outputPath, 'ios');
+      fse.ensureDirSync(iosPath);
+      fse.copySync(path.resolve(__dirname, '../ios-template'), iosPath);
 
-      fse.mkdirs(path.join(this.outputPath, 'dist'), function () {
-        console.log("create category...");
-      });
+      var configPath = path.join(this.outputPath, 'config');
+      fse.ensureDirSync(configPath);
+      fse.copySync(path.resolve(__dirname, '../config-template'), configPath);
+
+      var distPath = path.join(this.outputPath, 'dist');
+      fse.ensureDirSync(distPath);
 
       // 建配置文件
-      fse.mkdirs(path.join(this.outputPath, 'config'), function () {
-        console.log("config");
-      });
+      fse.ensureFileSync(path.join(this.outputPath, 'manifest.json'));
+      npmlog.info('完成 ');
     }
   }, {
     key: 'build',

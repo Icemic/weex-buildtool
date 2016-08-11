@@ -40,13 +40,14 @@ var crypto = require('crypto');
  * 依赖 Android SDK，并须添加环境变量 ANDROID_SDK
  */
 function checkSDK() {
-  process.stdout.write('检查 Android SDK...'.green);
+  process.stdout.write('Check Android SDK...'.green);
 
   return new _promise2.default(function (resolve, reject) {
 
     var sdkPath = process.env.ANDROID_HOME;
     if (sdkPath) {
-      console.info('已安装'.green);
+      console.info('installed'.green);
+      process.stdout.write('Check SDK version...'.green);
 
       var lack = [];
       if (!fs.existsSync(path.resolve(sdkPath, 'platforms/android-24'))) {
@@ -55,6 +56,7 @@ function checkSDK() {
       if (!fs.existsSync(path.resolve(sdkPath, 'build-tools/23.0.2'))) {
         lack.push('build-tools-23.0.2');
       }
+      process.stdout.write('done\n'.green);
       if (lack.length) {
         console.info('检测到以下内容尚未安装：'.yellow);
         console.info('');
@@ -87,6 +89,7 @@ function checkSDK() {
         console.info('程序将自动安装...'.yellow);
         resolve(installSDK(lack));
       } else {
+
         resolve();
       }
     } else {

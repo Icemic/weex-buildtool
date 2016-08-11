@@ -38,7 +38,7 @@ var fs = require('fs'),
     weFileCreate = require('../build/create'),
     generator = require('../build/generator'),
     commands = require('../build/commands'),
-    htmlserver = require('./libs/html5-server');
+    htmlserver = require('../build/libs/html5-server');
 // Emulator = require('../build/emulater')
 
 
@@ -376,8 +376,7 @@ var argv = yargs.usage('\nUsage: weex foo/bar/we_file_or_dir_path  [options]' + 
     var builder = new _builder.Builder();
 
     if (argv._[1] === "init") {
-      builder.init();
-      return;
+      return builder.init();
     } else {
       try {
         // TODO 判断更多东西
