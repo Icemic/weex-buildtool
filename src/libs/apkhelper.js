@@ -15,7 +15,7 @@ export function checkSDK() {
 
   return new Promise((resolve, reject) => {
 
-    let sdkPath = process.env.ANDROID_SDK;
+    let sdkPath = process.env.ANDROID_HOME;
     if (sdkPath) {
       console.info('installed'.green);
       process.stdout.write('Check SDK version...'.green);
@@ -108,7 +108,7 @@ export function pack(buildPath, release) {
         } else {
           console.info('Android 打包完成'.green);
           console.info('生成的文件位于：'.yellow,
-            path.resolve(buildPath, 'playground','app/build/outputs/apk/'));
+            path.resolve(buildPath, 'playground','app/build/outputs/apk/').underline);
           resolve();
         }
       });
