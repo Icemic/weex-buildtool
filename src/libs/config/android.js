@@ -6,14 +6,15 @@ const fs = require('fs'),
   path = require('path'),
   validator = require('validator'),
   async = require('async'),
-  icons = require('./icons.js');
+  icons = require('./icons.js'),
+  nw_utils = require('../../nw-utils.js') ;
 
 /**
  * 配置处理
  * @param  {[bool]} debug 是否debug模式
  * @return {[type]}           [description]
  */
-module.exports = function (debug,curPath) {
+module.exports = function (debug,curPath,debugPath) {
   curPath = curPath ? curPath : process.cwd() + '/android';
   var config = require(path.resolve(curPath,'../config/config.android.js'))();
 
@@ -52,10 +53,14 @@ module.exports = function (debug,curPath) {
           function (callback) {
             fs.readFile(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'),{encoding: 'utf8'}, callback);
           },function (data,callback) {
+            var launch_path = config.launch_path;
+            if(debug){
+              launch_path = debugPath;
+            }
             data = data.replace(/package=".*"/,'package="' + config.packagename + '"')
             .replace(/android:versionCode=".*"/,'android:versionCode="' + config.version.code + '"')
             .replace(/android:versionName=".*"/,'android:versionName="' + config.version.name + '"')
-            .replace(/android:name="weex_index"\sandroid:value=".*"/,'android:name="weex_index" android:value="' + config.launch_path + '"');
+            .replace(/android:name="weex_index"\sandroid:value=".*"/,'android:name="weex_index" android:value="' + launch_path + '"');
             fs.writeFile(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'), data, callback);
           },
           // function (callback) {

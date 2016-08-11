@@ -85,7 +85,7 @@ export class Builder {
     return packAndorid.sync(PROJECTPATH, BUILDPATH)
     .then(() => {
       icons.android(PROJECTPATH);
-      androidConfig(1,PROJECTPATH);//处理配置
+      androidConfig(false,PROJECTPATH);//处理配置
       packAndorid.pack(BUILDPATH, false);
     })
       .then(function() {
@@ -114,7 +114,7 @@ export class Builder {
     const IOSPATH = path.resolve(ROOT,'ios');
     console.log(PROJECTPATH);
     icons.ios(IOSPATH);//处理icon
-    iosConfig(1,IOSPATH);//处理配置
+    iosConfig(false,IOSPATH);//处理配置
     packIos(PROJECTPATH);
     console.info('build ios...');
   }
