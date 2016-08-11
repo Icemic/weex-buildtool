@@ -14,7 +14,7 @@ var _createClass2 = require("babel-runtime/helpers/createClass");
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _builder = require("../build/builder.js");
+var _builder2 = require("../build/builder.js");
 
 var _emulater = require("../build/emulater");
 
@@ -40,7 +40,8 @@ var fs = require('fs'),
     weFileCreate = require('../build/create'),
     generator = require('../build/generator'),
     commands = require('../build/commands'),
-    htmlserver = require('../build/libs/html5-server');
+    htmlserver = require('../build/libs/html5-server'),
+    exec = require('sync-exec');
 // Emulator = require('../build/emulater')
 
 
@@ -375,20 +376,20 @@ var argv = yargs.usage('\nUsage: weex foo/bar/we_file_or_dir_path  [options]' + 
 
   if (argv._[0] === "build") {
     // weex build
-    var builder = new _builder.Builder();
+    var builder = new _builder2.Builder();
 
     if (argv._[1] === "init") {
       return builder.init();
     } else {
-      try {
-        // TODO 判断更多东西
-        fs.accessSync(path.join(process.cwd(), 'manifest.json'), fs.F_OK);
-      } catch (e) {
-        npmlog.info('进行 build 初始化工作');
-        builder.init();
-        npmlog.info('check your manifest.json and build angain');
-        return;
-      }
+      // try {
+      //   // TODO 判断更多东西
+      //   fs.accessSync(path.join(process.cwd(), 'manifest.json'), fs.F_OK);
+      // } catch (e) {
+      //   npmlog.info('进行 build 初始化工作');
+      //   builder.init();
+      //   npmlog.info('check your manifest.json and build angain');
+      //   return;
+      // }
     }
 
     var _inputPath = path.join('.', 'src');
@@ -434,6 +435,7 @@ var argv = yargs.usage('\nUsage: weex foo/bar/we_file_or_dir_path  [options]' + 
             npmlog.error("目标路径没有文件!");
             process.exit(1);
           }
+          console.log('emulate', files[0]);
           var emulater = new _emulater.Emulator(files[0]);
           emulater.emulateIos();
         });
@@ -459,6 +461,23 @@ var argv = yargs.usage('\nUsage: weex foo/bar/we_file_or_dir_path  [options]' + 
     }
 
     // return;
+  } else if (argv._[0] === "run") {
+    var _builder = new _builder2.Builder();
+    var emulator = new _emulater.Emulator();
+    var platform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
+
+    switch (platform) {
+      case "ios":
+
+        // TODO builde.checkInit();
+        _builder.buildIos();
+        emulator.emulateIos();
+        break;
+      case "android":
+        break;
+      default:
+        break;
+    }
   } else {
     if (argv._[0] && commands.exec(argv._[0], process.argv.slice(3))) {
       return;

@@ -9,6 +9,7 @@ const icons = require("./libs/config/icons.js");
 const androidConfig = require("./libs/config/android.js");
 const iosConfig = require("./libs/config/ios.js");
 
+
 import * as packAndorid from "./libs/apkhelper";
 import packHtml from "./libs/html5";
 import serveHtml from "./libs/html5-server";
@@ -116,6 +117,17 @@ export class Builder {
     icons.ios(IOSPATH);//处理icon
     iosConfig(1,IOSPATH);//处理配置
     packIos(PROJECTPATH);
+    glob(`${IOSPATH}/**/*.app`, function(er, files) {
+      if( er || files.length === 0 ){
+        npmlog.error("打包发生错误")
+        process.exit(1);
+      } else {
+        console.log(files);
+        let pathDir = path.resolve(files[0], '..');
+        console.log(pathDir);
+        fse.copySync(pathDir, 'dist/ios/dist/');
+      }
+    })
     console.info('build ios...');
   }
 

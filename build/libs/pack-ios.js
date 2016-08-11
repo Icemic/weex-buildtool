@@ -24,6 +24,7 @@ function run(localpath, release, sdkType) {
   //清除目标目录
   // var appPath = path.resolve(localpath, './build/real/'+ target +'.app');
   // var appSimPath = path.resolve(localpath, './build/sim/'+ target +'.app');
+
   var appPath = path.resolve(localpath, './build/' + target + '.app');
   if (fs.existsSync(appPath)) {
     console.log('删除app文件');
@@ -53,6 +54,7 @@ function run(localpath, release, sdkType) {
   } else if (sdkType == 'sim') {
     result = packSim(target, scheme, config, sdk, localpath);
   }
+  console.log(result);
   // cmd = 'xcodebuild -workspace '+ target +'.xcworkspace -scheme '+ scheme +' -sdk ' + sdk.realSDK + ' -configuration '+ config +' -archivePath build';
   // var result = exec(cmd, {cwd: localpath}).stdout;
   var outputPath = findOutputPath(result);

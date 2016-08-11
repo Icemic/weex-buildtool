@@ -20,7 +20,8 @@ const fs = require('fs'),
   weFileCreate = require('../build/create'),
   generator = require('../build/generator'),
   commands = require('../build/commands'),
-  htmlserver = require('../build/libs/html5-server');
+  htmlserver = require('../build/libs/html5-server'),
+  exec = require('sync-exec');
   // Emulator = require('../build/emulater')
 
 
@@ -430,6 +431,7 @@ var argv = yargs
             npmlog.error("目标路径没有文件!")
             process.exit(1);
           }
+          console.log('emulate', files[0]);
           let emulater = new Emulator(files[0]);
           emulater.emulateIos();
         });
@@ -455,6 +457,24 @@ var argv = yargs
     }
 
     // return;
+  } else if (argv._[0] === "run") {
+    let builder = new Builder;
+    let emulator = new Emulator;
+    const platform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
+
+    switch (platform) {
+      case "ios":
+
+        // TODO builde.checkInit();
+        builder.buildIos();
+        emulator.emulateIos();
+        break;
+      case "android":
+        break;
+      default:
+        break;
+    }
+
   } else {
     if (argv._[0] && commands.exec(argv._[0], process.argv.slice(3))) {
       return
