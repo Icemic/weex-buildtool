@@ -4,7 +4,7 @@ const path = require('path');
 const npmlog = require('npmlog');
 const packIos = require('./libs/pack-ios');
 const glob = require("glob");
-const targz = require('tar.gz');
+const unzip = require('unzip');
 const icons = require("./libs/config/icons.js");
 const androidConfig = require("./libs/config/android.js");
 const iosConfig = require("./libs/config/ios.js");
@@ -36,15 +36,20 @@ export class Builder {
 
     let androidPath = path.join(this.outputPath, 'android');
     fs.ensureDirSync(androidPath);
-    fs.copySync(path.resolve(__dirname, '../package-template/android'), androidPath);
-    // await targz().extract(path.resolve(__dirname, '../package-template/android.tar.gz')
-    //   , androidPath);
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(path.resolve(__dirname, '../package-template/android.zip'))
+      .pipe(unzip.Extract({ path: androidPath }))
+      .on('close', resolve).on('error', reject);
+    });
+
 
     let iosPath = path.join(this.outputPath, 'ios');
     fs.ensureDirSync(iosPath);
-    fs.copySync(path.resolve(__dirname, '../package-template/ios'), iosPath);
-    // await targz().extract(path.resolve(__dirname, '../package-template/ios.tar.gz')
-    //   , iosPath);
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(path.resolve(__dirname, '../package-template/ios.zip'))
+      .pipe(unzip.Extract({ path: iosPath }))
+      .on('close', resolve).on('error', reject);
+    });
 
     let configPath = path.join(this.outputPath, 'config');
     fs.ensureDirSync(configPath);
