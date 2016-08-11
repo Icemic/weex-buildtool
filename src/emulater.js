@@ -2,15 +2,18 @@
 
 import * as androidEmulator from "./libs/adbhelper";
 const path = require('path');
-
-var start = require('./lib/start.js');
+const nwUtils = require('../build/nw-utils');
+const start = require('./lib/start.js');
 
 
 export class Emulator{
   constructor(filePath) {
     this.curPath = process.cwd();
     this.filePath = filePath || `${this.curPath}/dist/ios/HelloWorld.app`;
+    this.publicIp = nwUtils.getPublicIP();
+
   }
+
 
   emulateIos () {
     var config = require(path.resolve(this.curPath, './config/config.ios.js'))();
@@ -19,6 +22,7 @@ export class Emulator{
       appId: config.appid,
       path: this.filePath
     };
+    console.log(params);
     start(params);
   }
 

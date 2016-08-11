@@ -15,7 +15,7 @@ const fs = require('fs'),
  * @param  {[bool]} debug 是否debug模式
  * @return {[type]}           [description]
  */
-module.exports = function (debug,curPath,debugPath) {
+module.exports = function (release,curPath,debugPath) {
   console.log(configPath)
   curPath = curPath ? curPath : process.cwd() + '/android';
   var config = require(path.resolve(configPath,'config.android.js'))();
@@ -61,7 +61,7 @@ module.exports = function (debug,curPath,debugPath) {
             fs.readFile(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'),{encoding: 'utf8'}, callback);
           },function (data,callback) {
             var launch_path = config.launch_path;
-            if(debug){
+            if(!release){
               launch_path = debugPath;
             }
             data = data.replace(/android:versionCode=".*"/,'android:versionCode="' + config.version.code + '"')
