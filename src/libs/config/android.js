@@ -16,7 +16,7 @@ const configPath = process.cwd() + '/config';
  * @param  {[bool]} debug 是否debug模式
  * @return {[type]}           [description]
  */
-module.exports = function (debug,curPath,debugPath) {
+module.exports = function (release,curPath,debugPath) {
   curPath = curPath ? curPath : process.cwd() + '/android';
   var config = require(path.resolve(configPath,'config.android.js'))();
   return Promise.resolve()
@@ -26,6 +26,13 @@ module.exports = function (debug,curPath,debugPath) {
     try {
       data = fs.readFileSync(path.resolve(curPath,'playground/local.properties'),{encoding: 'utf8'});
 
+let sdkPath = process.env.ANDROID_HOME;
+            if (!config.sdkdir &&  sdkPath) {
+              config.sdkdir = sdkPath;
+            }else if (!config.sdkdir) {
+              console.log('请配置 Android SDK 地址');
+              process.exit();
+            }
       let outString = data.replace(/sdk\.dir.*/,'sdk.dir=' + path.resolve(configPath,config.sdkdir).replace(/\\/g, '/'));
       fs.writeFileSync(path.resolve(curPath,'playground/local.properties'), outString);
 

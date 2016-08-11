@@ -8,7 +8,7 @@ const fs = require('fs'),
   icons = require('./icons.js'),
   configPath = process.cwd() + '/config';
 
-module.exports = function (debug,curPath,debugPath) {
+module.exports = function (release,curPath,debugPath) {
   curPath = curPath ? curPath : process.cwd() + '/ios';
   var config = require(path.resolve(configPath,'config.ios.js'))();
 
@@ -18,7 +18,7 @@ module.exports = function (debug,curPath,debugPath) {
       fs.readFile(path.resolve(curPath,'playground/WeexApp/Info.plist'),{encoding: 'utf8'}, callback);
     },function (data,callback) {
       var launch_path = config.launch_path;
-      if(debug){
+      if(!release){
         launch_path = debugPath;
       }
       data = data.replace(/<key>CFBundleIdentifier<\/key>[\S\s]*?\/string>/m,'<key>CFBundleIdentifier</key>\n <string>' + config.appid + '</string>')

@@ -438,7 +438,7 @@ var argv = yargs
 
           let ip = nwUtils.getPublicIP();
           let dfWe = "main.we";
-
+          HTTP_PORT = '8083';
           new Previewer(null,null,false, DEFAULT_HOST, false, false, transformPath);
 
           if( er || files.length === 0 ){
