@@ -13,14 +13,14 @@ const crypto = require('crypto');
  * @return {Promise}             [description]
  */
 export default function folderSync(projectPath, buildPath, excludes) {
-  process.stdout.write('准备生成构建目录。\n'.green);
+  process.stdout.write('准备生成构建目录\n'.green);
   let exist = !fs.ensureDirSync(buildPath);
   if (!exist) {
-    process.stdout.write('目标文件夹不存在，将执行全量同步，请耐心等待...\n'.yellow);
-    return syncIncremental(projectPath, buildPath, excludes);
+    process.stdout.write('目标文件夹不存在，将执行全量同步\n'.yellow);
+    return syncFull(projectPath, buildPath, excludes);
   } else {
     // process.stdout.write('使用增量同步...\n'.yellow);
-    return syncFull(projectPath, buildPath, excludes);
+    return syncIncremental(projectPath, buildPath, excludes);
   }
 }
 

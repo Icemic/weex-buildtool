@@ -4,16 +4,17 @@ const path = require('path');
 const npmlog = require('npmlog');
 const packIos = require('./libs/pack-ios');
 const glob = require("glob");
+
 const targz = require('tar.gz');
+
 const icons = require("./libs/config/icons.js");
 const androidConfig = require("./libs/config/android.js");
 const iosConfig = require("./libs/config/ios.js");
 
-
 import * as packAndorid from "./libs/apkhelper";
 import packHtml from "./libs/html5";
 import serveHtml from "./libs/html5-server";
-import {folderSync} from './libs/folderSync';
+import folderSync from './libs/folderSync';
 
 
 export class Builder {
@@ -23,7 +24,7 @@ export class Builder {
     this.buildPlatform = buildPlatform;
   }
 
-  init () {
+  async init () {
     npmlog.info('进行初始化... ');
 
     // TODO 下载原始工程
@@ -36,13 +37,15 @@ export class Builder {
 
     let androidPath = path.join(this.outputPath, 'android');
     fs.ensureDirSync(androidPath);
-    fs.createReadStream(path.resolve(__dirname, '../package-template/android.tar.gz'))
-      .pipe(targz().createWriteStream(androidPath));
+    fs.copySync(path.resolve(__dirname, '../package-template/android'), androidPath);
+    // await targz().extract(path.resolve(__dirname, '../package-template/android.tar.gz')
+    //   , androidPath);
 
     let iosPath = path.join(this.outputPath, 'ios');
     fs.ensureDirSync(iosPath);
-    fs.createReadStream(path.resolve(__dirname, '../package-template/ios.tar.gz'))
-      .pipe(targz().createWriteStream(iosPath));
+    fs.copySync(path.resolve(__dirname, '../package-template/ios'), iosPath);
+    // await targz().extract(path.resolve(__dirname, '../package-template/ios.tar.gz')
+    //   , iosPath);
 
     let configPath = path.join(this.outputPath, 'config');
     fs.ensureDirSync(configPath);
@@ -86,11 +89,12 @@ export class Builder {
     const BUILDPATH = path.resolve(ROOT, '.build','android');
 
     console.info('Start building Android package...'.green);
+
     return folderSync(PROJECTPATH, BUILDPATH)
     .then(() => {
-      icons.android(PROJECTPATH);
-      androidConfig(false,PROJECTPATH);//处理配置
-      packAndorid.pack(BUILDPATH, false);
+      icons.android(BUILDPATH);
+      androidConfig(false, BUILDPATH);//处理配置
+      return packAndorid.pack(BUILDPATH, false);
     })
       .then(function() {
 
@@ -128,7 +132,7 @@ export class Builder {
         console.log(files);
         let pathDir = path.resolve(files[0], '..');
         console.log(pathDir);
-        fse.copySync(pathDir, 'dist/ios/dist/');
+        fs.copySync(pathDir, 'dist/ios/dist/');
       }
     })
     console.info('build ios...');
