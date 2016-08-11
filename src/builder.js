@@ -1,14 +1,15 @@
 const prompt = require('prompt');
-const fs = require('fs');
-const fse = require('fs-extra');
+const fs = require('fs-extra');
 const path = require('path');
 const npmlog = require('npmlog');
 const packIos = require('./libs/pack-ios');
 const glob = require("glob");
+const targz = require('tar.gz');
 
 import * as packAndorid from "./libs/apkhelper";
 import packHtml from "./libs/html5";
 import serveHtml from "./libs/html5-server";
+import {folderSync} from './libs/folderSync';
 
 
 export class Builder {
@@ -26,24 +27,26 @@ export class Builder {
 
     // 建工程目录
     let assetsPath = path.join(this.outputPath, 'assets');
-    fse.ensureDirSync(assetsPath);
-    fse.copySync(path.resolve(__dirname, '../package-template/assets'), assetsPath);
+    fs.ensureDirSync(assetsPath);
+    fs.copySync(path.resolve(__dirname, '../package-template/assets'), assetsPath);
 
     let androidPath = path.join(this.outputPath, 'android');
-    fse.ensureDirSync(androidPath);
-    fse.copySync(path.resolve(__dirname, '../package-template/android'), androidPath);
+    fs.ensureDirSync(androidPath);
+    fs.createReadStream(path.resolve(__dirname, '../package-template/android.tar.gz'))
+      .pipe(targz().createWriteStream(androidPath));
 
     let iosPath = path.join(this.outputPath, 'ios');
-    fse.ensureDirSync(iosPath);
-    fse.copySync(path.resolve(__dirname, '../package-template/ios'), iosPath);
+    fs.ensureDirSync(iosPath);
+    fs.createReadStream(path.resolve(__dirname, '../package-template/ios.tar.gz'))
+      .pipe(targz().createWriteStream(iosPath));
 
     let configPath = path.join(this.outputPath, 'config');
-    fse.ensureDirSync(configPath);
-    fse.copySync(path.resolve(__dirname, '../package-template/config'), configPath);
+    fs.ensureDirSync(configPath);
+    fs.copySync(path.resolve(__dirname, '../package-template/config'), configPath);
 
     // 建立发布目录
     let distPath = path.join(this.outputPath, 'dist');
-    fse.ensureDirSync(distPath);
+    fs.ensureDirSync(distPath);
 
     npmlog.info('完成 ');
   }
@@ -79,7 +82,7 @@ export class Builder {
     const BUILDPATH = path.resolve(ROOT, '.build','android');
 
     console.info('Start building Android package...'.green);
-    return packAndorid.sync(PROJECTPATH, BUILDPATH)
+    return folderSync(PROJECTPATH, BUILDPATH)
     .then(() => packAndorid.pack(BUILDPATH, false))
       .then(function() {
 
@@ -91,7 +94,7 @@ export class Builder {
             console.log(files);
             let pathDir = path.resolve(files[0], '..');
             console.log(pathDir);
-            fse.copySync(pathDir, 'dist/android/dist/');
+            fs.copySync(pathDir, 'dist/android/dist/');
           }
         })
       });

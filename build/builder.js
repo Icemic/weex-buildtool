@@ -25,17 +25,19 @@ var _html5Server = require('./libs/html5-server');
 
 var _html5Server2 = _interopRequireDefault(_html5Server);
 
+var _folderSync = require('./libs/folderSync');
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var prompt = require('prompt');
-var fs = require('fs');
-var fse = require('fs-extra');
+var fs = require('fs-extra');
 var path = require('path');
 var npmlog = require('npmlog');
 var packIos = require('./libs/pack-ios');
 var glob = require("glob");
+var targz = require('tar.gz');
 
 var Builder = exports.Builder = function () {
   function Builder(outputPath) {
@@ -57,24 +59,24 @@ var Builder = exports.Builder = function () {
 
       // 建工程目录
       var assetsPath = path.join(this.outputPath, 'assets');
-      fse.ensureDirSync(assetsPath);
-      fse.copySync(path.resolve(__dirname, '../package-template/assets'), assetsPath);
+      fs.ensureDirSync(assetsPath);
+      fs.copySync(path.resolve(__dirname, '../package-template/assets'), assetsPath);
 
       var androidPath = path.join(this.outputPath, 'android');
-      fse.ensureDirSync(androidPath);
-      fse.copySync(path.resolve(__dirname, '../package-template/android'), androidPath);
+      fs.ensureDirSync(androidPath);
+      fs.createReadStream(path.resolve(__dirname, '../package-template/android.tar.gz')).pipe(targz().createWriteStream(androidPath));
 
       var iosPath = path.join(this.outputPath, 'ios');
-      fse.ensureDirSync(iosPath);
-      fse.copySync(path.resolve(__dirname, '../package-template/ios'), iosPath);
+      fs.ensureDirSync(iosPath);
+      fs.createReadStream(path.resolve(__dirname, '../package-template/ios.tar.gz')).pipe(targz().createWriteStream(iosPath));
 
       var configPath = path.join(this.outputPath, 'config');
-      fse.ensureDirSync(configPath);
-      fse.copySync(path.resolve(__dirname, '../package-template/config'), configPath);
+      fs.ensureDirSync(configPath);
+      fs.copySync(path.resolve(__dirname, '../package-template/config'), configPath);
 
       // 建立发布目录
       var distPath = path.join(this.outputPath, 'dist');
-      fse.ensureDirSync(distPath);
+      fs.ensureDirSync(distPath);
 
       npmlog.info('完成 ');
     }
@@ -109,7 +111,7 @@ var Builder = exports.Builder = function () {
       var BUILDPATH = path.resolve(ROOT, '.build', 'android');
 
       console.info('Start building Android package...'.green);
-      return packAndorid.sync(PROJECTPATH, BUILDPATH).then(function () {
+      return (0, _folderSync.folderSync)(PROJECTPATH, BUILDPATH).then(function () {
         return packAndorid.pack(BUILDPATH, false);
       }).then(function () {
 
@@ -121,7 +123,7 @@ var Builder = exports.Builder = function () {
             console.log(files);
             var pathDir = path.resolve(files[0], '..');
             console.log(pathDir);
-            fse.copySync(pathDir, 'dist/android/dist/');
+            fs.copySync(pathDir, 'dist/android/dist/');
           }
         });
       });

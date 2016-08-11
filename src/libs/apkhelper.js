@@ -3,8 +3,7 @@ require('colors');
 const path = require('path');
 const childProcess = require('child_process');
 const fs = require('fs-extra');
-// const Promise = require('bluebird');
-const crypto = require('crypto');
+
 
 /**
  * 检查 Android SDK 安装情况
@@ -75,74 +74,6 @@ export function installSDK(lack) {
       }
     });
     android.stdin.write('y\n');
-  })
-}
-
-function getMd5(p){
-	var str = fs.readFileSync(p,'utf-8');
-	var md5um = crypto.createHash('md5');
-	md5um.update(str);
-	return md5um.digest('hex');
-}
-
-/**
- * 同步工程目录的文件到构建目录, 在修改配置之前执行
- * @param  {absolutePath} projectPath [description]
- * @param  {absolutePath} buildPath   [description]
- * @param  {String | RegExp} excludes    [description]
- * @return {Promise}             [description]
- */
-export function sync(projectPath, buildPath, excludes) {
-  process.stdout.write('生成构建目录...\n'.green);
-  fs.ensureDirSync(buildPath);
-  let buildFileInfo = new Map();
-  let projectFileInfo = new Map();
-  process.stdout.write('读取目录信息...'.grey);
-  return new Promise((resolve, reject) => {
-    fs.walk(buildPath)
-    .on('data', item => {
-      if (item.stats.isFile()) {
-        buildFileInfo.set(path.relative(buildPath, item.path), getMd5(item.path));
-      } else if (item.stats.isDirectory()) {
-        buildFileInfo.set(path.relative(buildPath, item.path), 'dir');
-      }
-    })
-    .on('end', resolve);
-  })
-  .then(() => {
-    return new Promise((resolve, reject) => {
-      fs.walk(projectPath)
-      .on('data', item => {
-        if (item.stats.isFile()) {
-          projectFileInfo.set(path.relative(projectPath, item.path), getMd5(item.path));
-        } else if (item.stats.isDirectory()) {
-          projectFileInfo.set(path.relative(projectPath, item.path), 'dir');
-        }
-      })
-      .on('end', resolve);
-    });
-  })
-  .then(() => {
-    process.stdout.write('done\n'.grey);
-    let buildKeys = buildFileInfo.keys();
-    for (let key of buildKeys) {
-      if (!projectFileInfo.has(key)) {
-        let absolutePath = path.resolve(buildPath, key);
-        process.stdout.write(`  remove: ${absolutePath}\n`.grey);
-        fs.removeSync(absolutePath);
-      }
-    }
-  })
-  .then(() => {
-    for (let [key, md5] of projectFileInfo) {
-      let buildItem = buildFileInfo.get(key);
-      if (buildItem !== md5) {
-        let absolutePath = path.resolve(buildPath, key);
-        process.stdout.write(`  copy: ${absolutePath}\n`.grey);
-        fs.copySync(path.resolve(projectPath, key), absolutePath);
-      }
-    }
-    process.stdout.write('完成\n'.green);
   })
 }
 

@@ -4,14 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
-
-var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
-
-var _map = require('babel-runtime/core-js/map');
-
-var _map2 = _interopRequireDefault(_map);
-
 var _getIterator2 = require('babel-runtime/core-js/get-iterator');
 
 var _getIterator3 = _interopRequireDefault(_getIterator2);
@@ -22,7 +14,6 @@ var _promise2 = _interopRequireDefault(_promise);
 
 exports.checkSDK = checkSDK;
 exports.installSDK = installSDK;
-exports.sync = sync;
 exports.pack = pack;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -31,8 +22,6 @@ require('colors');
 var path = require('path');
 var childProcess = require('child_process');
 var fs = require('fs-extra');
-// const Promise = require('bluebird');
-var crypto = require('crypto');
 
 /**
  * 检查 Android SDK 安装情况
@@ -127,113 +116,6 @@ function installSDK(lack) {
       }
     });
     android.stdin.write('y\n');
-  });
-}
-
-function getMd5(p) {
-  var str = fs.readFileSync(p, 'utf-8');
-  var md5um = crypto.createHash('md5');
-  md5um.update(str);
-  return md5um.digest('hex');
-}
-
-/**
- * 同步工程目录的文件到构建目录, 在修改配置之前执行
- * @param  {absolutePath} projectPath [description]
- * @param  {absolutePath} buildPath   [description]
- * @param  {String | RegExp} excludes    [description]
- * @return {Promise}             [description]
- */
-function sync(projectPath, buildPath, excludes) {
-  process.stdout.write('生成构建目录...\n'.green);
-  fs.ensureDirSync(buildPath);
-  var buildFileInfo = new _map2.default();
-  var projectFileInfo = new _map2.default();
-  process.stdout.write('读取目录信息...'.grey);
-  return new _promise2.default(function (resolve, reject) {
-    fs.walk(buildPath).on('data', function (item) {
-      if (item.stats.isFile()) {
-        buildFileInfo.set(path.relative(buildPath, item.path), getMd5(item.path));
-      } else if (item.stats.isDirectory()) {
-        buildFileInfo.set(path.relative(buildPath, item.path), 'dir');
-      }
-    }).on('end', resolve);
-  }).then(function () {
-    return new _promise2.default(function (resolve, reject) {
-      fs.walk(projectPath).on('data', function (item) {
-        if (item.stats.isFile()) {
-          projectFileInfo.set(path.relative(projectPath, item.path), getMd5(item.path));
-        } else if (item.stats.isDirectory()) {
-          projectFileInfo.set(path.relative(projectPath, item.path), 'dir');
-        }
-      }).on('end', resolve);
-    });
-  }).then(function () {
-    process.stdout.write('done\n'.grey);
-    var buildKeys = buildFileInfo.keys();
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
-
-    try {
-      for (var _iterator2 = (0, _getIterator3.default)(buildKeys), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var key = _step2.value;
-
-        if (!projectFileInfo.has(key)) {
-          var absolutePath = path.resolve(buildPath, key);
-          process.stdout.write(('  remove: ' + absolutePath + '\n').grey);
-          fs.removeSync(absolutePath);
-        }
-      }
-    } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-          _iterator2.return();
-        }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
-        }
-      }
-    }
-  }).then(function () {
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
-
-    try {
-      for (var _iterator3 = (0, _getIterator3.default)(projectFileInfo), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-        var _step3$value = (0, _slicedToArray3.default)(_step3.value, 2);
-
-        var key = _step3$value[0];
-        var md5 = _step3$value[1];
-
-        var buildItem = buildFileInfo.get(key);
-        if (buildItem !== md5) {
-          var absolutePath = path.resolve(buildPath, key);
-          process.stdout.write(('  copy: ' + absolutePath + '\n').grey);
-          fs.copySync(path.resolve(projectPath, key), absolutePath);
-        }
-      }
-    } catch (err) {
-      _didIteratorError3 = true;
-      _iteratorError3 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion3 && _iterator3.return) {
-          _iterator3.return();
-        }
-      } finally {
-        if (_didIteratorError3) {
-          throw _iteratorError3;
-        }
-      }
-    }
-
-    process.stdout.write('完成\n'.green);
   });
 }
 
