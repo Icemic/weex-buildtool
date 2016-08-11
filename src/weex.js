@@ -332,6 +332,9 @@ var argv = yargs
   .describe('watch', 'using with -o , watch input path , auto run transform if change happen')
   .option('s', {demand: false, alias: 'server', type: 'string'})
   .describe('s', 'start a http file server, weex .we file will be transforme to JS bundle on the server , specify local root path using the option')
+  .boolean('r', {demand: false})
+  .describe('r', '打出来的包是 release 包')
+  .alias('r', 'release')
   .option('port', {demand: false})
   .default('port', NO_PORT_SPECIFIED)
   .describe('port', 'http listening port number ,default is 8081')
@@ -373,7 +376,10 @@ var argv = yargs
 
   if (argv._[0] === "build") {
     // weex build
-    var builder = new Builder();
+    var isRelease = argv.r;
+    var outputPath = process.cwd();
+
+    var builder = new Builder(outputPath, isRelease);
 
     if (argv._[1] === "init") {
       return builder.init();
@@ -428,6 +434,13 @@ var argv = yargs
           // If the `nonull` option is set, and nothing
           // was found, then files is ["**/*.js"]
           // er is an error object or null.
+          let transformPath = path.resolve(path.join(curPath, 'src'));
+
+          let ip = nwUtils.getPublicIP();
+          let dfWe = "main.we";
+
+          new Previewer(null,null,false, DEFAULT_HOST, false, false, transformPath);
+
           if( er || files.length === 0 ){
             npmlog.error("目标路径没有文件!")
             process.exit(1);
@@ -460,8 +473,8 @@ var argv = yargs
     // return;
   } else if (argv._[0] === "run") {
     const platform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
-    let builder = new Builder();
-    let emulater = new Emulator();
+    let curPath = process.cwd();
+    let builder = new Builder(curPath, argv.r);
     // TODO builde.checkInit();
     switch (platform) {
       case "ios":
