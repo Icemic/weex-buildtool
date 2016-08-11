@@ -6,6 +6,8 @@ const npmlog = require('npmlog');
 const packIos = require('./libs/pack-ios');
 const glob = require("glob");
 const icons = require("./libs/config/icons.js");
+const androidConfig = require("./libs/config/android.js");
+const iosConfig = require("./libs/config/ios.js");
 
 import * as packAndorid from "./libs/apkhelper";
 import packHtml from "./libs/html5";
@@ -80,6 +82,8 @@ export class Builder {
     console.info('Start building Android package...'.green);
     return packAndorid.sync(PROJECTPATH, BUILDPATH)
     .then(() => {
+      icons.android(PROJECTPATH);
+      androidConfig(1,PROJECTPATH);//处理配置
       packAndorid.pack(BUILDPATH, false);
     })
       .then(function() {
@@ -99,13 +103,16 @@ export class Builder {
   }
 
   buildIos () {
-    if (process.platform === 'win32') {
-      process.stdout.write('cannot build iOS package in Windows'.red);
-      process.exit(1);
-    }
+    // if (process.platform === 'win32') {
+    //   process.stdout.write('cannot build iOS package in Windows'.red);
+    //   process.exit(1);
+    // }
     const ROOT = process.cwd();
     const PROJECTPATH = path.resolve(ROOT,'ios', 'playground');
+    const IOSPATH = path.resolve(ROOT,'ios');
     console.log(PROJECTPATH);
+    icons.ios(IOSPATH);//处理icon
+    iosConfig(1,IOSPATH);//处理配置
     packIos(PROJECTPATH);
     console.info('build ios...');
   }
