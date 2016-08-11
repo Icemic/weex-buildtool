@@ -80,21 +80,40 @@ export class Builder {
 
     console.info('Start building Android package...'.green);
 
+    let ip = nwUtils.getPublicIP();
+    let port = '8083';
+    let debugPath = `http://${ip}:${port}/main.we`;
+
+    let jsbundle = path.resolve('index.js');
+
+    if(this.isRelease) {
+      debugPath = jsbundle;
+      let jsBundle = path.resolve(ROOT, 'dist', 'js', 'main.js');
+      let toPath = path.resolve(ROOT, 'android','playground','app','src','main','assets','index.js');
+      fs.copySync(jsBundle, toPath);
+    }
+
     return folderSync(PROJECTPATH, BUILDPATH)
     .then(() => icons.android(BUILDPATH))
-    .then(() => androidConfig(false, BUILDPATH))
+    .then(() => androidConfig(this.isRelease, BUILDPATH, debugPath))
     .then(() => packAndorid.pack(BUILDPATH, this.isRelease))
       .then(function() {
-
-        glob(`${BUILDPATH}/**/*.apk`, function(er, files) {
-          if( er || files.length === 0 ){
-            npmlog.error("打包发生错误")
-            process.exit(1);
-          } else {
-            let pathDir = path.resolve(files[0], '..');
-            fs.copySync(pathDir, 'dist/android/dist/');
-          }
+        console.log('hello');
+        return new Promise((resolve, reject) => {
+          glob(`${BUILDPATH}/**/*.apk`, function(er, files) {
+            if( er || files.length === 0 ){
+              npmlog.error("打包发生错误");
+              reject(er);
+              // process.exit(1);
+            } else {
+              console.log('hello');
+              let pathDir = path.resolve(files[0], '..');
+              fs.copySync(pathDir, 'dist/android/dist/');
+              resolve();
+            }
+          })
         })
+
       });
   }
 
@@ -113,7 +132,18 @@ export class Builder {
     let debugPath = `http://${ip}:${port}/main.we`;
     console.log(debugPath);
     fs.removeSync('dist/ios/dist');
+    // this.isRelease =false;
+    if(this.isRelease) {
+      let jsBundle = path.resolve(ROOT, 'dist', 'js', 'main.js');
+      let toPath = path.resolve(ROOT, 'ios', 'sdk', 'WeexSDK','Resources','main.js');
+      fs.copySync(jsBundle, toPath);
+    }
+
     iosConfig(this.isRelease, IOSPATH, debugPath);//处理配置
+    // iosConfig(false, IOSPATH, 'main.js');
+
+    // release 没有debugPath
+    // iosConfig(this.isRelease, IOSPATH, debugPath);//处理配置
     let pack = "sim";
     let info;
     if (this.isRelease) {
@@ -124,12 +154,14 @@ export class Builder {
     }
 
     packIos(PROJECTPATH, this.isRelease, pack, info);
+
     glob(`${IOSPATH}/**/*.app`, function(er, files) {
       if( er || files.length === 0 ){
         npmlog.error("打包发生错误")
         process.exit(1);
       } else {
         let pathDir = path.resolve(files[0], '..');
+        console.log(pathDir);
         fs.copySync(pathDir, 'dist/ios/dist/');
       }
     })

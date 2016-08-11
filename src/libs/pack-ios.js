@@ -65,6 +65,7 @@ function run (localpath, release, sdkType, info) {
   } else if (sdkType == 'sim') {
     result = packSim(target, scheme, config, sdk, localpath);
   }
+
   // cmd = 'xcodebuild -workspace '+ target +'.xcworkspace -scheme '+ scheme +' -sdk ' + sdk.realSDK + ' -configuration '+ config +' -archivePath build';
   // var result = exec(cmd, {cwd: localpath}).stdout;
   var packInfo = findOutputPath(result);
@@ -178,7 +179,7 @@ function packSim(target, scheme, config, sdk, localpath) {
 
 function app2ipa(target, localpath) {
   var abPath = path.resolve(localpath, './build/'+ target + '.ipa');
-  var cmd = 'xcrun -sdk iphoneos -v PackageApplication ./build/'+ target +'.app -o ' + abPath;
+  var cmd = 'xcrun -sdk iphoneos -v PackageApplication ./build/' + target +'.app -o ' + abPath;
   console.log('转换app文件为ipa');
   exec(cmd, {cwd: localpath});
 }

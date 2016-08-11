@@ -27,13 +27,17 @@ export class Emulator{
   }
 
   emulateAndroid () {
-    var config = require(path.resolve(this.curPath,'../config/config.android.js'))();
+    console.log(path.resolve(this.curPath,'./config/config.android.js'));
+    var config = require(path.resolve(this.curPath,'./config/config.android.js'))();
+
+    console.log(config);
+
 
     androidEmulator.getDeviceList().then(function() {
       console.log(arguments);
     });
     console.log(this.filePath);
-    androidEmulator.runApp(this.filePath, config.packagename, "config.packagename"+".IndexActivity");
+    androidEmulator.runApp(this.filePath, config.packagename, config.packagename+".IndexActivity");
   }
 }
 

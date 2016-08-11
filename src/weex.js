@@ -459,6 +459,7 @@ function serveForLoad() {
 
         break;
       case "android":
+        console.log(curPath);
         glob(`${curPath}/**/*.apk`, function (er, files) {
           // files is an array of filenames.
           // If the `nonull` option is set, and nothing
@@ -468,7 +469,8 @@ function serveForLoad() {
             npmlog.error("目标路径没有文件!")
             process.exit(1);
           }
-          let emulater = new Emulator(files[0]);
+          serveForLoad();
+          let emulater = new Emulator(files[1]);
           emulater.emulateAndroid();
         });
 
@@ -483,7 +485,8 @@ function serveForLoad() {
     let curPath = process.cwd();
 
     // run 命令打 debug 包
-    let builder = new Builder(curPath, true);
+    // let builder = new Builder(curPath, false);
+    let builder = new Builder(curPath, false);
     // TODO builde.checkInit();
     switch (platform) {
       case "ios":
@@ -505,19 +508,23 @@ function serveForLoad() {
         });
         break;
       case "android":
-        builder.buildAndroid();
-        glob(`${curPath}/**/*.apk`, function (er, files) {
-          // files is an array of filenames.
-          // If the `nonull` option is set, and nothing
-          // was found, then files is ["**/*.js"]
-          // er is an error object or null.
-          if( er || files.length === 0 ){
-            npmlog.error("目标路径没有文件!")
-            process.exit(1);
-          }
-          let emulater = new Emulator(files[0]);
-          emulater.emulateAndroid();
-        });
+        console.log(curPath);
+        builder.buildAndroid()
+          .then(()=>{
+            glob(`${curPath}/**/*.apk`, function (er, files) {
+              // files is an array of filenames.
+              // If the `nonull` option is set, and nothing
+              // was found, then files is ["**/*.js"]
+              // er is an error object or null.
+              if( er || files.length === 0 ){
+                npmlog.error("目标路径没有文件!")
+                process.exit(1);
+              }
+              let emulater = new Emulator(files[1]);
+              emulater.emulateAndroid();
+            });
+          });
+
         break;
       default:
         break;
