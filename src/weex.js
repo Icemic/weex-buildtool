@@ -352,6 +352,7 @@ var argv = yargs
 
   HTTP_PORT = argv.port
   WEBSOCKET_PORT = argv.wsport
+  const curPath = process.cwd();
 
   if (argv.debugger) {
     let port = (HTTP_PORT == NO_PORT_SPECIFIED) ? debuggerServer.DEBUGGER_SERVER_PORT : HTTP_PORT;
@@ -458,24 +459,49 @@ var argv = yargs
 
     // return;
   } else if (argv._[0] === "run") {
-    let builder = new Builder;
-    let emulator = new Emulator;
     const platform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
-
+    let builder = new Builder();
+    let emulater = new Emulator();
+    // TODO builde.checkInit();
     switch (platform) {
       case "ios":
-
-        // TODO builde.checkInit();
+        npmlog.info("正在 build ios...");
         builder.buildIos();
-        emulator.emulateIos();
+        glob(`${curPath}/**/*.app`, function (er, files) {
+          // files is an array of filenames.
+          // If the `nonull` option is set, and nothing
+          // was found, then files is ["**/*.js"]
+          // er is an error object or null.
+          if( er || files.length === 0 ){
+            npmlog.error("目标路径没有文件!")
+            process.exit(1);
+          }
+          let emulater = new Emulator(files[0]);
+          npmlog.info("正在寻找模拟器...");
+
+          emulater.emulateIos();
+        });
         break;
       case "android":
+        builder.buildAndroid();
+        glob(`${curPath}/**/*.apk`, function (er, files) {
+          // files is an array of filenames.
+          // If the `nonull` option is set, and nothing
+          // was found, then files is ["**/*.js"]
+          // er is an error object or null.
+          if( er || files.length === 0 ){
+            npmlog.error("目标路径没有文件!")
+            process.exit(1);
+          }
+          let emulater = new Emulator(files[0]);
+          emulater.emulateAndroid();
+        });
         break;
       default:
         break;
     }
 
-  } else {
+  } else  {
     if (argv._[0] && commands.exec(argv._[0], process.argv.slice(3))) {
       return
     }

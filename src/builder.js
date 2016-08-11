@@ -113,10 +113,10 @@ export class Builder {
     //   process.stdout.write('cannot build iOS package in Windows'.red);
     //   process.exit(1);
     // }
+    npmlog.info("进入打包流程...");
     const ROOT = process.cwd();
     const PROJECTPATH = path.resolve(ROOT,'ios', 'playground');
     const IOSPATH = path.resolve(ROOT,'ios');
-    console.log(PROJECTPATH);
     icons.ios(IOSPATH);//处理icon
     iosConfig(false,IOSPATH);//处理配置
     packIos(PROJECTPATH);
@@ -125,13 +125,10 @@ export class Builder {
         npmlog.error("打包发生错误")
         process.exit(1);
       } else {
-        console.log(files);
         let pathDir = path.resolve(files[0], '..');
-        console.log(pathDir);
-        fse.copySync(pathDir, 'dist/ios/dist/');
+        fs.copySync(pathDir, 'dist/ios/dist/');
       }
     })
-    console.info('build ios...');
   }
 
   buildHtml () {

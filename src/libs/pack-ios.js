@@ -21,6 +21,9 @@ function run (localpath, release, sdkType) {
   var scheme = iosInfo.scheme;
   var cmd;
 
+  console.log('init pod');
+  exec('pod install', {cwd: localpath});
+
   //清除目标目录
   // var appPath = path.resolve(localpath, './build/real/'+ target +'.app');
   // var appSimPath = path.resolve(localpath, './build/sim/'+ target +'.app');
