@@ -28,7 +28,7 @@ module.exports = function (debug,curPath,debugPath) {
             fs.readFile(path.resolve(curPath,'playground/local.properties'),{encoding: 'utf8'}, callback);
           },
           function(data,callback){
-            let outString = data.replace(/sdk.dir.*/,'sdk.dir=' + path.resolve(curPath,config.sdkdir));
+            let outString = data.replace(/sdk.dir.*/,'sdk.dir=' + path.resolve(curPath,config.sdkdir).replace(/\\/g, '/'));
             // replace(/ndk.dir.*/,'ndk.dir=' + path.resolve(curPath,config.ndkdir));
             fs.writeFile(path.resolve(curPath,'playground/local.properties'), outString, callback);
           },
@@ -40,7 +40,7 @@ module.exports = function (debug,curPath,debugPath) {
             .replace(/applicationId.*/,'applicationId \'' + config.packagename + '\'')
             .replace(/keyPassword.*/,'keyPassword \'' + config.password + '\'')
             .replace(/storePassword.*/,'storePassword \'' + config.storePassword + '\'')
-            .replace(/storeFile.*/,'storeFile file(\'' + path.resolve(config.keystore) + '\')');
+            .replace(/storeFile.*/,'storeFile file(\'' + path.resolve(config.keystore).replace(/\\/g, '/') + '\')');
             fs.writeFile(path.resolve(curPath,'playground/app/build.gradle'), data, callback);
           },
           function (callback) {

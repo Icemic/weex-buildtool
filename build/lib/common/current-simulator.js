@@ -12,23 +12,23 @@ var iOSDevicesList = require('../ios/devices-list'),
 
 // 判断当前运行设备
 function currentSimulator(params, callback) {
-  var devicePolymer = {};
+    var devicePolymer = {};
 
-  iOSDevicesList(null).then(function (device) {
-    var currentDevice = findCurrentDevice(device.devices);
+    iOSDevicesList(null).then(function (device) {
+        var currentDevice = findCurrentDevice(device.devices);
 
-    devicePolymer.iOSDevice = device;
+        devicePolymer.iOSDevice = device;
 
-    // if(currentDevice && currentDevice.name.indexOf('simctl') > -1){
+        // if(currentDevice && currentDevice.name.indexOf('simctl') > -1){
 
-    debug('iOS simulator running:::' + (0, _stringify2.default)(currentDevice, null, 2));
-    // 确定iOS模拟器已经启动
-    // callback(false, 'iOS', currentDevice, device);
-    devicePolymer.iOSCurrentDevice = currentDevice;
-    devicePolymer.iOS = true;
-    devicePolymer.simulator = 'iOS';
-    callback(devicePolymer);
-  });
+        debug('iOS simulator running:::' + (0, _stringify2.default)(currentDevice, null, 2));
+        // 确定iOS模拟器已经启动
+        // callback(false, 'iOS', currentDevice, device);
+        devicePolymer.iOSCurrentDevice = currentDevice;
+        devicePolymer.iOS = true;
+        devicePolymer.simulator = 'iOS';
+        callback(devicePolymer);
+    });
 }
 
 module.exports = currentSimulator;

@@ -8,28 +8,28 @@ var fs = require('fs')
   source = require('vinyl-source-stream'),
   path = require('path'),
   less = require('gulp-less'),
-  wrap  = require('gulp-wrap');    
+  wrap  = require('gulp-wrap');
 
 
 gulp.task('clean', function() {
-  del.sync(['build/*']);    
+  del.sync(['build/*']);
   return del.sync(['bin/*']);
 });
 
 gulp.task('dump',['clean'],function(callback){
     gulp.src("vendor/**/*")
         .pipe(gulp.dest('./build/vendor'));
-    return callback()    
+    return callback()
 });
 
 
 gulp.task('babel',['clean'],function(){
   return  gulp.src('src/**/*.js')
   .pipe(babel({
-      presets: ['es2015'],
+      presets: ['stage-0','es2015'],
       plugins: ['transform-runtime']
   }))
-  .pipe(gulp.dest('./build'));    
+  .pipe(gulp.dest('./build'));
 })
 
 gulp.task('weex',['babel'],function(){
@@ -53,7 +53,7 @@ gulp.task('less',function(callback){
         }))
         .pipe(gulp.dest('./build/css'));
 
-    gulp.src('./src/css/**/*.css')    
+    gulp.src('./src/css/**/*.css')
         .pipe(gulp.dest('./build/css'));
 
     return callback()
@@ -61,7 +61,7 @@ gulp.task('less',function(callback){
 
 
 gulp.task('build',['dump','weex','browserify','less'],function(cb){
-    
+
   return cb()
 })
 
@@ -70,4 +70,3 @@ gulp.task('watch',function(){
 });
 
 gulp.task('default',['build']);
-
