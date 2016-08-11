@@ -7,7 +7,8 @@ const fs = require('fs'),
   validator = require('validator'),
   async = require('async'),
   icons = require('./icons.js'),
-  nw_utils = require('../../nw-utils.js') ;
+  nw_utils = require('../../nw-utils.js'),
+  configPath = process.cwd() + '/config';
 
 /**
  * 配置处理
@@ -15,10 +16,9 @@ const fs = require('fs'),
  * @return {[type]}           [description]
  */
 module.exports = function (debug,curPath,debugPath) {
+  console.log(configPath)
   curPath = curPath ? curPath : process.cwd() + '/android';
-  var config = require(path.resolve(curPath,'../config/config.android.js'))();
-
-  icons.android(curPath);
+  var config = require(path.resolve(configPath,'config.android.js'))();
     return Promise.resolve()
   .then(function () {
     //playground/local
@@ -28,8 +28,9 @@ module.exports = function (debug,curPath,debugPath) {
             fs.readFile(path.resolve(curPath,'playground/local.properties'),{encoding: 'utf8'}, callback);
           },
           function(data,callback){
-            let outString = data.replace(/sdk.dir.*/,'sdk.dir=' + path.resolve(curPath,config.sdkdir).replace(/\\/g, '/'));
+            let outString = data.replace(/sdk.dir.*/,'sdk.dir=' + path.resolve(configPath,config.sdkdir).replace(/\\/g, '/'));
             // replace(/ndk.dir.*/,'ndk.dir=' + path.resolve(curPath,config.ndkdir));
+            console.log(path.resolve(curPath,'playground/local.properties'))
             fs.writeFile(path.resolve(curPath,'playground/local.properties'), outString, callback);
           },
           function(callback){
@@ -40,7 +41,7 @@ module.exports = function (debug,curPath,debugPath) {
             .replace(/applicationId.*/,'applicationId \'' + config.packagename + '\'')
             .replace(/keyPassword.*/,'keyPassword \'' + config.password + '\'')
             .replace(/storePassword.*/,'storePassword \'' + config.storePassword + '\'')
-            .replace(/storeFile.*/,'storeFile file(\'' + path.resolve(config.keystore).replace(/\\/g, '/') + '\')');
+            .replace(/storeFile.*/,'storeFile file(\'' + path.resolve(configPath,config.keystore).replace(/\\/g, '/') + '\')');
             fs.writeFile(path.resolve(curPath,'playground/app/build.gradle'), data, callback);
           },
           function (callback) {

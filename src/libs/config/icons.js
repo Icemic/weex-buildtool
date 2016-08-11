@@ -2,17 +2,18 @@ const fs = require('fs'),
   npmlog = require('npmlog'),
   path = require('path'),
   fse = require('fs-extra'),
-  images = require('images');
+  images = require('images'),
+  configPath = process.cwd() + '/config';
 
 //移动图片
 function movePic(curPath,pics,to,fileName) {
   for(var name in pics){
-    fse.copySync(path.resolve(curPath,pics[name]) , path.resolve(curPath,to+name,fileName));
+    fse.copySync(path.resolve(configPath,pics[name]) , path.resolve(curPath,to+name,fileName));
   }
 }
 //处理图标
 function android(curPath) {
-  const androidConfig = require(path.resolve(curPath,'../config/config.android.js'))();
+  const androidConfig = require(path.resolve(configPath,'config.android.js'))();
   if (androidConfig.icon) {
     var sizes = {
       'mipmap-mdpi': 48,
@@ -23,17 +24,18 @@ function android(curPath) {
     };
     for (var name in sizes) {
       var size = sizes[name];
-      images(androidConfig.icon).resize(size).save(path.resolve(curPath, 'playground/app/src/main/res/', name, "ic_launcher.png"));
+      images(path.resolve(configPath,androidConfig.icon)).resize(size).save(path.resolve(curPath, 'playground/app/src/main/res/', name, "ic_launcher.png"));
     }
   }else{
     movePic(curPath,androidConfig.icons,'playground/app/src/main/res/mipmap-',"ic_launcher.png");
   }
-  fse.copySync(path.resolve(curPath,androidConfig.splashscreen) , 'android/playground/app/src/main/res/mipmap-hdpi/weex_splash.png');
+  console.log(path.resolve(configPath,androidConfig.splashscreen))
+  fse.copySync(path.resolve(configPath,androidConfig.splashscreen) , path.resolve(curPath,'android/playground/app/src/main/res/mipmap-hdpi/weex_splash.png'));
 }
 
 //处理图标
 function ios(curPath) {
-  const iosConfig = require(path.resolve(curPath,'../config/config.ios.js'))();
+  const iosConfig = require(path.resolve(configPath,'config.ios.js'))();
   if (iosConfig.icon) {
     var sizes = {
       'Icon-Small@2x.png': 29*2,
@@ -52,7 +54,7 @@ function ios(curPath) {
     };
     for (var name in sizes) {
       var size = sizes[name];
-      images(iosConfig.icon).resize(size).draw(images(iosConfig.icon), 100, 100).save(path.resolve(curPath, 'playground/WeexApp/Assets.xcassets/AppIcon.appiconset', name),{               //Save the image to a file,whih quality 50
+      images(path.resolve(configPath,iosConfig.icon)).resize(size).save(path.resolve(curPath, 'playground/WeexApp/Assets.xcassets/AppIcon.appiconset', name),{               //Save the image to a file,whih quality 50
         quality : 50
     });
     }

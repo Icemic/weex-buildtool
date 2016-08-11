@@ -5,13 +5,13 @@ const fs = require('fs'),
   npmlog = require('npmlog'),
   path = require('path'),
   async = require('async'),
-  icons = require('./icons.js');
+  icons = require('./icons.js'),
+  configPath = process.cwd() + '/config';
 
 module.exports = function (debug,curPath,debugPath) {
   curPath = curPath ? curPath : process.cwd() + '/ios';
-  var config = require(path.resolve(curPath,'../config/config.ios.js'))();
+  var config = require(path.resolve(configPath,'config.ios.js'))();
 
-  icons.ios(curPath);
   return Promise.resolve()
   .then(function () {
     async.waterfall([function (callback) {
