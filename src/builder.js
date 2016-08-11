@@ -4,12 +4,11 @@ const path = require('path');
 const npmlog = require('npmlog');
 const packIos = require('./libs/pack-ios');
 const glob = require("glob");
-
-const targz = require('tar.gz');
-
+const unzip = require('unzip');
 const icons = require("./libs/config/icons.js");
 const androidConfig = require("./libs/config/android.js");
 const iosConfig = require("./libs/config/ios.js");
+
 
 import * as packAndorid from "./libs/apkhelper";
 import packHtml from "./libs/html5";
@@ -37,15 +36,20 @@ export class Builder {
 
     let androidPath = path.join(this.outputPath, 'android');
     fs.ensureDirSync(androidPath);
-    fs.copySync(path.resolve(__dirname, '../package-template/android'), androidPath);
-    // await targz().extract(path.resolve(__dirname, '../package-template/android.tar.gz')
-    //   , androidPath);
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(path.resolve(__dirname, '../package-template/android.zip'))
+      .pipe(unzip.Extract({ path: androidPath }))
+      .on('close', resolve).on('error', reject);
+    });
+
 
     let iosPath = path.join(this.outputPath, 'ios');
     fs.ensureDirSync(iosPath);
-    fs.copySync(path.resolve(__dirname, '../package-template/ios'), iosPath);
-    // await targz().extract(path.resolve(__dirname, '../package-template/ios.tar.gz')
-    //   , iosPath);
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(path.resolve(__dirname, '../package-template/ios.zip'))
+      .pipe(unzip.Extract({ path: iosPath }))
+      .on('close', resolve).on('error', reject);
+    });
 
     let configPath = path.join(this.outputPath, 'config');
     fs.ensureDirSync(configPath);
@@ -117,10 +121,10 @@ export class Builder {
     //   process.stdout.write('cannot build iOS package in Windows'.red);
     //   process.exit(1);
     // }
+    npmlog.info("进入打包流程...");
     const ROOT = process.cwd();
     const PROJECTPATH = path.resolve(ROOT,'ios', 'playground');
     const IOSPATH = path.resolve(ROOT,'ios');
-    console.log(PROJECTPATH);
     icons.ios(IOSPATH);//处理icon
     iosConfig(false,IOSPATH);//处理配置
     packIos(PROJECTPATH);
@@ -129,13 +133,10 @@ export class Builder {
         npmlog.error("打包发生错误")
         process.exit(1);
       } else {
-        console.log(files);
         let pathDir = path.resolve(files[0], '..');
-        console.log(pathDir);
         fs.copySync(pathDir, 'dist/ios/dist/');
       }
     })
-    console.info('build ios...');
   }
 
   buildHtml () {

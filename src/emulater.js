@@ -13,15 +13,12 @@ export class Emulator{
   }
 
   emulateIos () {
-    console.log(path.resolve(this.curPath,'/config/config.ios.js'))
     var config = require(path.resolve(this.curPath, './config/config.ios.js'))();
-    console.log(config);
     var params = {
       name: config.name,
       appId: config.appid,
       path: this.filePath
     };
-    console.log(params, true, 'sim');
     start(params);
   }
 
