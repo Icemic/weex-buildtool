@@ -24,13 +24,12 @@ function android(curPath) {
     };
     for (var name in sizes) {
       var size = sizes[name];
-      images(path.resolve(configPath,androidConfig.icon)).resize(size).save(path.resolve(curPath, 'playground/app/src/main/res/', name, "ic_launcher.png"));
+      images(path.resolve(configPath,androidConfig.icon)).resize(size,size).save(path.resolve(curPath, 'playground/app/src/main/res/', name, "ic_launcher.png"));
     }
   }else{
     movePic(curPath,androidConfig.icons,'playground/app/src/main/res/mipmap-',"ic_launcher.png");
   }
-  console.log(path.resolve(configPath,androidConfig.splashscreen))
-  fse.copySync(path.resolve(configPath,androidConfig.splashscreen) , path.resolve(curPath,'android/playground/app/src/main/res/mipmap-hdpi/weex_splash.png'));
+  fse.copySync(path.resolve(configPath,androidConfig.splashscreen) , path.resolve(curPath,'playground/app/src/main/res/mipmap-hdpi/weex_splash.png'));
 }
 
 //处理图标
@@ -54,7 +53,7 @@ function ios(curPath) {
     };
     for (var name in sizes) {
       var size = sizes[name];
-      images(path.resolve(configPath,iosConfig.icon)).resize(size).save(path.resolve(curPath, 'playground/WeexApp/Assets.xcassets/AppIcon.appiconset', name),{               //Save the image to a file,whih quality 50
+      images(path.resolve(configPath,iosConfig.icon)).resize(size,size).save(path.resolve(curPath, 'playground/WeexApp/Assets.xcassets/AppIcon.appiconset', name),{               //Save the image to a file,whih quality 50
         quality : 50
     });
     }

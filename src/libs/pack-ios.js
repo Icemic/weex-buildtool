@@ -12,6 +12,7 @@ function run (localpath, release, sdkType) {
   var config = 'Debug';
   if (release) {
     config = 'Release';
+    console.log('正在打 release 包');
   }
   sdkType = sdkType || 'sim';
 
@@ -57,7 +58,7 @@ function run (localpath, release, sdkType) {
   } else if (sdkType == 'sim') {
     result = packSim(target, scheme, config, sdk, localpath);
   }
-  console.log(result);
+  // console.log(result);
   // cmd = 'xcodebuild -workspace '+ target +'.xcworkspace -scheme '+ scheme +' -sdk ' + sdk.realSDK + ' -configuration '+ config +' -archivePath build';
   // var result = exec(cmd, {cwd: localpath}).stdout;
   var outputPath = findOutputPath(result);

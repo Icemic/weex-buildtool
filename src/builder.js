@@ -8,6 +8,7 @@ const unzip = require('unzip');
 const icons = require("./libs/config/icons.js");
 const androidConfig = require("./libs/config/android.js");
 const iosConfig = require("./libs/config/ios.js");
+const nwUtils = require('../build/nw-utils');
 
 
 import * as packAndorid from "./libs/apkhelper";
@@ -17,10 +18,10 @@ import folderSync from './libs/folderSync';
 
 
 export class Builder {
-  constructor (outputPath, buildPlatform = "h5") {
+  constructor (outputPath, isRelease = false) {
     this.outputPath = outputPath || process.cwd() ;
     this.outputPath = path.resolve(this.outputPath);
-    this.buildPlatform = buildPlatform;
+    this.isRelease = isRelease;
   }
 
   async init () {
@@ -71,21 +72,6 @@ export class Builder {
 
     }
   }
-  download () {
-    const ap = path.join(__dirname, '..', 'node_modules', 'android.zip');
-    const ip = path.join(__dirname, '..', 'node_modules', 'ios.zip');
-
-    try {
-      fs.accessSync(ap, fs.F_OK | fs.R_OK);
-    } catch(e) {
-      let file = fs.createWriteStream(ap);
-      let request = http.get("http://gw.alicdn.com/bao/uploaded/LB1PRUrLXXXXXbIaXXXXXXXXXXX.zip", function(response) {
-        console.log('download....');
-        response.pipe(file);
-      });
-    }
-  }
-
 
   buildAndroid () {
     const ROOT = process.cwd();
@@ -98,7 +84,7 @@ export class Builder {
     .then(() => {
       icons.android(BUILDPATH);
       androidConfig(false, BUILDPATH);//处理配置
-      return packAndorid.pack(BUILDPATH, false);
+      return packAndorid.pack(BUILDPATH, this.isRelease);
     })
       .then(function() {
 
@@ -126,8 +112,14 @@ export class Builder {
     const PROJECTPATH = path.resolve(ROOT,'ios', 'playground');
     const IOSPATH = path.resolve(ROOT,'ios');
     icons.ios(IOSPATH);//处理icon
-    iosConfig(false,IOSPATH);//处理配置
-    packIos(PROJECTPATH);
+    console.log('我是release:', this.isRelease);
+
+    let ip = nwUtils.getPublicIP();
+    let port = '8081';
+    let debugPath = `http://${ip}:${port}/main.we`;
+    console.log(debugPath);
+    iosConfig(this.isRelease, IOSPATH, debugPath);//处理配置
+    packIos(PROJECTPATH, this.isRelease, 'sim');
     glob(`${IOSPATH}/**/*.app`, function(er, files) {
       if( er || files.length === 0 ){
         npmlog.error("打包发生错误")
