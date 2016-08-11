@@ -375,6 +375,7 @@ var argv = yargs
 
     if (argv._[1] === "init") {
       builder.init();
+      return;
     } else {
       try {
         // TODO 判断更多东西

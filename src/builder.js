@@ -5,6 +5,7 @@ const path = require('path');
 const npmlog = require('npmlog');
 const packIos = require('./libs/pack-ios');
 const glob = require("glob");
+const icons = require("./libs/config/icons.js");
 
 import * as packAndorid from "./libs/apkhelper";
 import packHtml from "./libs/html5";
@@ -39,8 +40,8 @@ export class Builder {
     });
 
     // 建配置文件
-    fse.ensureFile(path.join(this.outputPath, 'manifest.json'), () =>{
-      console.log("create manifest.json");
+    fse.mkdirs(path.join(this.outputPath, 'config'), () =>{
+      console.log("config");
     });
 
   }
@@ -77,7 +78,9 @@ export class Builder {
 
     console.info('Start building Android package...'.green);
     return packAndorid.sync(PROJECTPATH, BUILDPATH)
-    .then(() => packAndorid.pack(BUILDPATH, false))
+    .then(() => {
+      packAndorid.pack(BUILDPATH, false);
+    })
       .then(function() {
 
         glob(`${BUILDPATH}/**/*.apk`, function(er, files) {

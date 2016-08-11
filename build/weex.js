@@ -377,6 +377,7 @@ var argv = yargs.usage('\nUsage: weex foo/bar/we_file_or_dir_path  [options]' + 
 
     if (argv._[1] === "init") {
       builder.init();
+      return;
     } else {
       try {
         // TODO 判断更多东西

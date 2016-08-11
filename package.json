@@ -61,6 +61,7 @@
     "gulp-less": "^3.0.5",
     "gulp-rename": "^1.2.2",
     "gulp-wrap": "^0.11.0",
+    "images": "^3.0.0",
     "vinyl-source-stream": "^1.1.0",
     "vue": "^1.0.24"
   },

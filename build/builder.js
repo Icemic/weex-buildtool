@@ -36,6 +36,7 @@ var path = require('path');
 var npmlog = require('npmlog');
 var packIos = require('./libs/pack-ios');
 var glob = require("glob");
+var icons = require("./libs/config/icons.js");
 
 var Builder = exports.Builder = function () {
   function Builder(outputPath) {
@@ -70,8 +71,8 @@ var Builder = exports.Builder = function () {
       });
 
       // 建配置文件
-      fse.ensureFile(path.join(this.outputPath, 'manifest.json'), function () {
-        console.log("create manifest.json");
+      fse.mkdirs(path.join(this.outputPath, 'config'), function () {
+        console.log("config");
       });
     }
   }, {
@@ -106,7 +107,7 @@ var Builder = exports.Builder = function () {
 
       console.info('Start building Android package...'.green);
       return packAndorid.sync(PROJECTPATH, BUILDPATH).then(function () {
-        return packAndorid.pack(BUILDPATH, false);
+        packAndorid.pack(BUILDPATH, false);
       }).then(function () {
 
         glob(BUILDPATH + '/**/*.apk', function (er, files) {
