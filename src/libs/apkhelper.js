@@ -63,7 +63,7 @@ export function installSDK(lack) {
     let android = childProcess.exec(`android update sdk --no-ui --all --filter ${lack}`);
     android.stdout.on('data', data => process.stdout.write(data.grey));
     android.stderr.on('data', data => process.stdout.write(data.red));
-    android.stdin.pipe(process.stdin);
+    process.stdin.pipe(android.stdin);
     android.on('close', code => {
       if (code) {
         console.info('安装遇到错误'.red);
@@ -73,8 +73,8 @@ export function installSDK(lack) {
         resolve();
       }
     });
-    android.stdin.write('y\n');
-    android.stdin.write('y\n');
+    // android.stdin.write('y\n');
+    // android.stdin.write('y\n');
   })
 }
 
