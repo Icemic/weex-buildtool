@@ -28,6 +28,13 @@ module.exports = function (debug,curPath,debugPath) {
             fs.readFile(path.resolve(curPath,'playground/local.properties'),{encoding: 'utf8'}, callback);
           },
           function(data,callback){
+            let sdkPath = process.env.ANDROID_HOME;
+            if (!config.sdkdir &&  sdkPath) {
+              config.sdkdir = sdkPath;
+            }else if (!config.sdkdir) {
+              console.log('请配置 Android SDK 地址');
+              process.exit();
+            }
             let outString = data.replace(/sdk\.dir.*/,'sdk.dir=' + path.resolve(configPath,config.sdkdir).replace(/\\/g, '/'));
             // replace(/ndk.dir.*/,'ndk.dir=' + path.resolve(curPath,config.ndkdir));
             fs.writeFile(path.resolve(curPath,'playground/local.properties'), outString, callback);
