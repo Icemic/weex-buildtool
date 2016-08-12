@@ -1,7 +1,6 @@
 import {Builder} from "../build/builder.js"
 import {Emulator} from "../build/emulater"
-const fs = require('fs'),
-  fse = require('fs-extra'),
+const fs = require('fs-extra'),
   path = require('path'),
   opener = require('opener'),
   npmlog = require('npmlog'),
@@ -144,12 +143,12 @@ class Previewer {
   }
 
   tempDirInit() {
-    fse.removeSync(WEEX_TRANSFORM_TMP)
+    fs.removeSync(WEEX_TRANSFORM_TMP)
 
     fs.mkdirSync(WEEX_TRANSFORM_TMP)
-    fse.copySync(`${__dirname}/../node_modules/weex-html5`, `${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
+    fs.copySync(`${__dirname}/../node_modules/weex-html5`, `${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
 
-    fse.mkdirsSync(`${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
+    fs.mkdirsSync(`${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
   }
 
   startServer(fileName) {
@@ -362,7 +361,7 @@ function serveForLoad() {
 }
 
 
-(function argvProcess() {
+(async function argvProcess() {
 
   HTTP_PORT = argv.port
   WEBSOCKET_PORT = argv.wsport
@@ -416,12 +415,28 @@ function serveForLoad() {
       }
       fs.mkdirSync(outputPath);
     }
-    console.log(inputPath,outputPath);
+    // console.log(inputPath,outputPath);
 
     // new Previewer(inputPath, outputPath);
 
-    console.log(exec("weex " + inputPath + ' -o ' + outputPath, {cwd: curPath}).stdout);
-    ;
+    // console.log(exec("weex " + inputPath + ' -o ' + outputPath, {cwd: curPath}).stdout);
+    fs.emptyDirSync(outputPath);
+    await new Promise((resolve, reject) => {
+      process.stdout.write('正在生成 jsBundle...'.green);
+      fs.walk(inputPath)
+      .on('data', item => {
+        if (item.stats.isDirectory()) {
+          let inPath = item.path;
+          let outPath = path.resolve(outputPath, path.relative(curPath+'/src', item.path));
+          fs.ensureDirSync(outPath);
+          exec(`weex ${inPath} -o ${outPath}`);
+        }
+      })
+      .on('end', () => {
+        process.stdout.write('done\n'.green);
+        resolve();
+      });
+    });
 
     const buildPlatform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
 
@@ -499,7 +514,26 @@ function serveForLoad() {
       }
       fs.mkdirSync(outputPath);
     }
-    exec("weex " + inputPath + ' -o ' + outputPath, {cwd: curPath});
+    // exec("weex " + inputPath + ' -o ' + outputPath, {cwd: curPath});
+    //
+    fs.emptyDirSync(outputPath);
+    await new Promise((resolve, reject) => {
+      process.stdout.write('正在生成 jsBundle...'.green);
+      fs.walk(inputPath)
+      .on('data', item => {
+        if (item.stats.isDirectory()) {
+          let inPath = item.path;
+          let outPath = path.resolve(outputPath, path.relative(curPath+'/src', item.path));
+          fs.ensureDirSync(outPath);
+          exec(`weex ${inPath} -o ${outPath}`);
+        }
+      })
+      .on('end', () => {
+        process.stdout.write('done\n'.green);
+        resolve();
+      });
+    });
+
     console.log('run........');
     let builder = new Builder(curPath, false);
     // TODO builde.checkInit();

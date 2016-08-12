@@ -86,14 +86,15 @@ export class Builder {
 
     let jsbundle = path.resolve('index.js');
 
-    if(this.isRelease) {
-      debugPath = jsbundle;
-      let jsBundle = path.resolve(ROOT, 'dist', 'js', 'main.js');
-      let toPath = path.resolve(ROOT, 'android','playground','app','src','main','assets','index.js');
-      fs.copySync(jsBundle, toPath);
-    }
 
     return folderSync(PROJECTPATH, BUILDPATH)
+    .then(() => {
+      if(this.isRelease) {
+        debugPath = jsbundle;
+        return folderSync(path.resolve(ROOT, 'dist', 'js'),
+          path.resolve(ROOT, '.build/android/playground/app/src/main/assets'));
+      }
+    })
     .then(() => icons.android(BUILDPATH))
     .then(() => androidConfig(this.isRelease, BUILDPATH, debugPath))
     .then(() => packAndorid.pack(BUILDPATH, this.isRelease))
