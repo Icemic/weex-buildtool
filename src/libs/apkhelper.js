@@ -89,6 +89,17 @@ export function pack(buildPath, release) {
   return checkSDK()
 
   .then(() => {
+    if (process.platform !== 'win32') {
+      return new Promise((resolve, reject) => {
+        childProcess.execFile('chmod +x ' + path.join(buildPath, 'playground', 'gradlew'), [arg],
+        {cwd: path.join(buildPath, 'playground')});
+      });
+    } else {
+      return Promise.resolve();
+    }
+  })
+
+  .then(() => {
     let arg = release ? 'assembleRelease' : 'assembleDebug';
 
     return new Promise((resolve, reject) => {
