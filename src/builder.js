@@ -37,20 +37,20 @@ export class Builder {
 
     let androidPath = path.join(this.outputPath, 'android');
     fs.ensureDirSync(androidPath);
-    // await new Promise((resolve, reject) => {
-    //   fs.createReadStream(path.resolve(__dirname, '../package-template/android.zip'))
-    //   .pipe(unzip.Extract({ path: androidPath }))
-    //   .on('close', resolve).on('error', reject);
-    // });
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(path.resolve(__dirname, '../package-template/android.zip'))
+      .pipe(unzip.Extract({ path: androidPath }))
+      .on('close', resolve).on('error', reject);
+    });
 
 
     let iosPath = path.join(this.outputPath, 'ios');
     fs.ensureDirSync(iosPath);
-    // await new Promise((resolve, reject) => {
-    //   fs.createReadStream(path.resolve(__dirname, '../package-template/ios.zip'))
-    //   .pipe(unzip.Extract({ path: iosPath }))
-    //   .on('close', resolve).on('error', reject);
-    // });
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(path.resolve(__dirname, '../package-template/ios.zip'))
+      .pipe(unzip.Extract({ path: iosPath }))
+      .on('close', resolve).on('error', reject);
+    });
 
     let configPath = path.join(this.outputPath, 'config');
     fs.ensureDirSync(configPath);

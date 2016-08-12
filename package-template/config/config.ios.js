@@ -9,11 +9,11 @@ module.exports = function () {
     "devices": "universal",/*iphone，可取值iphone/ipad/universal*/
     "dependencies":{},/*依赖项可选*/
     "splashscreen":{
-        "Default~iphone.png": "../assets/splash/weex_splash.png", /*必选，320x480，iPhone3启动图片*/
-        "Default@2x~iphone.png": "../assets/splash/weex_splash.png",/*必选，640x960，3.5英寸设备(iPhone4)启动图片*/
-        "Default-568h@2x~iphone.png": "../assets/splash/weex_splash.png", /*640*1136 4.0 英寸设备(iPhone5)启动图片*/
-        "Default-667h.png": "../assets/splash/weex_splash.png", /*750*1134 启动图片*/
-        "Default-736h.png": "../assets/splash/weex_splash.png" /*1242*2208 */
+      "Default~iphone.png": "../assets/splash/Default~iphone.png", /*必选，320x480，iPhone3启动图片*/
+      "Default@2x~iphone.png": "../assets/splash/Default@2x~iphone.png",/*必选，640x960，3.5英寸设备(iPhone4)启动图片*/
+      "Default-568h@2x~iphone.png": "../assets/splash/Default-568h@2x~iphone.png", /*640*1136 4.0 英寸设备(iPhone5)启动图片*/
+      "Default-667h.png": "../assets/splash/Default-667h.png", /*750*1134 启动图片*/
+      "Default-736h.png": "../assets/splash/Default-736h.png" /*1242*2208 */
     },
     "certificate":{
       codeSignIdentity: "iPhone Developer: zhuiqian wu (22RMUQ2DWW)",
