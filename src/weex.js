@@ -535,6 +535,7 @@ function serveForLoad() {
                 npmlog.error("目标路径没有文件!")
                 process.exit(1);
               }
+              serveForLoad();
               let emulater = new Emulator(files[1]);
               emulater.emulateAndroid();
             });
