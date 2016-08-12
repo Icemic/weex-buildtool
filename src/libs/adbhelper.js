@@ -81,7 +81,7 @@ export function runApp(apkFile, packageName, activityName) {
     });
   })
   .then(deviceId => {
-    process.stdout.write('正在向设备安装应用...'.green)
+    process.stdout.write('正在向设备安装应用...'.green);
     return client.install(deviceId, apkFile)
     .then(() => client.startActivity(deviceId, {
       debug: false,

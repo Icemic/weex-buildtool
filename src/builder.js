@@ -97,24 +97,25 @@ export class Builder {
     .then(() => icons.android(BUILDPATH))
     .then(() => androidConfig(this.isRelease, BUILDPATH, debugPath))
     .then(() => packAndorid.pack(BUILDPATH, this.isRelease))
-      .then(function() {
-        console.log('hello');
-        return new Promise((resolve, reject) => {
-          glob(`${BUILDPATH}/**/*.apk`, function(er, files) {
-            if( er || files.length === 0 ){
-              npmlog.error("打包发生错误");
-              reject(er);
-              // process.exit(1);
-            } else {
-              console.log('hello');
-              let pathDir = path.resolve(files[0], '..');
-              fs.copySync(pathDir, 'dist/android/dist/');
-              resolve();
-            }
-          })
+    .then(function() {
+      return new Promise((resolve, reject) => {
+        glob(`${BUILDPATH}/**/*.apk`, function(er, files) {
+          if( er || files.length === 0 ){
+            npmlog.error("打包发生错误");
+            reject(er);
+            // process.exit(1);
+          } else {
+            let pathDir = path.resolve(files[0], '..');
+            fs.copySync(pathDir, 'dist/android/dist/');
+            resolve();
+          }
         })
+      })
 
-      }).catch(console.error)
+    })
+    .then(() => {
+
+    })
   }
 
   buildIos () {
