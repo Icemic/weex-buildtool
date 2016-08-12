@@ -470,7 +470,7 @@ function serveForLoad() {
             npmlog.error("目标路径没有文件!")
             process.exit(1);
           }
-          console.log('emulate', files[0]);
+          // console.log('emulate', files[0]);
           serveForLoad();
           let emulater = new Emulator(files[0]);
           emulater.emulateIos();
@@ -478,7 +478,7 @@ function serveForLoad() {
 
         break;
       case "android":
-        console.log(curPath);
+        // console.log(curPath);
         glob(`${curPath}/**/*.apk`, function (er, files) {
           // files is an array of filenames.
           // If the `nonull` option is set, and nothing

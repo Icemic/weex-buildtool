@@ -6,8 +6,6 @@
 */.svn
 */.DS_Store
 */.idea
-bin
-build
 node_modules
 tmp
 npm-debug.log

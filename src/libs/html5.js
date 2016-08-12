@@ -24,7 +24,6 @@ var buildHtml = function() {
             let reg = /<title>.*<\/title>/g;
             let str = data.replace(reg, '<title>' + manifest.name + '<\/title>');
             str = str.replace(/weex.js/g, 'weex.min.js');
-            console.log(`${curPath}/dist/js`, '${curPath}/dist/html5/dist/');
             fse.copySync(`${curPath}/dist/js`, `${curPath}/dist/html5/`);
             str = str.replace(/demo\/build\/index.js/g, '.\/' + manifest.launch_path);
             fs.writeFile(`${curPath}/dist/html5/index.html`, str, { flag: 'w' }, function(err) {

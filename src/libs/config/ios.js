@@ -13,8 +13,8 @@ module.exports = function (release,curPath,debugPath) {
   curPath = curPath ? curPath : process.cwd() + '/ios';
   var config = require(path.resolve(configPath,'config.ios.js'))();
 
-  console.log("ios config:", arguments);
-  console.log("ios config:", config);
+  // console.log("ios config:", arguments);
+  // console.log("ios config:", config);
   return Promise.resolve()
   .then(function () {
     async.waterfall([function (callback) {

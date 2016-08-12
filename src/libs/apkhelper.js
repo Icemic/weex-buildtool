@@ -89,10 +89,11 @@ export function pack(buildPath, release) {
   return checkSDK()
 
   .then(() => {
-    if (process.platform !== 'win32') {
+    if (process.platform !== 'win32' && false) {
       return new Promise((resolve, reject) => {
-        childProcess.execFile('chmod +x ' + path.join(buildPath, 'playground', 'gradlew'), [arg],
+        let chmod = childProcess.execFile('chmod +x ' + path.join(buildPath, 'playground', 'gradlew'),
         {cwd: path.join(buildPath, 'playground')});
+        chmod.on('close', resolve).on('error', reject);
       });
     } else {
       return Promise.resolve();
@@ -127,5 +128,6 @@ export function pack(buildPath, release) {
 
     });
 
-  });
+  })
+    .catch(console.error)
 }

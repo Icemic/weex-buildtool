@@ -82,7 +82,7 @@ export class Builder {
 
     let ip = nwUtils.getPublicIP();
     let port = '8083';
-    let debugPath = `http://${ip}:${port}/main.we`;
+    let debugPath = `http://${ip}:${port}/index.we`;
 
     let jsbundle = path.resolve('index.js');
 
@@ -114,8 +114,8 @@ export class Builder {
       })
 
     })
-    .then(() => {
-
+    .catch(e => {
+      console.error(e);
     })
   }
 
@@ -132,14 +132,14 @@ export class Builder {
     let ip = nwUtils.getPublicIP();
     let port = '8083';
     let debugPath = `http://${ip}:${port}/main.we`;
-    console.log(debugPath);
+    // console.log(debugPath);
     fs.removeSync('dist/ios/dist');
     // this.isRelease =false;
     if(this.isRelease) {
       let jsBundle = path.resolve(ROOT, 'dist', 'js', 'main.js');
       // let toPath = path.resolve(ROOT, 'ios', 'sdk', 'WeexSDK','Resources','main.js');
       let toPath = path.resolve(ROOT, 'ios', 'playground', 'js.bundle', 'main.js');
-      console.log(toPath);
+      // console.log(toPath);
       fs.copySync(jsBundle, toPath);
       debugPath = "main.js";
     }
@@ -148,29 +148,39 @@ export class Builder {
     // iosConfig(false, IOSPATH, 'main.js');
 
     // release 没有debugPath
-    console.log("isrelease: ",this.isRelease, "path:", debugPath);
-    iosConfig(this.isRelease, IOSPATH, debugPath);//处理配置
-    let pack = "sim";
-    let info;
-    if (this.isRelease) {
-      pack = "normal";
-      let configPath = process.cwd() + '/config';
-      let config = require(path.resolve(configPath,'config.ios.js'))();
-      info = config.certificate;
-    }
+    // console.log("isrelease: ",this.isRelease, "path:", debugPath);
+    iosConfig(this.isRelease, IOSPATH, debugPath)//处理配置
+    .then(() => {
 
-    packIos(PROJECTPATH, this.isRelease, pack, info);
-
-    glob(`${IOSPATH}/**/*.app`, function(er, files) {
-      if( er || files.length === 0 ){
-        npmlog.error("打包发生错误")
-        process.exit(1);
-      } else {
-        let pathDir = path.resolve(files[0], '..');
-        console.log(pathDir);
-        fs.copySync(pathDir, 'dist/ios/dist/');
+      let pack = "sim";
+      let info;
+      if (this.isRelease) {
+        pack = "normal";
+        let configPath = process.cwd() + '/config';
+        let config = require(path.resolve(configPath,'config.ios.js'))();
+        info = config.certificate;
       }
+
+      packIos(PROJECTPATH, this.isRelease, pack, info);
     })
+    .then(() => {
+      return new Promise((resolve, reject) => {
+
+        glob(`${IOSPATH}/**/*.app`, function(er, files) {
+          if( er || files.length === 0 ){
+            npmlog.error("打包发生错误")
+            process.exit(1);
+          } else {
+            let pathDir = path.resolve(files[0], '..');
+            // console.log(pathDir);
+            fs.copySync(pathDir, 'dist/ios/dist/');
+            resolve();
+          }
+        })
+      })
+    })
+
+
   }
 
   buildHtml () {
