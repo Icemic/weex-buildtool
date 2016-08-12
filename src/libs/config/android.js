@@ -71,12 +71,12 @@ console.log('配置')
       npmlog.error(e);
     }
   })
-  /*
+
   .then(() => {
     /**
      * 为 WXApplication.java 添加签名数据，以实现签名校验
      *    可能会因用户自行编辑原始工程而失效，是否会导致问题未知
-     *
+     */
 
     return new Promise((resolve, reject) => {
       let keytool = childProcess.exec(`keytool -list -keystore ${path.resolve(configPath, config.keystore).replace(/\\/g, '/')}`, (err, stdout, stderr) => {
@@ -140,5 +140,5 @@ console.log('配置')
       keytool.stdin.write(`${config.storePassword}\n`);
 
     })
-  })*/
+  })
 };
