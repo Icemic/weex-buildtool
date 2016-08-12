@@ -114,7 +114,7 @@ export class Builder {
           })
         })
 
-      });
+      }).catch(console.error)
   }
 
   buildIos () {
