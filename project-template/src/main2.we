@@ -1,0 +1,9 @@
+<template>
+  <div>
+    <demo class="demo"></demo>
+  </div>
+</template>
+<script>
+  require('showcase/new-fashion/demo.we');
+
+</script>
