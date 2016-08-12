@@ -37,20 +37,20 @@ export class Builder {
 
     let androidPath = path.join(this.outputPath, 'android');
     fs.ensureDirSync(androidPath);
-    await new Promise((resolve, reject) => {
-      fs.createReadStream(path.resolve(__dirname, '../package-template/android.zip'))
-      .pipe(unzip.Extract({ path: androidPath }))
-      .on('close', resolve).on('error', reject);
-    });
+    // await new Promise((resolve, reject) => {
+    //   fs.createReadStream(path.resolve(__dirname, '../package-template/android.zip'))
+    //   .pipe(unzip.Extract({ path: androidPath }))
+    //   .on('close', resolve).on('error', reject);
+    // });
 
 
     let iosPath = path.join(this.outputPath, 'ios');
     fs.ensureDirSync(iosPath);
-    await new Promise((resolve, reject) => {
-      fs.createReadStream(path.resolve(__dirname, '../package-template/ios.zip'))
-      .pipe(unzip.Extract({ path: iosPath }))
-      .on('close', resolve).on('error', reject);
-    });
+    // await new Promise((resolve, reject) => {
+    //   fs.createReadStream(path.resolve(__dirname, '../package-template/ios.zip'))
+    //   .pipe(unzip.Extract({ path: iosPath }))
+    //   .on('close', resolve).on('error', reject);
+    // });
 
     let configPath = path.join(this.outputPath, 'config');
     fs.ensureDirSync(configPath);
@@ -135,15 +135,19 @@ export class Builder {
     // this.isRelease =false;
     if(this.isRelease) {
       let jsBundle = path.resolve(ROOT, 'dist', 'js', 'main.js');
-      let toPath = path.resolve(ROOT, 'ios', 'sdk', 'WeexSDK','Resources','main.js');
+      // let toPath = path.resolve(ROOT, 'ios', 'sdk', 'WeexSDK','Resources','main.js');
+      let toPath = path.resolve(ROOT, 'ios', 'playground', 'js.bundle', 'main.js');
+      console.log(toPath);
       fs.copySync(jsBundle, toPath);
+      debugPath = "main.js";
     }
 
-    iosConfig(this.isRelease, IOSPATH, debugPath);//处理配置
+    // iosConfig(this.isRelease, IOSPATH, debugPath);//处理配置
     // iosConfig(false, IOSPATH, 'main.js');
 
     // release 没有debugPath
-    // iosConfig(this.isRelease, IOSPATH, debugPath);//处理配置
+    console.log("isrelease: ",this.isRelease, "path:", debugPath);
+    iosConfig(this.isRelease, IOSPATH, debugPath);//处理配置
     let pack = "sim";
     let info;
     if (this.isRelease) {

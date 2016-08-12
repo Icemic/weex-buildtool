@@ -416,15 +416,18 @@ function serveForLoad() {
       }
       fs.mkdirSync(outputPath);
     }
+    console.log(inputPath,outputPath);
 
-    new Previewer(inputPath, outputPath);
+    // new Previewer(inputPath, outputPath);
+
+    console.log(exec("weex " + inputPath + ' -o ' + outputPath, {cwd: curPath}).stdout);
+    ;
+
     const buildPlatform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
 
     if (buildPlatform === 'android') {
-      console.log(1)
       builder.buildAndroid();
     } else if (buildPlatform === 'ios') {
-      console.log(2)
       builder.buildIos();
     } else if (buildPlatform === 'all') {
       builder.buildAll();
@@ -432,6 +435,7 @@ function serveForLoad() {
       builder.buildHtml();
       // htmlserver();
     }
+
 
     return;
   }
@@ -486,6 +490,17 @@ function serveForLoad() {
 
     // run 命令打 debug 包
     // let builder = new Builder(curPath, false);
+    let inputPath = path.join('.', 'src');
+    let outputPath = path.join('.', 'dist', 'js');
+
+    if (!fs.existsSync(outputPath)) {
+      if (!fs.existsSync('dist')) {
+        fs.mkdirSync('dist');
+      }
+      fs.mkdirSync(outputPath);
+    }
+    exec("weex " + inputPath + ' -o ' + outputPath, {cwd: curPath});
+    console.log('run........');
     let builder = new Builder(curPath, false);
     // TODO builde.checkInit();
     switch (platform) {
