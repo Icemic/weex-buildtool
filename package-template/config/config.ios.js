@@ -13,7 +13,12 @@ module.exports = function () {
       "Default@2x~iphone.png": "../assets/splash/Default@2x~iphone.png",/*必选，640x960，3.5英寸设备(iPhone4)启动图片*/
       "Default-568h@2x~iphone.png": "../assets/splash/Default-568h@2x~iphone.png", /*640*1136 4.0 英寸设备(iPhone5)启动图片*/
       "Default-667h.png": "../assets/splash/Default-667h.png", /*750*1134 启动图片*/
-      "Default-736h.png": "../assets/splash/Default-736h.png" /*1242*2208 */
+      "Default-736h.png": "../assets/splash/Default-736h.png",
+      "Default-Landscape@2x~ipad.png": "../assets/splash/Default-Landscape@2x~ipad.png",
+      "Default-Landscape~ipad.png": "../assets/splash/Default-Landscape~ipad.png",
+      "Default-Landscape-736h.png": "../assets/splash/Default-Landscape-736h.png",
+      "Default-Portrait@2x~ipad.png": "../assets/splash/Default-Portrait@2x~ipad.png",
+      "Default-Portrait~ipad.png": "../assets/splash/Default-Portrait~ipad.png"
     },
     "certificate":{
       codeSignIdentity: "iPhone Developer: zhuiqian wu (22RMUQ2DWW)",

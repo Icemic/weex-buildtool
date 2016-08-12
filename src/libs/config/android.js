@@ -66,7 +66,6 @@ module.exports = function (release, curPath, debugPath) {
       .replace(/android:versionName=".*"/,'android:versionName="' + config.version.name + '"')
       .replace(/android:name="weex_index"\sandroid:value=".*"/,'android:name="weex_index" android:value="' + launch_path + '"');
       fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'), data);
-console.log('配置')
     } catch (e) {
       npmlog.error(e);
     }
@@ -78,13 +77,17 @@ console.log('配置')
      *    可能会因用户自行编辑原始工程而失效，是否会导致问题未知
      */
 
+    if (!release) {
+      return Promise.resolve();
+    }
+
     return new Promise((resolve, reject) => {
       let keytool = childProcess.exec(`keytool -list -keystore ${path.resolve(configPath, config.keystore).replace(/\\/g, '/')}`, (err, stdout, stderr) => {
 
         if (err) {
           console.log(err)
           reject(err);
-        } else {    console.log('zhengshu')
+        } else {
 
           let origin = stdout;
           origin = origin.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
@@ -94,6 +97,7 @@ console.log('配置')
           if (r && r.length) {
             sha1 = r[1].replace(/:/g, '');
           } else {
+            console.error(stdout)
             reject('证书读取错误，可能是密码或别名有误。');
             return;
           }
@@ -133,7 +137,6 @@ console.log('配置')
           .replace(/\/\*\* weex tag head \*\/.*?($\n^)*([\S\s]*)$\n^.*?\/\*\* weex tag tail \*\//m,
                   `\/\*\* weex tag head \*\/\n    private static final String TAG = "${hash.digest('hex')}"; \n\/\*\* weex tag tail \*\/`);
           fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/WXApplication.java'), data);
-          console.log('zhengshuover')
           resolve();
         }
       });
