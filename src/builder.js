@@ -1,3 +1,4 @@
+require('colors');
 const prompt = require('prompt');
 const fs = require('fs-extra');
 const path = require('path');
@@ -17,15 +18,52 @@ import serveHtml from "./libs/html5-server";
 import folderSync from './libs/folderSync';
 
 
-export class Builder {
-  constructor (outputPath, isRelease = true) {
-    this.outputPath = outputPath || process.cwd() ;
-    this.outputPath = path.resolve(this.outputPath);
-    this.isRelease = isRelease;
-  }
+export default Builder = {
 
-  async init () {
-    npmlog.info('进行初始化... ');
+  root: process.cwd(),  // 用户进程运行的目录
+
+  async init (platform, gitPath) {
+
+    /*  init 分成几个过程
+     *  @param: platform, 根据用户输入的平台进行初始化工作
+     *  @param: git, git 仓库地址, 去该仓库下载原始工程
+     *  1. initial , 检测当前目录是否经过 init
+     *  2. prompting, 与用户交互过程
+     *  3. configuring, 创建配置文件
+     *  4. install, 为用户下载或者为用户安装依赖
+     *  5. end, 清除工作,和用户说 bye
+     *
+     */
+    const platform = platform;
+    const gitPath = gitPath;
+
+    let initialization = {
+      initial,
+      prompting,
+      configuring,
+      install,
+      end
+    };
+
+
+    // 初始化,判断是否经过 init
+    function initial() {
+      console.log('初始化开始'.green);
+      let configs = ['config.base.js'];
+
+      if ( platform === 'all' ) {
+        configs.push(['config.android.js', 'config.ios.js']);
+      } else {
+        let c = `config.${platform}.js`;
+        configs.push(c);
+      }
+
+
+
+
+
+    }
+
 
     // TODO 下载原始工程
     // this.download();
@@ -61,7 +99,7 @@ export class Builder {
     fs.ensureDirSync(distPath);
 
     npmlog.info('完成 ');
-  }
+  },
 
   build () {
     if (this.buildPlatform === 'android') {
@@ -71,7 +109,7 @@ export class Builder {
     } else {
 
     }
-  }
+  },
 
   buildAndroid () {
     const ROOT = process.cwd();
@@ -117,7 +155,7 @@ export class Builder {
     .catch(e => {
       console.error(e);
     })
-  }
+  },
 
   buildIos () {
     // if (process.platform === 'win32') {
@@ -181,21 +219,25 @@ export class Builder {
     })
 
 
-  }
+  },
 
   buildHtml () {
     console.info('build h5...');
     packHtml();
     serveHtml();
-  }
+  },
 
   buildAll() {
     this.buildHtml();
     this.buildIos();
     this.buildAndroid();
-  }
+  },
 
   setPlatform (p) {
     this.buildPlatform = p;
+  },
+
+  existFile (path) {
+
   }
 }
