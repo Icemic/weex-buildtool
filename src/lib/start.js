@@ -16,7 +16,7 @@ function start(params) {
     params.name = 'example';
   }
   currentSimulator(params, function(devicePolymer){
-    run(params, devicePolymer);
+    return run(params, devicePolymer);
   });
 }
 
@@ -25,7 +25,7 @@ function run(params, devicePolymer) {
       iOSDevices = devicePolymer.iOSDevice;
 
     // 选择模拟器
-    iOSimulatorSelect(iOSCurrentDeviceInfo, iOSDevices, params)
+  return iOSimulatorSelect(iOSCurrentDeviceInfo, iOSDevices, params)
     .then(function(currentDevice) {
       // 打开模拟器
       console.log(currentDevice);
