@@ -7,7 +7,6 @@ const fs = require('fs-extra'),
   watch = require('node-watch'),
   os = require('os'),
   _ = require("underscore"),
-  glob = require("glob"),
   qrcode = require('qrcode-terminal'),
   webpack = require('webpack'),
   webpackLoader = require('weex-loader'),
@@ -385,7 +384,8 @@ function serveForLoad() {
   }
 
   if (argv._[0] === "build") {
-    weexBuild.entry(argv._, argv.r || true)
+    let release = argv.r || true;
+    weexBuild.entry(argv._, release)
     .catch(e => {
       if (typeof e === 'string') {
         process.stderr.write(e.red);
@@ -397,7 +397,13 @@ function serveForLoad() {
   }
 
   if (argv._[0] === "emulate") {
-    weexEmulate.entry(argv._, argv.r || true)
+    let release = argv.r || true;
+    weexEmulate.entry(argv._, release)
+    .then(() => {
+      if (!release) {
+        return serveForLoad()
+      }
+    })
     .catch(e => {
       if (typeof e === 'string') {
         process.stderr.write(e.red);
@@ -409,8 +415,14 @@ function serveForLoad() {
   }
 
   if (argv._[0] === "run") {
-    weexBuild.entry(argv._, argv.r || false)
-    .then(() => weexEmulate.entry(argv._, argv.r || true))
+    let release = argv.r || false;
+    weexBuild.entry(argv._, release)
+    .then(() => weexEmulate.entry(argv._, release))
+    .then(() => {
+      if (!release) {
+        return serveForLoad()
+      }
+    })
     .catch(e => {
       if (typeof e === 'string') {
         process.stderr.write(e.red);

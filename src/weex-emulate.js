@@ -2,6 +2,8 @@ require('colors');
 const path = require('path');
 const fs = require('fs-extra');
 const exec = require('sync-exec');
+const glob = require("glob");
+
 
 import {Emulator} from "../build/emulater";
 // const Promise = require('bluebird');
@@ -20,7 +22,7 @@ export async function entry (subCommands, release) {
       }
       // serveForLoad();
       emulater = new Emulator(files[0]);
-      emulater.emulateIos();
+      await emulater.emulateIos();
       break;
     case "android":
       files = glob.sync(`${rootPath}/**/*.apk`);
@@ -29,7 +31,7 @@ export async function entry (subCommands, release) {
       }
       // serveForLoad();
       emulater = new Emulator(files[1]);  // WTF???
-      emulater.emulateAndroid();
+      await emulater.emulateAndroid();
       break;
     default:
       throw `Unsupported target platfrom "${buildPlatform}".`;

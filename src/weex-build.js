@@ -16,7 +16,7 @@ export async function entry (subCommands, release) {
   let type = subCommands[1];
 
   if (type === "init") {
-    builder.init();
+    await builder.init();
   } else {
     const bundleInputPath = path.resolve(rootPath, 'src');
     const bundleOutputPath = path.resolve(rootPath, 'dist', 'js');
@@ -45,13 +45,13 @@ export async function entry (subCommands, release) {
     const buildPlatform = !!subCommands[1] ? subCommands[1].toLocaleLowerCase() : null;
 
     if (buildPlatform === 'android') {
-      builder.buildAndroid();
+      await builder.buildAndroid();
     } else if (buildPlatform === 'ios') {
-      builder.buildIos();
+      await builder.buildIos();
     } else if (buildPlatform === 'all') {
-      builder.buildAll();
+      await builder.buildAll();
     } else if (buildPlatform === 'h5') {
-      builder.buildHtml();
+      await builder.buildHtml();
     } else {
       throw `Unsupported target platfrom "${buildPlatform}".`;
     }
