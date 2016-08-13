@@ -28,7 +28,7 @@ export class Emulator{
   emulateAndroid () {
     var config = require(path.resolve(this.curPath,'./config/config.android.js'))();
 
-    androidEmulator.runApp(this.filePath, config.packagename,
+    return androidEmulator.runApp(this.filePath, config.packagename,
       "com.alibaba.weex.SplashActivity");
   }
 }
