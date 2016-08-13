@@ -3,7 +3,7 @@
 import * as androidEmulator from "./libs/adbhelper";
 const path = require('path');
 const nwUtils = require('../build/nw-utils');
-const start = require('./lib/start.js');
+const start = require('./libs/sim-ios.js');
 
 
 export class Emulator{
