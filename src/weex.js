@@ -1,5 +1,3 @@
-import {Builder} from "../build/builder.js"
-import {Emulator} from "../build/emulater"
 const fs = require('fs-extra'),
   path = require('path'),
   opener = require('opener'),
@@ -22,6 +20,9 @@ const fs = require('fs-extra'),
   htmlserver = require('../build/libs/html5-server'),
   exec = require('sync-exec');
   // Emulator = require('../build/emulater')
+
+const weexBuild = require('../build/weex-build');
+const weexEmulate = require('../build/weex-emulate');
 
 
 const VERSION = require('../package.json').version
@@ -361,7 +362,7 @@ function serveForLoad() {
 }
 
 
-(async function argvProcess() {
+(function argvProcess() {
 
   HTTP_PORT = argv.port
   WEBSOCKET_PORT = argv.wsport
@@ -383,204 +384,44 @@ function serveForLoad() {
     return
   }
 
-
   if (argv._[0] === "build") {
-    // weex build
-    var isRelease = argv.r;
-    var outputPath = process.cwd();
-
-    // build 命令打 release 包
-    var builder = new Builder(outputPath, true);
-
-    if (argv._[1] === "init") {
-      return builder.init();
-    } else {
-      // try {
-      //   // TODO 判断更多东西
-      //   fs.accessSync(path.join(process.cwd(), 'manifest.json'), fs.F_OK);
-      // } catch (e) {
-      //   npmlog.info('进行 build 初始化工作');
-      //   builder.init();
-      //   npmlog.info('check your manifest.json and build angain');
-      //   return;
-      // }
-    }
-
-    let inputPath = path.join('.', 'src');
-    let outputPath = path.join('.', 'dist', 'js');
-
-    if (!fs.existsSync(outputPath)) {
-      if (!fs.existsSync('dist')) {
-        fs.mkdirSync('dist');
+    weexBuild.entry(argv._, argv.r || true)
+    .catch(e => {
+      if (typeof e === 'string') {
+        process.stderr.write(e.red);
+      } else {
+        process.stderr.write(e);
       }
-      fs.mkdirSync(outputPath);
-    }
-    // console.log(inputPath,outputPath);
-
-    // new Previewer(inputPath, outputPath);
-
-    // console.log(exec("weex " + inputPath + ' -o ' + outputPath, {cwd: curPath}).stdout);
-    fs.emptyDirSync(outputPath);
-    await new Promise((resolve, reject) => {
-      process.stdout.write('正在生成 jsBundle...'.green);
-      fs.walk(inputPath)
-      .on('data', item => {
-        if (item.stats.isDirectory()) {
-          let inPath = item.path;
-          let outPath = path.resolve(outputPath, path.relative(curPath+'/src', item.path));
-          fs.ensureDirSync(outPath);
-          exec(`weex ${inPath} -o ${outPath}`);
-        }
-      })
-      .on('end', () => {
-        process.stdout.write('done\n'.green);
-        resolve();
-      });
     });
-
-    const buildPlatform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
-
-    if (buildPlatform === 'android') {
-      builder.buildAndroid();
-    } else if (buildPlatform === 'ios') {
-      builder.buildIos();
-    } else if (buildPlatform === 'all') {
-      builder.buildAll();
-    } else {
-      builder.buildHtml();
-      // htmlserver();
-    }
-
-
     return;
   }
 
   if (argv._[0] === "emulate") {
-    const buildPlatform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
-    let curPath = process.cwd();
-    switch (buildPlatform) {
-      case "ios":
-        glob(`${curPath}/**/*.app`, function (er, files) {
-          // files is an array of filenames.
-          // If the `nonull` option is set, and nothing
-          // was found, then files is ["**/*.js"]
-          // er is an error object or null.
-
-          if( er || files.length === 0 ){
-            npmlog.error("目标路径没有文件!")
-            process.exit(1);
-          }
-          // console.log('emulate', files[0]);
-          serveForLoad();
-          let emulater = new Emulator(files[0]);
-          emulater.emulateIos();
-        });
-
-        break;
-      case "android":
-        // console.log(curPath);
-        glob(`${curPath}/**/*.apk`, function (er, files) {
-          // files is an array of filenames.
-          // If the `nonull` option is set, and nothing
-          // was found, then files is ["**/*.js"]
-          // er is an error object or null.
-          if( er || files.length === 0 ){
-            npmlog.error("目标路径没有文件!")
-            process.exit(1);
-          }
-          serveForLoad();
-          let emulater = new Emulator(files[1]);
-          emulater.emulateAndroid();
-        });
-
-        break;
-      default:
-        break;
-    }
-
-    // return;
-  } else if (argv._[0] === "run") {
-    const platform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
-    let curPath = process.cwd();
-
-    // run 命令打 debug 包
-    // let builder = new Builder(curPath, false);
-    let inputPath = path.join('.', 'src');
-    let outputPath = path.join('.', 'dist', 'js');
-
-    if (!fs.existsSync(outputPath)) {
-      if (!fs.existsSync('dist')) {
-        fs.mkdirSync('dist');
+    weexEmulate.entry(argv._, argv.r || true)
+    .catch(e => {
+      if (typeof e === 'string') {
+        process.stderr.write(e.red);
+      } else {
+        process.stderr.write(e);
       }
-      fs.mkdirSync(outputPath);
-    }
-    // exec("weex " + inputPath + ' -o ' + outputPath, {cwd: curPath});
-    //
-    fs.emptyDirSync(outputPath);
-    await new Promise((resolve, reject) => {
-      process.stdout.write('正在生成 jsBundle...'.green);
-      fs.walk(inputPath)
-      .on('data', item => {
-        if (item.stats.isDirectory()) {
-          let inPath = item.path;
-          let outPath = path.resolve(outputPath, path.relative(curPath+'/src', item.path));
-          fs.ensureDirSync(outPath);
-          exec(`weex ${inPath} -o ${outPath}`);
-        }
-      })
-      .on('end', () => {
-        process.stdout.write('done\n'.green);
-        resolve();
-      });
     });
+    return;
+  }
 
-    console.log('run........');
-    let builder = new Builder(curPath, false);
-    // TODO builde.checkInit();
-    switch (platform) {
-      case "ios":
-        npmlog.info("正在 build ios...");
-        builder.buildIos();
-        glob(`${curPath}/**/*.app`, function (er, files) {
-          // files is an array of filenames.
-          // If the `nonull` option is set, and nothing
-          // was found, then files is ["**/*.js"]
-          // er is an error object or null.
-          if( er || files.length === 0 ){
-            npmlog.error("目标路径没有文件!")
-            process.exit(1);
-          }
-          let emulater = new Emulator(files[0]);
-          npmlog.info("正在寻找模拟器...");
-          serveForLoad();
-          emulater.emulateIos();
-        });
-        break;
-      case "android":
-        console.log(curPath);
-        builder.buildAndroid()
-          .then(()=>{
-            glob(`${curPath}/**/*.apk`, function (er, files) {
-              // files is an array of filenames.
-              // If the `nonull` option is set, and nothing
-              // was found, then files is ["**/*.js"]
-              // er is an error object or null.
-              if( er || files.length === 0 ){
-                npmlog.error("目标路径没有文件!")
-                process.exit(1);
-              }
-              serveForLoad();
-              let emulater = new Emulator(files[1]);
-              emulater.emulateAndroid();
-            });
-          });
+  if (argv._[0] === "run") {
+    weexBuild.entry(argv._, argv.r || false)
+    .then(() => weexEmulate.entry(argv._, argv.r || true))
+    .catch(e => {
+      if (typeof e === 'string') {
+        process.stderr.write(e.red);
+      } else {
+        process.stderr.write(e);
+      }
+    });
+    return;
+  }
 
-        break;
-      default:
-        break;
-    }
-
-  } else  {
+  else  {
     if (argv._[0] && commands.exec(argv._[0], process.argv.slice(3))) {
       return
     }

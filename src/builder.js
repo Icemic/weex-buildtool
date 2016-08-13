@@ -14,7 +14,7 @@ const nwUtils = require('../build/nw-utils');
 import * as packAndorid from "./libs/apkhelper";
 import packHtml from "./libs/html5";
 import serveHtml from "./libs/html5-server";
-import folderSync from './libs/folderSync';
+import folderSync from './utils/folderSync';
 
 
 export class Builder {
