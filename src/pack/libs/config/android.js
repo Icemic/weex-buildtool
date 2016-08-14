@@ -8,7 +8,7 @@ const crypto = require('crypto');
 const validator = require('validator');
 const async = require('async');
 const icons = require('./icons.js');
-const nw_utils = require('../../../nw-utils.js');
+const nw_utils = require('../../nw-utils.js');
 
 const configPath = process.cwd() + '/config';
 

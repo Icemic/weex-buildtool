@@ -15,7 +15,7 @@ var buildHtml = function() {
         }
         fs.mkdirSync('dist/html5/dist');
     }
-    fse.copySync(`${__dirname}/../../node_modules/weex-html5/dist/weex.min.js`, 'dist/html5/dist/weex.min.js');
+    fse.copySync(`${curPath}/node_modules/weex-html5/dist/weex.min.js`, 'dist/html5/dist/weex.min.js');
 
     return new Promise((resolve, reject) => {
         fs.readFile(`${curPath}/node_modules/weex-html5/index.html`, { encoding: 'utf8' }, (err, data) => resolve(data));

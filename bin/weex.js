@@ -396,27 +396,45 @@ function serveForLoad() {
 
             pakeex(argv);
 
-            _context.next = 28;
+            _context.next = 34;
             break;
 
           case 10:
+            if (!(argv._[0] === 'init')) {
+              _context.next = 13;
+              break;
+            }
+
+            generator.generate();
+            return _context.abrupt('return');
+
+          case 13:
+            if (!(argv._[0] === "create")) {
+              _context.next = 16;
+              break;
+            }
+
+            npmlog.warn('\nSorry, "weex create" is no longer supported, we recommand you please try "weex init" instead.');
+            return _context.abrupt('return');
+
+          case 16:
             if (!(argv._[0] && commands.exec(argv._[0], process.argv.slice(3)))) {
-              _context.next = 12;
+              _context.next = 18;
               break;
             }
 
             return _context.abrupt('return');
 
-          case 12:
+          case 18:
             if (!argv.version) {
-              _context.next = 15;
+              _context.next = 21;
               break;
             }
 
             npmlog.info(VERSION);
             return _context.abrupt('return');
 
-          case 15:
+          case 21:
             inputPath = argv._[0];
             transformServerPath = argv.s;
             badWePath = !!(!inputPath || inputPath.length < 2); //we path can be we file or dir
@@ -461,24 +479,6 @@ function serveForLoad() {
             transformWatch = argv.watch;
 
             new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath);
-
-          case 28:
-            if (!(argv._[0] === 'init')) {
-              _context.next = 31;
-              break;
-            }
-
-            generator.generate();
-            return _context.abrupt('return');
-
-          case 31:
-            if (!(argv._[0] === "create")) {
-              _context.next = 34;
-              break;
-            }
-
-            npmlog.warn('\nSorry, "weex create" is no longer supported, we recommand you please try "weex init" instead.');
-            return _context.abrupt('return');
 
           case 34:
           case 'end':

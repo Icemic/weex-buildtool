@@ -8,7 +8,7 @@ module.exports = function () {
     },
     "description": "Weex",/*可选，应用描述信息*/
     // "fullscreen":true,
-    "launch_path": "main.js",/*必选，应用的入口页面，默认为根目录下的main.js；*/
+    "launch_path": "index.js",/*必选，应用的入口页面，默认为根目录下的main.js；*/
     "developer": {
         "email": "",/*可选，开发者名称*/
         "name": "",/*可选，开发者邮箱地址*/

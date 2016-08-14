@@ -77,6 +77,14 @@ module.exports = function configBuild(argv) {
 
     options.root = process.cwd();
     options.toolRoot = path.resolve(__dirname, "..", "..");
+
+    if (argv.debug) {
+      options.release = false;
+      options.debug = true;
+    } else {
+      options.release = true;
+      options.debug = false;
+    }
     resolve(options);
   })
 };

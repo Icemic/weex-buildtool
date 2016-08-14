@@ -9,7 +9,6 @@ var fs = require('fs'),
 // sdkType: sim包还是正规包 取值sim 或 normal
 function run (localpath, release, sdkType, info) {
 
-  console.log(arguments);
   var config = 'Debug';
   if (release) {
     config = 'Release';
@@ -43,17 +42,6 @@ function run (localpath, release, sdkType, info) {
 
   //打中间包
   debugger;
-  // cmd = 'xcodebuild -workspace '+ target + '.xcworkspace -scheme ' + scheme + ' -sdk iphonesimulator9.3 -configuration ' + config + ' -archivePath build/' + target + '.xcarchive archive';
-  // var result = exec(cmd, {cwd: localpath}).stdout;
-  // console.log(result);
-  // packRelease(target, scheme, config, sdk, localpath);
-  // packDebug(target, scheme, config, sdk, localpath);
-
-
-  //导出app
-  // cmd = 'xcodebuild  -exportArchive -exportFormat APP -archivePath build/'+ target +'.xcarchive -exportPath build/'+ target +'.app';
-  // result = exec(cmd, {cwd: localpath}).stdout;
-  // console.log(result);
   var result;
   console.log('正在打包，请稍后...');
   if (sdkType == 'normal') {
