@@ -391,18 +391,19 @@ var builder = {
 
     let jsbundle = path.resolve('index.js');
 
-
+    console.log(options);
+    
     return folderSync(PROJECTPATH, BUILDPATH)
       .then(() => {
-        if (options.isRelease) {
+        if (options.release) {
           debugPath = jsbundle;
           return folderSync(path.resolve(ROOT, 'dist', 'js'),
             path.resolve(ROOT, '.build/android/playground/app/src/main/assets'));
         }
       })
       .then(() => icons.android(BUILDPATH))
-      .then(() => androidConfig(options.isRelease, BUILDPATH, debugPath))
-      .then(() => packAndorid.pack(BUILDPATH, options.isRelease))
+      .then(() => androidConfig(options.release, BUILDPATH, debugPath))
+      .then(() => packAndorid.pack(BUILDPATH, options.release))
       .then(function() {
         return new Promise((resolve, reject) => {
           glob(`${BUILDPATH}/**/*.apk`, function(er, files) {
@@ -444,7 +445,6 @@ var builder = {
 
     return folderSync(IOSPATH, BUILDPATH)
       .then(() => {
-        console.log(1);
         if (options.release) {
           let jsBundle = path.resolve(ROOT, 'dist', 'js');
           let toPath = path.resolve(ROOT, '.build', 'ios', 'playground', 'js.bundle');
@@ -453,30 +453,23 @@ var builder = {
         }
       })
       .then(() => {
-        console.log(2);
         icons.ios(path.resolve(BUILDPATH));
-        console.log(3);
       })
       .then(() => {
-        console.log(4);
-        iosConfig(options.isRelease, IOSPATH, debugPath)
-        console.log(5);
+        iosConfig(options.release, IOSPATH, debugPath)
       })
       .then(() => {
-        console.log(6);
         let pack = "sim";
         let info;
-        if (options.isRelease) {
+        if (options.release) {
           pack = "normal";
           let configPath = process.cwd() + '/config';
           let config = require(path.resolve(configPath, 'config.ios.js'))();
           info = config.certificate;
         }
-        packIos(PROJECTPATH, options.isRelease, pack, info);
-        console.log(7);
+        packIos(PROJECTPATH, options.release, pack, info);
       })
       .then(() => {
-        console.log(8);
         return new Promise((resolve, reject) => {
 
           glob(`${IOSPATH}/**/*.app`, function(er, files) {
@@ -495,11 +488,11 @@ var builder = {
         console.log(e);
       })
 
-    // iosConfig(this.isRelease, IOSPATH, debugPath);//处理配置
+    // iosConfig(this.release, IOSPATH, debugPath);//处理配置
     // iosConfig(false, IOSPATH, 'main.js');
 
     // release 没有debugPath
-    // console.log("isrelease: ",this.isRelease, "path:", debugPath);
+    // console.log("isrelease: ",this.release, "path:", debugPath);
 
   },
 
