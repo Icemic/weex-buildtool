@@ -10,7 +10,13 @@ const configPath = process.cwd() + '/config';
 const plist = require('plist');
 const checkConfig = require('./check-config.js')
 
-// debug 模式才有debugPath
+/**
+ * 处理ios配置，写入到工程debug 模式才有debugPath
+ * @param  {[bool]} release   [description]
+ * @param  {[string]} curPath   [description]
+ * @param  {[string]} debugPath [description]
+ * @return {[type]}           [description]
+ */
 module.exports = function(release, curPath, debugPath) {
   curPath = curPath ? curPath : process.cwd() + '/ios';
   var config = require(path.resolve(configPath, 'config.ios.js'))();
@@ -24,6 +30,10 @@ module.exports = function(release, curPath, debugPath) {
     var launch_path = config.launch_path;
     if (!release) {
       launch_path = debugPath;
+      //区分debug还是release
+      let podfile = fs.readFileSync(path.resolve(curPath, 'playground/Podfile'), 'utf8');
+      podfile = podfile.replace(/# release delete head[\s\S]*?(# release delete tail)/, '');
+      fs.writeFileSync(path.resolve(curPath, 'playground/Podfile'), podfile);
     }
 
     let data = fs.readFileSync(path.resolve(curPath, 'playground/WeexApp/Info.plist'), 'utf8');

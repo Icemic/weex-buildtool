@@ -118,7 +118,30 @@ module.exports = function(release, curPath, debugPath) {
         npmlog.error(e);
       }
     })
+  .then(() => {
+    /**
+     * debug 和 release 区分
+     * 删除特定注释中的代码
+     */
+    let data;
+    if (release) {
+      data = fs.readFileSync(path.resolve(curPath,'playground/settings.gradle'), { encoding: 'utf8' });
+      let outString = data.replace(/\/\*\* release delete head \*\/[\s\S]?\/\*\* release delete tail \*\//m,'');
 
+      fs.writeFileSync(path.resolve(curPath,'playground/settings.gradle'),outString);
+      data = fs.readFileSync(path.resolve(curPath,'playground/app/build.gradle'), { encoding: 'utf8' });
+      data = data.replace(/\/\*\* release delete head \*\/[\s\S]?\/\*\* release delete tail \*\//m,'');
+      fs.writeFileSync(path.resolve(curPath,'playground/app/build.gradle'),data);
+
+      data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/https/WXOkHttpDispatcher.java'), { encoding: 'utf8' });
+      data = data.replace(/\/\*\* release delete head \*\/[\s\S]?\/\*\* release delete tail \*\//m,'');
+      fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/https/WXOkHttpDispatcher.java'),data);
+
+      data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/IndexActivity.java'), { encoding: 'utf8' });
+      data = data.replace(/\/\*\* release delete head \*\/[\s\S]?\/\*\* release delete tail \*\//m,'');
+      fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/IndexActivity.java'),data);
+    }
+  })
   .then(() => {
     /**
      * 为 WXApplication.java 添加签名数据，以实现签名校验
