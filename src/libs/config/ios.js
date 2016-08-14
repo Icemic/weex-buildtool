@@ -1,39 +1,52 @@
 'use strict';
 
 var curPath = process.cwd();
-const fs = require('fs'),
-  npmlog = require('npmlog'),
-  path = require('path'),
-  async = require('async'),
-  icons = require('./icons.js'),
-  configPath = process.cwd() + '/config';
+const fs = require('fs');
+const npmlog = require('npmlog');
+const path = require('path');
+const async = require('async');
+const icons = require('./icons.js');
+const configPath = process.cwd() + '/config';
+const plist = require('plist');
+const checkConfig = require('./check-config.js')
 
-// debug 模式才有debugPath
-module.exports = function (release,curPath,debugPath) {
+/**
+ * 处理ios配置，写入到工程debug 模式才有debugUrl
+ * @param  {[bool]} release   [description]
+ * @param  {[string]} curPath   [description]
+ * @param  {[string]} debugUrl [description]
+ * @param  {[string]} configFile 配置文件路径
+ * @return {[type]}           [description]
+ */
+module.exports = function(release, curPath, debugUrl,configFile) {
   curPath = curPath ? curPath : process.cwd() + '/ios';
-  var config = require(path.resolve(configPath,'config.ios.js'))();
+  var config = require(path.resolve(configPath, configFile ? configFile : 'config.ios.js'))();
+
+  checkConfig(config, 'ios'); //检查配置
 
   // console.log("ios config:", arguments);
   // console.log("ios config:", config);
-  return Promise.resolve()
-  .then(function () {
-    async.waterfall([function (callback) {
-      fs.readFile(path.resolve(curPath,'playground/WeexApp/Info.plist'),{encoding: 'utf8'}, callback);
-    },function (data,callback) {
-      var launch_path = config.launch_path;
-      if(!release){
-        launch_path = debugPath;
-      }
-      data = data.replace(/<key>CFBundleIdentifier<\/key>[\S\s]*?\/string>/m,'<key>CFBundleIdentifier</key>\n <string>' + config.appid + '</string>')
-      .replace(/<key>CFBundleName<\/key>[\S\s]*?\/string>/m,'<key>CFBundleName</key>\n <string>' + config.name + '</string>')
-      .replace(/<key>CFBundleShortVersionString<\/key>[\S\s]*?\/string>/m,'<key>CFBundleShortVersionString</key>\n <string>' + config.version.name + '</string>')
-      .replace(/<key>BUNDLE_URL.*[\s\S]*?\/string>/m,'<key>BUNDLE_URL</key>\n <string>' + launch_path + '</string>')
-      .replace(/<key>CFBundleVersion<\/key>[\S\s]*?\/string>/m,'<key>CFBundleVersion</key>\n <string>' + config.version.code + '</string>');
-      fs.writeFile(path.resolve(curPath,'playground/WeexApp/Info.plist'), data, callback);
-    }],function (err) {
-      if (err) {
-        npmlog.error(err);
-      }
-    });
+
+  return new Promise((resolve, reject) => {
+    var launch_path = config.launch_path;
+    if (!release) {
+      launch_path = debugUrl;
+      //区分debug还是release
+      let podfile = fs.readFileSync(path.resolve(curPath, 'playground/Podfile'), 'utf8');
+      podfile = podfile.replace(/# release delete head[\s\S]*?(# release delete tail)/, '');
+      fs.writeFileSync(path.resolve(curPath, 'playground/Podfile'), podfile);
+    }
+
+    let data = fs.readFileSync(path.resolve(curPath, 'playground/WeexApp/Info.plist'), 'utf8');
+    data = plist.parse(data); //转成json
+    data.CFBundleIdentifier = config.appid;
+    data.CFBundleName = config.name;
+    data.CFBundleShortVersionString = config.version.name;
+    data.BUNDLE_URL = launch_path;
+    data.CFBundleVersion = config.version.code;
+    data = plist.build(data); //转换格式
+
+    fs.writeFileSync(path.resolve(curPath, 'playground/WeexApp/Info.plist'), data);
+    resolve();
   });
 };
