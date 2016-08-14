@@ -1,6 +1,8 @@
 const inquirer = require('inquirer');
 const configBuild = require('./config-build');
 const configProcess = require('./config-ex');
+const stdlog = require('./utils/stdlog');
+const emulator = require('./emulator');
 
 // 所有打包逻辑的处理
 async function pack(argv) {
@@ -11,37 +13,45 @@ async function pack(argv) {
 
     try {
       options = await configBuild(argv);
-    } catch (e){
-      console.error(e);
-    }
-    try {
-      var builder = require('./builder');
-      if (options.oprate === "init") {
-        try {
-          await builder.init(options);
-        } catch (e) {
-          console.error(e);
-        }
-      }
 
-      if (options.oprate === "build") {
-        try {
+      var builder = require('./builder');
+
+      if (options.oprate === "init") {
+
+          await builder.init(options);
+
+      } else if (options.oprate === "build") {
+
           await builder.build(options);
-        } catch (e) {
-          console.log(e);
-        }
+
       }
 
     } catch (e) {
-      console.log(e);
+      stdlog.errorln(e);
+      stdlog.errorln('Build failed.');
     }
 
-    console.log('build end');
+    stdlog.infoln('Build Success');
   }
 
-  if (argv._[0] === "emulate" || argv._[0] === "run") {
+  if (argv._[0] === "emulate") {
     try {
       options = await configProcess(argv);
+      let release = argv.target ? (argv.target === 'release') : true;
+
+      await emulator.handle(options.platform, release);
+
+
+    } catch (e){
+      stdlog.errorln(e);
+    }
+    // console.log(options);
+  }
+
+  if (argv._[0] === "run") {
+    try {
+      options = await configProcess(argv);
+
     } catch (e){
       console.error(e);
     }
