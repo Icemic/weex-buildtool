@@ -1,10 +1,11 @@
 const inquirer = require('inquirer');
+const path = require('path');
 
 const platforms = ["init", "android", "all", "ios", "html"];
 const sweetAndroid = ["android", "an", "a", "andriod"];
 const sweetPlat = platforms.concat(sweetAndroid);
 const defaultAndroid = "https://github.com/liujiescut/WeexAndroidTemplate/archive/master.zip";
-const defaultIos = "https://github.com/phonegap/ios-deploy/archive/master.zip";
+const defaultIos = "https://github.com/VeHan/Weex-Pakeex-iOS-Template/archive/master.zip";
 
 
 module.exports = function configBuild(argv) {
@@ -15,7 +16,7 @@ module.exports = function configBuild(argv) {
   // build android -d | build an | build android init
   //
 
-  return new Promise( async (resolve, reject) => {
+  return new Promise(async(resolve, reject) => {
     let options = {};
 
     var argv1 = argv._[1] ? argv._[1].toLocaleLowerCase() : null;
@@ -60,24 +61,26 @@ module.exports = function configBuild(argv) {
         options.platform = argv1;
       }
     }
-
-    options.giturl = [];
-    if (argv.url) {
-      options.giturl = [argv.url];
-    } else {
-      if (options.platform === "android") {
-        options.giturl.push(defaultAndroid);
-      }
-
-      if (options.platform === "ios") {
-        options.giturl.push(defaultIos);
-      }
-
-      if (options.platform === "all") {
-        options.giturl.concat([defaultIos, defaultAndroid]);
-      }
-
+    options.giturl = {};
+    console.log('处理url.....')
+    if (options.platform === "android") {
+      options.giturl.android = argv.url || defaultAndroid;
     }
+
+    if (options.platform === "ios") {
+      options.giturl.ios = argv.url ||defaultIos;
+    }
+
+    if (options.platform === "all") {
+      options.giturl.android = argv.url || defaultAndroid;
+      options.giturl.ios = argv.url ||defaultIos;
+    }
+
+    console.log('.....')
+
+
+    options.root = process.cwd();
+    options.toolRoot = path.resolve(__dirname, "..", "..");
     console.log(options);
     resolve(options);
   })

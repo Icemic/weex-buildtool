@@ -1,6 +1,6 @@
 var httpServer = require('http-server'),
     npmlog = require('npmlog'),
-    nwUtils =  require('../nw-utils.js'),
+    nwUtils =  require('../../nw-utils.js'),
     c = require('child_process');
 
 const DEFAULT_HTTP_PORT  = "8081";
