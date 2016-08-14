@@ -62,7 +62,6 @@ module.exports = function configBuild(argv) {
       }
     }
     options.giturl = {};
-    console.log('处理url.....')
     if (options.platform === "android") {
       options.giturl.android = argv.url || defaultAndroid;
     }
@@ -76,12 +75,8 @@ module.exports = function configBuild(argv) {
       options.giturl.ios = argv.url ||defaultIos;
     }
 
-    console.log('.....')
-
-
     options.root = process.cwd();
     options.toolRoot = path.resolve(__dirname, "..", "..");
-    console.log(options);
     resolve(options);
   })
 };

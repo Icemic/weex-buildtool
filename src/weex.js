@@ -378,6 +378,16 @@ function serveForLoad() {
     pakeex(argv);
 
   }  else  {
+    if (argv._[0] === 'init') {
+      generator.generate();
+      return;
+    }
+
+    if (argv._[0] === "create") {
+      npmlog.warn('\nSorry, "weex create" is no longer supported, we recommand you please try "weex init" instead.')
+      return
+    }
+
     if (argv._[0] && commands.exec(argv._[0], process.argv.slice(3))) {
       return
     }
@@ -427,15 +437,7 @@ function serveForLoad() {
     new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath)
 
   }
-  if (argv._[0] === 'init') {
-    generator.generate();
-    return;
-  }
 
-  if (argv._[0] === "create") {
-    npmlog.warn('\nSorry, "weex create" is no longer supported, we recommand you please try "weex init" instead.')
-    return
-  }
 
   // if (argv._[0] === "build") {
   //   let release = argv.r || true;

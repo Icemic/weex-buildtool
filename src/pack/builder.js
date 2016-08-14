@@ -29,6 +29,29 @@ var builder = {
     initial: async function(options) {
       // 判断是否经过 init
       // 返回一个对象,保存文件是否存在的信息
+      try {
+        try {
+          await new Promise((resolve, reject)=> {
+            glob(`${options.root}/src/*.we`, function(err, files) {
+              if (err || files.length === 0) {
+                reject(1);
+              } else {
+                resolve(1);
+              }
+            })
+          });
+        } catch (e) {
+          stdlog.errorln("Please exec weex init && npm install first");
+          process.exit(1);
+        }
+
+
+        builder.existFile();
+        options.configbase = true;
+      } catch (e) {
+        options.configbase = false;
+      }
+
       console.log('判断文件是否存在');
       const platform = options.platform;
       let configs = ['config.base.js'];
@@ -110,7 +133,8 @@ var builder = {
             {
               type: 'confirm',
               name: 'overwrite',
-              message: '安卓工程已经存在,需要覆盖吗?'
+              message: '安卓工程已经存在,需要覆盖吗?',
+              default: false
             }
           ]).then(function(value) {
             // exec(`pakeex ${value.command}`, {cwd: process.cwd()});
@@ -127,7 +151,8 @@ var builder = {
             {
               type: 'confirm',
               name: 'overwrite',
-              message: 'ios 工程已经存在,需要覆盖吗?'
+              message: 'ios 工程已经存在,需要覆盖吗?',
+              default: false
             }
           ]).then(function(value) {
             // exec(`pakeex ${value.command}`, {cwd: process.cwd()});
@@ -154,7 +179,7 @@ var builder = {
         case "android":
           if (!options.configandroid) {
             stdlog.infoln("创建配置文件: config.android.js");
-            fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.android.js'), configPath);
+            fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.android.js'), path.resolve(configPath, 'config.android.js'));
           }
           break;
         case "ios":
@@ -165,10 +190,12 @@ var builder = {
           break;
         case "all":
           if (!options.configandroid) {
-            fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.android.js'), configPath);
+            stdlog.infoln("创建配置文件: config.android.js");
+            fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.android.js'), path.resolve(configPath, 'config.android.js'));
           }
           if (!options.configios) {
-            fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), configPath);
+            stdlog.infoln("创建配置文件: config.ios.js");
+            fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
           }
           break;
       }
@@ -176,7 +203,6 @@ var builder = {
     install: async function(options) {
       console.log("下载安装操作");
 
-      console.error("记得做清理的工作");
 
       options.download = {};
       var iosPath = path.resolve(options.root, 'ios');
@@ -191,8 +217,8 @@ var builder = {
         stdlog.info("Downloading...");
 
         await Promise.all([
-          download(options.giturl.ios, path.resolve(options.root, '.tmp')),
-          download(options.giturl.android, path.resolve(options.root, '.tmp'))
+          download(options.giturl.ios, path.resolve(options.root, '.tmp', 'ios')),
+          download(options.giturl.android, path.resolve(options.root, '.tmp', 'android'))
         ])
           .then(() => {
               stdlog.infoln("done");
@@ -210,7 +236,7 @@ var builder = {
         // exec(`rm -rf ${iosPath}`, {cwd: options.root});
         fs.removeSync(iosPath);
         stdlog.info("Downloading...");
-        await download(options.giturl.ios, path.resolve(options.root,'.tmp')).then((value) => {
+        await download(options.giturl.ios, path.resolve(options.root, '.tmp', 'ios')).then((value) => {
           stdlog.infoln("done");
           options.download.ios = true;
         }).catch(e => {
@@ -222,7 +248,7 @@ var builder = {
         // exec(`rm -rf ${androidPath}`, {cwd: options.root});
         fs.removeSync(androidPath);
         stdlog.info("Downloading...");
-        await download(options.giturl.android, path.resolve(options.root, '.tmp')).then(() => {
+        await download(options.giturl.android, path.resolve(options.root, '.tmp', 'android')).then(() => {
           stdlog.infoln("done");
           options.download.android = true;
         }).catch(e => {
@@ -232,11 +258,11 @@ var builder = {
         });
       }
 
-      var iosFile = path.resolve(options.root, '.tmp', 'master.zip');
-      var androidFile = path.resolve(options.root, '.tmp', 'master.zip');
+      var iosFile = path.resolve(options.root, '.tmp', 'ios', 'master.zip');
+      var androidFile = path.resolve(options.root, '.tmp', 'android', 'master.zip');
 
-      var iosTmpPath = path.resolve(options.root, '.tmp', String(Math.floor(Math.random()*10000000)));
-      var androidTmpPath = path.resolve(options.root, '.tmp', String(Math.floor(Math.random()*10000000)));
+      var iosTmpPath = path.resolve(options.root, '.tmp', String(Math.floor(Math.random() * 10000000)));
+      var androidTmpPath = path.resolve(options.root, '.tmp', String(Math.floor(Math.random() * 10000000)));
 
       if (options.download.ios) {
         await unzipFile(iosFile, iosTmpPath);
@@ -251,7 +277,6 @@ var builder = {
         }
         console.log(path.resolve(iosPath, '.tmp'), iosPath);
       }
-      console.log(options);
 
       if (options.download.android) {
         await unzipFile(androidFile, androidTmpPath);
@@ -274,16 +299,11 @@ var builder = {
         });
       }
 
-      console.log(options);
     },
     clean(options) {
-      console.log("清除工作");
-      console.log(options);
+      stdlog.textln("Build init succeed");
       var tmpPath = path.resolve(options.root, '.tmp');
-      // exec(`rm -rf ${iosTmpPath}`, {cwd: options.root});
-      // exec(`rm -rf ${androidTmpPath}`, {cwd: options.root})
       fs.removeSync(tmpPath);
-
     }
 
   },
@@ -344,28 +364,44 @@ var builder = {
   },
 
   async build (options) {
+
+    // build 初始化判断
+    await this.initialization.initial(options);
+
     const platform = options.platform;
 
     if (platform === 'android') {
 
       console.log("build android...");
-      builder.buildAndroid();
+      await this.buildAndroid();
+
     } else if (platform === 'ios') {
+
       console.log("build ios...");
-      builder.buildIos();
-    } else if (platform === 'all') {
+      await this.buildIos();
+
+    } else if (platform === 'html') {
+
       console.log(`build ${platform}`);
+      await this.buildHtml();
+
+    } else if (platform === 'all') {
+
+      console.log(`build ${platform}`);
+      await this.buildAll();
+
     } else {
       // 渠道包扩展
     }
   },
 
-  buildAndroid () {
+  buildAndroid: async function() {
+
     const ROOT = process.cwd();
     const PROJECTPATH = path.resolve(ROOT, 'android');
     const BUILDPATH = path.resolve(ROOT, '.build', 'android');
 
-    console.info('Start building Android package...'.green);
+    stdlog.info("Build android start..")
 
     let ip = nwUtils.getPublicIP();
     let port = '8083';
@@ -479,6 +515,12 @@ var builder = {
     this.buildHtml();
     this.buildIos();
     this.buildAndroid();
+  },
+
+  makeJsbundle: async function (_wePath, _jsPath) {
+    let wePath = _wePath || path.resolve( this.root, 'src');
+    let jsPath = _jsPath || path.resolve( this.root, 'dist');
+
   },
 
   setPlatform (p) {
