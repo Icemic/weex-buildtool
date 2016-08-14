@@ -20,12 +20,12 @@ function run (localpath, release, sdkType, info) {
     console.log('SDK类型参数错误');
   }
   var name = info.name || 'noName';
-  var extraName;
-  if(sdkType == 'sim') {
-    extraName = 'Sim';
-  } else {
-    extraName = 'Real';
-  }
+  // var extraName;
+  // if(sdkType == 'sim') {
+  //   extraName = 'Sim';
+  // } else {
+  //   extraName = 'Real';
+  // }
   var sdk = getSDKs(localpath);
   var iosInfo = findPackInfo(localpath);
   var target = iosInfo.target;
@@ -87,12 +87,12 @@ function run (localpath, release, sdkType, info) {
     console.log('得到文件位置，准备拷贝文件到build目录下...');
     var mvPath = path.resolve(localpath, './build');
     exec('mkdir build', {cwd: localpath});
-    cmd = 'mv ' + outputPath + ' ./build/'+ name + extraName +'.app';
+    cmd = 'mv ' + outputPath + ' ./build/'+ name +'.app';
     exec(cmd, {cwd: localpath});
     console.log('拷贝完成！');
     if(sdkType == 'normal') {
       debugger;
-      app2ipa(name, localpath, extraName);
+      app2ipa(name, localpath);
     }
   } else {
     console.log('文件位置不正确');
@@ -183,9 +183,9 @@ function packSim(target, scheme, config, sdk, localpath) {
   return result;
 }
 
-function app2ipa(name, localpath, extraName) {
-  var abPath = path.resolve(localpath, './build/'+ name + extraName + '.ipa');
-  var cmd = 'xcrun -sdk iphoneos -v PackageApplication ./build/'+ name + extraName +'.app -o ' + abPath;
+function app2ipa(name, localpath) {
+  var abPath = path.resolve(localpath, './build/'+ name + '.ipa');
+  var cmd = 'xcrun -sdk iphoneos -v PackageApplication ./build/'+ name +'.app -o ' + abPath;
   console.log('转换app文件为ipa');
   exec(cmd, {cwd: localpath});
 }
