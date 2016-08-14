@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 const platforms = ["init", "android", "all", "ios", "html"];
 const sweetAndroid = ["android", "an", "a", "andriod"];
 const sweetPlat = platforms.concat(sweetAndroid);
-const defaultAndroid = "https://github.com/phonegap/ios-deploy/archive/master.zip";
+const defaultAndroid = "https://github.com/liujiescut/WeexAndroidTemplate/archive/master.zip";
 const defaultIos = "https://github.com/phonegap/ios-deploy/archive/master.zip";
 
 

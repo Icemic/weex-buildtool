@@ -4,6 +4,8 @@ const path = require('path');
 const npmlog = require('npmlog');
 const glob = require("glob");
 const unzip = require('unzip');
+const stdlog = require('./utils/stdlog');
+
 // const packIos = require('./libs/pack-ios');
 // const icons = require("./libs/config/icons.js");
 // const androidConfig = require("./libs/config/android.js");
@@ -22,17 +24,30 @@ module.exports = {
 
   initialization : {
     initial(options) {
+      // 判断是否经过 init
+      // 返回一个对象,保存文件是否存在的信息
+      var initFiles= {};
       const platform = options.platform;
+      stdlog.infoln('初始化开始'.green);
 
-      console.log('初始化开始'.green);
       let configs = ['config.base.js'];
 
       if ( platform === 'all' ) {
-        configs.push(['config.android.js', 'config.ios.js']);
+        configs.push('config.android.js');
+        configs.push('config.ios.js');
       } else {
-        let c = `config.${platform}.js`;
-        configs.push(c);
+        if (platform !== "html") {
+          let c = `config.${platform}.js`;
+          configs.push(c);
+        }
       }
+
+      stdlog.textln(configs);
+
+
+
+      return initFiles;
+
     },
     prompting(options) {
       console.log("与用户交互");
@@ -107,6 +122,7 @@ module.exports = {
     const platform = options.platform;
 
     if (platform === 'android') {
+
       console.log("build android...");
 
     } else if( platform === 'ios') {
