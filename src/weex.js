@@ -20,6 +20,7 @@ const fs = require('fs-extra'),
   exec = require('sync-exec');
   // Emulator = require('../build/emulater')
 
+const pakeex = require('../build/pack/index');
 const weexBuild = require('../build/weex-build');
 const weexEmulate = require('../build/weex-emulate');
 
@@ -361,11 +362,10 @@ function serveForLoad() {
 }
 
 
-(function argvProcess() {
+(async function argvProcess() {
 
   HTTP_PORT = argv.port
   WEBSOCKET_PORT = argv.wsport
-  const curPath = process.cwd();
 
   if (argv.debugger) {
     let port = (HTTP_PORT == NO_PORT_SPECIFIED) ? debuggerServer.DEBUGGER_SERVER_PORT : HTTP_PORT;
@@ -373,67 +373,11 @@ function serveForLoad() {
     return
   }
 
-  if (argv._[0] === 'init') {
-    generator.generate();
-    return;
-  }
+  if (["build", "emulate", "run"].indexOf(argv._[0]) !== -1) {
 
-  if (argv._[0] === "create") {
-    npmlog.warn('\nSorry, "weex create" is no longer supported, we recommand you please try "weex init" instead.')
-    return
-  }
+    pakeex(argv);
 
-  if (argv._[0] === "build") {
-    let release = argv.r || true;
-    weexBuild.entry(argv._, release)
-    .catch(e => {
-      if (typeof e === 'string') {
-        process.stderr.write(e.red);
-      } else {
-        process.stderr.write(e);
-      }
-    });
-    return;
-  }
-
-  if (argv._[0] === "emulate") {
-    let release = argv.r || true;
-    weexEmulate.entry(argv._, release)
-    .then(() => {
-      if (!release) {
-        return serveForLoad()
-      }
-    })
-    .catch(e => {
-      if (typeof e === 'string') {
-        process.stderr.write(e.red);
-      } else {
-        process.stderr.write(e);
-      }
-    });
-    return;
-  }
-
-  if (argv._[0] === "run") {
-    let release = argv.r || false;
-    weexBuild.entry(argv._, release)
-    .then(() => weexEmulate.entry(argv._, release))
-    .then(() => {
-      if (!release) {
-        return serveForLoad()
-      }
-    })
-    .catch(e => {
-      if (typeof e === 'string') {
-        process.stderr.write(e.red);
-      } else {
-        process.stderr.write(e);
-      }
-    });
-    return;
-  }
-
-  else  {
+  }  else  {
     if (argv._[0] && commands.exec(argv._[0], process.argv.slice(3))) {
       return
     }
@@ -483,6 +427,63 @@ function serveForLoad() {
     new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath)
 
   }
+  if (argv._[0] === 'init') {
+    generator.generate();
+    return;
+  }
 
+  if (argv._[0] === "create") {
+    npmlog.warn('\nSorry, "weex create" is no longer supported, we recommand you please try "weex init" instead.')
+    return
+  }
 
+  // if (argv._[0] === "build") {
+  //   let release = argv.r || true;
+  //   weexBuild.entry(argv._, release)
+  //   .catch(e => {
+  //     if (typeof e === 'string') {
+  //       process.stderr.write(e.red);
+  //     } else {
+  //       process.stderr.write(e);
+  //     }
+  //   });
+  //   return;
+  // }
+  //
+  // if (argv._[0] === "emulate") {
+  //   let release = argv.r || true;
+  //   weexEmulate.entry(argv._, release)
+  //   .then(() => {
+  //     if (!release) {
+  //       return serveForLoad()
+  //     }
+  //   })
+  //   .catch(e => {
+  //     if (typeof e === 'string') {
+  //       process.stderr.write(e.red);
+  //     } else {
+  //       process.stderr.write(e);
+  //     }
+  //   });
+  //   return;
+  // }
+  //
+  // if (argv._[0] === "run") {
+  //   let release = argv.r || false;
+  //   weexBuild.entry(argv._, release)
+  //   .then(() => weexEmulate.entry(argv._, release))
+  //   .then(() => {
+  //     if (!release) {
+  //       return serveForLoad()
+  //     }
+  //   })
+  //   .catch(e => {
+  //     if (typeof e === 'string') {
+  //       process.stderr.write(e.red);
+  //     } else {
+  //       process.stderr.write(e);
+  //     }
+  //   });
+  //   return;
+  // }
 })()

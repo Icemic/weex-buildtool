@@ -1,34 +1,26 @@
 #!/usr/bin/env node 
 
-"use strict";
+'use strict';
 
-var _typeof2 = require("babel-runtime/helpers/typeof");
-
-var _typeof3 = _interopRequireDefault(_typeof2);
-
-var _regenerator = require("babel-runtime/regenerator");
+var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _asyncToGenerator2 = require("babel-runtime/helpers/asyncToGenerator");
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _promise = require("babel-runtime/core-js/promise");
+var _promise = require('babel-runtime/core-js/promise');
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _classCallCheck2 = require("babel-runtime/helpers/classCallCheck");
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = require("babel-runtime/helpers/createClass");
+var _createClass2 = require('babel-runtime/helpers/createClass');
 
 var _createClass3 = _interopRequireDefault(_createClass2);
-
-var _builder = require("../build/builder.js");
-
-var _emulater = require("../build/emulater");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -41,7 +33,6 @@ var fs = require('fs-extra'),
     watch = require('node-watch'),
     os = require('os'),
     _ = require("underscore"),
-    glob = require("glob"),
     qrcode = require('qrcode-terminal'),
     webpack = require('webpack'),
     webpackLoader = require('weex-loader'),
@@ -55,6 +46,9 @@ var fs = require('fs-extra'),
     exec = require('sync-exec');
 // Emulator = require('../build/emulater')
 
+var pakeex = require('../build/pack/index');
+var weexBuild = require('../build/weex-build');
+var weexEmulate = require('../build/weex-emulate');
 
 var VERSION = require('../package.json').version;
 var WEEX_FILE_EXT = "we";
@@ -104,7 +98,7 @@ var Previewer = function () {
 
         if (fs.lstatSync(outputPath).isDirectory()) {
           var fileName = path.basename(inputPath).replace(/\..+/, '');
-          this.outputPath = outputPath = path.join(this.outputPath, fileName + ".js");
+          this.outputPath = outputPath = path.join(this.outputPath, fileName + '.js');
         }
       }
     } catch (e) {
@@ -113,16 +107,16 @@ var Previewer = function () {
 
     if (transformWatch) {
       (function () {
-        npmlog.info("watching " + inputPath);
+        npmlog.info('watching ' + inputPath);
         var self = _this;
         watch(inputPath, function (fileName) {
           if (/\.we$/gi.test(fileName)) {
-            npmlog.info(fileName + " updated");
+            npmlog.info(fileName + ' updated');
             var _outputPath = self.outputPath;
             try {
               if (fs.lstatSync(_outputPath).isDirectory()) {
                 var fn = path.basename(fileName).replace(/\..+/, '');
-                _outputPath = path.join(_outputPath, fn + ".js");
+                _outputPath = path.join(_outputPath, fn + '.js');
               }
             } catch (e) {}
             self.transforme(fileName, _outputPath);
@@ -135,7 +129,7 @@ var Previewer = function () {
   }
 
   (0, _createClass3.default)(Previewer, [{
-    key: "transforme",
+    key: 'transforme',
     value: function transforme(inputPath, outputPath) {
 
       var transformP = void 0;
@@ -162,7 +156,7 @@ var Previewer = function () {
         var filesInTargetPromiseList = _.map(filesInTarget, function (fileName) {
           var ip = path.join(inputPath, fileName);
           fileName = fileName.replace(/\.we/, '');
-          var op = path.join(outputPath, fileName + ".js");
+          var op = path.join(outputPath, fileName + '.js');
           return self.transformTarget(ip, op);
         });
         transformP = _promise2.default.all(filesInTargetPromiseList);
@@ -183,17 +177,17 @@ var Previewer = function () {
       });
     }
   }, {
-    key: "tempDirInit",
+    key: 'tempDirInit',
     value: function tempDirInit() {
       fs.removeSync(WEEX_TRANSFORM_TMP);
 
       fs.mkdirSync(WEEX_TRANSFORM_TMP);
-      fs.copySync(__dirname + "/../node_modules/weex-html5", WEEX_TRANSFORM_TMP + "/" + H5_Render_DIR);
+      fs.copySync(__dirname + '/../node_modules/weex-html5', WEEX_TRANSFORM_TMP + '/' + H5_Render_DIR);
 
-      fs.mkdirsSync(WEEX_TRANSFORM_TMP + "/" + H5_Render_DIR);
+      fs.mkdirsSync(WEEX_TRANSFORM_TMP + '/' + H5_Render_DIR);
     }
   }, {
-    key: "startServer",
+    key: 'startServer',
     value: function startServer(fileName) {
       var options = {
         root: ".",
@@ -214,14 +208,14 @@ var Previewer = function () {
       var port = HTTP_PORT == NO_PORT_SPECIFIED ? DEFAULT_HTTP_PORT : HTTP_PORT;
       //npmlog.info(`http port: ${port}`)
       server.listen(port, "0.0.0.0", function () {
-        npmlog.info(new Date() + ("http  is listening on port " + port));
+        npmlog.info(new Date() + ('http  is listening on port ' + port));
 
         if (self.transformServerPath) {
           var IP = nwUtils.getPublicIP();
           if (self.host != DEFAULT_HOST) {
             IP = self.host;
           }
-          npmlog.info("we file in local path " + self.transformServerPath + " will be transformer to JS bundle\nplease access http://" + IP + ":" + port + "/");
+          npmlog.info('we file in local path ' + self.transformServerPath + ' will be transformer to JS bundle\nplease access http://' + IP + ':' + port + '/');
           return;
         }
 
@@ -230,11 +224,11 @@ var Previewer = function () {
           return;
         }
 
-        var previewUrl = "http://" + self.host + ":" + port + "/" + WEEX_TRANSFORM_TMP + "/" + H5_Render_DIR + "/?hot-reload_controller&page=" + fileName + "&loader=xhr";
+        var previewUrl = 'http://' + self.host + ':' + port + '/' + WEEX_TRANSFORM_TMP + '/' + H5_Render_DIR + '/?hot-reload_controller&page=' + fileName + '&loader=xhr';
         if (self.shouldOpenBrowser) {
           opener(previewUrl);
         } else {
-          npmlog.info("weex preview url:  " + previewUrl);
+          npmlog.info('weex preview url:  ' + previewUrl);
         }
       });
 
@@ -251,7 +245,7 @@ var Previewer = function () {
       });
     }
   }, {
-    key: "showQR",
+    key: 'showQR',
     value: function showQR(fileName) {
       var IP = nwUtils.getPublicIP();
       if (this.host != DEFAULT_HOST) {
@@ -259,19 +253,19 @@ var Previewer = function () {
       }
       var port = HTTP_PORT == NO_PORT_SPECIFIED ? DEFAULT_HTTP_PORT : HTTP_PORT;
       var wsport = WEBSOCKET_PORT == NO_PORT_SPECIFIED ? DEFAULT_WEBSOCKET_PORT : WEBSOCKET_PORT;
-      var jsBundleURL = "http://" + IP + ":" + port + "/" + WEEX_TRANSFORM_TMP + "/" + H5_Render_DIR + "/" + fileName + "?wsport=" + wsport;
+      var jsBundleURL = 'http://' + IP + ':' + port + '/' + WEEX_TRANSFORM_TMP + '/' + H5_Render_DIR + '/' + fileName + '?wsport=' + wsport;
       // npmlog output will broken QR in some case ,some we using console.log
-      console.log("The following QR encoding url is\n" + jsBundleURL + "\n");
+      console.log('The following QR encoding url is\n' + jsBundleURL + '\n');
       qrcode.generate(jsBundleURL);
       console.log("\nPlease download Weex Playground app from https://github.com/alibaba/weex and scan this QR code to run your app, make sure your phone is connected to the same Wi-Fi network as your computer runing weex server.\n");
     }
   }, {
-    key: "startWebSocket",
+    key: 'startWebSocket',
     value: function startWebSocket() {
       var port = WEBSOCKET_PORT == NO_PORT_SPECIFIED ? DEFAULT_WEBSOCKET_PORT : WEBSOCKET_PORT;
       var wss = wsServer({ port: port });
       var self = this;
-      npmlog.info(new Date() + ("WebSocket  is listening on port " + port));
+      npmlog.info(new Date() + ('WebSocket  is listening on port ' + port));
       wss.on('connection', function connection(ws) {
         ws.on('message', function incoming(message) {
           npmlog.info('received: %s', message);
@@ -287,11 +281,11 @@ var Previewer = function () {
      */
 
   }, {
-    key: "watchForWSRefresh",
+    key: 'watchForWSRefresh',
     value: function watchForWSRefresh() {
       var self = this;
       watch(path.dirname(this.inputPath), function (fileName) {
-        if (!!fileName.match("" + WEEX_TRANSFORM_TMP)) {
+        if (!!fileName.match('' + WEEX_TRANSFORM_TMP)) {
           return;
         }
         if (/\.js$|\.we$/gi.test(fileName)) {
@@ -303,7 +297,7 @@ var Previewer = function () {
       });
     }
   }, {
-    key: "transformTarget",
+    key: 'transformTarget',
     value: function transformTarget(inputPath, outputPath) {
       var promiseData = { promise: null, resolver: null, rejecter: null };
       promiseData.promise = new _promise2.default(function (resolve, reject) {
@@ -315,10 +309,10 @@ var Previewer = function () {
       if (outputPath) {
         bundleWritePath = outputPath;
       } else {
-        bundleWritePath = WEEX_TRANSFORM_TMP + "/" + H5_Render_DIR + "/" + filename + ".js";
+        bundleWritePath = WEEX_TRANSFORM_TMP + '/' + H5_Render_DIR + '/' + filename + '.js';
       }
       inputPath = path.resolve(inputPath);
-      var entryValue = inputPath + "?entry=true";
+      var entryValue = inputPath + '?entry=true';
       var webpackConfig = {
         entry: entryValue,
         output: {
@@ -350,7 +344,7 @@ var Previewer = function () {
           if (outputPath) {
             promiseData.resolver(false);
           } else {
-            promiseData.resolver(filename + ".js");
+            promiseData.resolver(filename + '.js');
           }
         }
       });
@@ -374,332 +368,55 @@ function serveForLoad() {
 }
 
 (function () {
-  var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
-    var _this2 = this;
-
-    var curPath, port, isRelease, outputPath, builder, _ret2, _buildPlatform, _curPath, inputPath, transformServerPath, badWePath, absPath, res, host, shouldOpenBrowser, displayQR, transformWatch;
-
-    return _regenerator2.default.wrap(function _callee3$(_context3) {
+  var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+    var port, inputPath, transformServerPath, badWePath, absPath, res, host, shouldOpenBrowser, displayQR, outputPath, transformWatch;
+    return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context.prev = _context.next) {
           case 0:
 
             HTTP_PORT = argv.port;
             WEBSOCKET_PORT = argv.wsport;
-            curPath = process.cwd();
 
             if (!argv.debugger) {
-              _context3.next = 7;
+              _context.next = 6;
               break;
             }
 
             port = HTTP_PORT == NO_PORT_SPECIFIED ? debuggerServer.DEBUGGER_SERVER_PORT : HTTP_PORT;
 
             debuggerServer.startListen(port);
-            return _context3.abrupt("return");
+            return _context.abrupt('return');
 
-          case 7:
-            if (!(argv._[0] === 'init')) {
-              _context3.next = 10;
+          case 6:
+            if (!(["build", "emulate", "run"].indexOf(argv._[0]) !== -1)) {
+              _context.next = 10;
               break;
             }
 
-            generator.generate();
-            return _context3.abrupt("return");
+            pakeex(argv);
+
+            _context.next = 28;
+            break;
 
           case 10:
-            if (!(argv._[0] === "create")) {
-              _context3.next = 13;
-              break;
-            }
-
-            npmlog.warn('\nSorry, "weex create" is no longer supported, we recommand you please try "weex init" instead.');
-            return _context3.abrupt("return");
-
-          case 13:
-            if (!(argv._[0] === "build")) {
-              _context3.next = 18;
-              break;
-            }
-
-            return _context3.delegateYield(_regenerator2.default.mark(function _callee() {
-              var inputPath, outputPath, buildPlatform;
-              return _regenerator2.default.wrap(function _callee$(_context) {
-                while (1) {
-                  switch (_context.prev = _context.next) {
-                    case 0:
-                      // weex build
-                      isRelease = argv.r;
-                      outputPath = process.cwd();
-
-                      // build 命令打 release 包
-
-                      builder = new _builder.Builder(outputPath, true);
-
-                      if (!(argv._[1] === "init")) {
-                        _context.next = 7;
-                        break;
-                      }
-
-                      return _context.abrupt("return", {
-                        v: builder.init()
-                      });
-
-                    case 7:
-                      inputPath = path.join('.', 'src');
-                      outputPath = path.join('.', 'dist', 'js');
-
-
-                      if (!fs.existsSync(outputPath)) {
-                        if (!fs.existsSync('dist')) {
-                          fs.mkdirSync('dist');
-                        }
-                        fs.mkdirSync(outputPath);
-                      }
-                      // console.log(inputPath,outputPath);
-
-                      // new Previewer(inputPath, outputPath);
-
-                      // console.log(exec("weex " + inputPath + ' -o ' + outputPath, {cwd: curPath}).stdout);
-                      fs.emptyDirSync(outputPath);
-                      _context.next = 13;
-                      return new _promise2.default(function (resolve, reject) {
-                        process.stdout.write('正在生成 jsBundle...'.green);
-                        fs.walk(inputPath).on('data', function (item) {
-                          if (item.stats.isDirectory()) {
-                            var inPath = item.path;
-                            var outPath = path.resolve(outputPath, path.relative(curPath + '/src', item.path));
-                            fs.ensureDirSync(outPath);
-                            exec("weex " + inPath + " -o " + outPath);
-                          }
-                        }).on('end', function () {
-                          process.stdout.write('done\n'.green);
-                          resolve();
-                        });
-                      });
-
-                    case 13:
-                      buildPlatform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
-
-
-                      if (buildPlatform === 'android') {
-                        builder.buildAndroid();
-                      } else if (buildPlatform === 'ios') {
-                        builder.buildIos();
-                      } else if (buildPlatform === 'all') {
-                        builder.buildAll();
-                      } else {
-                        builder.buildHtml();
-                        // htmlserver();
-                      }
-
-                      return _context.abrupt("return", {
-                        v: void 0
-                      });
-
-                    case 16:
-                    case "end":
-                      return _context.stop();
-                  }
-                }
-              }, _callee, _this2);
-            })(), "t0", 15);
-
-          case 15:
-            _ret2 = _context3.t0;
-
-            if (!((typeof _ret2 === "undefined" ? "undefined" : (0, _typeof3.default)(_ret2)) === "object")) {
-              _context3.next = 18;
-              break;
-            }
-
-            return _context3.abrupt("return", _ret2.v);
-
-          case 18:
-            if (!(argv._[0] === "emulate")) {
-              _context3.next = 31;
-              break;
-            }
-
-            _buildPlatform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
-            _curPath = process.cwd();
-            _context3.t1 = _buildPlatform;
-            _context3.next = _context3.t1 === "ios" ? 24 : _context3.t1 === "android" ? 26 : 28;
-            break;
-
-          case 24:
-            glob(_curPath + "/**/*.app", function (er, files) {
-              // files is an array of filenames.
-              // If the `nonull` option is set, and nothing
-              // was found, then files is ["**/*.js"]
-              // er is an error object or null.
-
-              if (er || files.length === 0) {
-                npmlog.error("目标路径没有文件!");
-                process.exit(1);
-              }
-              // console.log('emulate', files[0]);
-              serveForLoad();
-              var emulater = new _emulater.Emulator(files[0]);
-              emulater.emulateIos();
-            });
-
-            return _context3.abrupt("break", 29);
-
-          case 26:
-            // console.log(curPath);
-            glob(_curPath + "/**/*.apk", function (er, files) {
-              // files is an array of filenames.
-              // If the `nonull` option is set, and nothing
-              // was found, then files is ["**/*.js"]
-              // er is an error object or null.
-              if (er || files.length === 0) {
-                npmlog.error("目标路径没有文件!");
-                process.exit(1);
-              }
-              serveForLoad();
-              var emulater = new _emulater.Emulator(files[1]);
-              emulater.emulateAndroid();
-            });
-
-            return _context3.abrupt("break", 29);
-
-          case 28:
-            return _context3.abrupt("break", 29);
-
-          case 29:
-            _context3.next = 53;
-            break;
-
-          case 31:
-            if (!(argv._[0] === "run")) {
-              _context3.next = 35;
-              break;
-            }
-
-            return _context3.delegateYield(_regenerator2.default.mark(function _callee2() {
-              var platform, curPath, inputPath, outputPath, builder;
-              return _regenerator2.default.wrap(function _callee2$(_context2) {
-                while (1) {
-                  switch (_context2.prev = _context2.next) {
-                    case 0:
-                      platform = !!argv._[1] ? argv._[1].toLocaleLowerCase() : argv.p.toLocaleLowerCase();
-                      curPath = process.cwd();
-
-                      // run 命令打 debug 包
-                      // let builder = new Builder(curPath, false);
-
-                      inputPath = path.join('.', 'src');
-                      outputPath = path.join('.', 'dist', 'js');
-
-
-                      if (!fs.existsSync(outputPath)) {
-                        if (!fs.existsSync('dist')) {
-                          fs.mkdirSync('dist');
-                        }
-                        fs.mkdirSync(outputPath);
-                      }
-                      // exec("weex " + inputPath + ' -o ' + outputPath, {cwd: curPath});
-                      //
-                      fs.emptyDirSync(outputPath);
-                      _context2.next = 8;
-                      return new _promise2.default(function (resolve, reject) {
-                        process.stdout.write('正在生成 jsBundle...'.green);
-                        fs.walk(inputPath).on('data', function (item) {
-                          if (item.stats.isDirectory()) {
-                            var inPath = item.path;
-                            var outPath = path.resolve(outputPath, path.relative(curPath + '/src', item.path));
-                            fs.ensureDirSync(outPath);
-                            exec("weex " + inPath + " -o " + outPath);
-                          }
-                        }).on('end', function () {
-                          process.stdout.write('done\n'.green);
-                          resolve();
-                        });
-                      });
-
-                    case 8:
-
-                      console.log('run........');
-                      builder = new _builder.Builder(curPath, false);
-                      // TODO builde.checkInit();
-
-                      _context2.t0 = platform;
-                      _context2.next = _context2.t0 === "ios" ? 13 : _context2.t0 === "android" ? 17 : 20;
-                      break;
-
-                    case 13:
-                      npmlog.info("正在 build ios...");
-                      builder.buildIos();
-                      glob(curPath + "/**/*.app", function (er, files) {
-                        // files is an array of filenames.
-                        // If the `nonull` option is set, and nothing
-                        // was found, then files is ["**/*.js"]
-                        // er is an error object or null.
-                        if (er || files.length === 0) {
-                          npmlog.error("目标路径没有文件!");
-                          process.exit(1);
-                        }
-                        var emulater = new _emulater.Emulator(files[0]);
-                        npmlog.info("正在寻找模拟器...");
-                        serveForLoad();
-                        emulater.emulateIos();
-                      });
-                      return _context2.abrupt("break", 21);
-
-                    case 17:
-                      console.log(curPath);
-                      builder.buildAndroid().then(function () {
-                        glob(curPath + "/**/*.apk", function (er, files) {
-                          // files is an array of filenames.
-                          // If the `nonull` option is set, and nothing
-                          // was found, then files is ["**/*.js"]
-                          // er is an error object or null.
-                          if (er || files.length === 0) {
-                            npmlog.error("目标路径没有文件!");
-                            process.exit(1);
-                          }
-                          serveForLoad();
-                          var emulater = new _emulater.Emulator(files[1]);
-                          emulater.emulateAndroid();
-                        });
-                      });
-
-                      return _context2.abrupt("break", 21);
-
-                    case 20:
-                      return _context2.abrupt("break", 21);
-
-                    case 21:
-                    case "end":
-                      return _context2.stop();
-                  }
-                }
-              }, _callee2, _this2);
-            })(), "t2", 33);
-
-          case 33:
-            _context3.next = 53;
-            break;
-
-          case 35:
             if (!(argv._[0] && commands.exec(argv._[0], process.argv.slice(3)))) {
-              _context3.next = 37;
+              _context.next = 12;
               break;
             }
 
-            return _context3.abrupt("return");
+            return _context.abrupt('return');
 
-          case 37:
+          case 12:
             if (!argv.version) {
-              _context3.next = 40;
+              _context.next = 15;
               break;
             }
 
             npmlog.info(VERSION);
-            return _context3.abrupt("return");
+            return _context.abrupt('return');
 
-          case 40:
+          case 15:
             inputPath = argv._[0];
             transformServerPath = argv.s;
             badWePath = !!(!inputPath || inputPath.length < 2); //we path can be we file or dir
@@ -708,7 +425,7 @@ function serveForLoad() {
               fs.accessSync(inputPath, fs.F_OK);
             } catch (e) {
               if (!transformServerPath && !!inputPath) {
-                npmlog.error("\n " + inputPath + " not accessable");
+                npmlog.error('\n ' + inputPath + ' not accessable');
               }
               badWePath = true;
             }
@@ -725,7 +442,7 @@ function serveForLoad() {
                 res = fs.accessSync(transformServerPath);
               } catch (e) {
                 npmlog.info(yargs.help());
-                npmlog.info("path " + absPath + " not accessible");
+                npmlog.info('path ' + absPath + ' not accessible');
                 process.exit(1);
               }
             }
@@ -745,12 +462,30 @@ function serveForLoad() {
 
             new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath);
 
-          case 53:
-          case "end":
-            return _context3.stop();
+          case 28:
+            if (!(argv._[0] === 'init')) {
+              _context.next = 31;
+              break;
+            }
+
+            generator.generate();
+            return _context.abrupt('return');
+
+          case 31:
+            if (!(argv._[0] === "create")) {
+              _context.next = 34;
+              break;
+            }
+
+            npmlog.warn('\nSorry, "weex create" is no longer supported, we recommand you please try "weex init" instead.');
+            return _context.abrupt('return');
+
+          case 34:
+          case 'end':
+            return _context.stop();
         }
       }
-    }, _callee3, this);
+    }, _callee, this);
   }));
 
   function argvProcess() {
