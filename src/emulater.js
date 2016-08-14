@@ -3,7 +3,7 @@
 import * as androidEmulator from "./libs/adbhelper";
 const path = require('path');
 const nwUtils = require('../build/nw-utils');
-const start = require('./lib/start.js');
+const start = require('./libs/sim-ios.js');
 
 
 export class Emulator{
@@ -28,7 +28,7 @@ export class Emulator{
   emulateAndroid () {
     var config = require(path.resolve(this.curPath,'./config/config.android.js'))();
 
-    androidEmulator.runApp(this.filePath, config.packagename,
+    return androidEmulator.runApp(this.filePath, config.packagename,
       "com.alibaba.weex.SplashActivity");
   }
 }
