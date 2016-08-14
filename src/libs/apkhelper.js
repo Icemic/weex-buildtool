@@ -3,6 +3,7 @@ require('colors');
 const path = require('path');
 const childProcess = require('child_process');
 const fs = require('fs-extra');
+const homedir = require('homedir');
 
 const stdlog = require('../utils/stdlog');
 
@@ -18,7 +19,8 @@ export function checkSDK() {
 
   return new Promise((resolve, reject) => {
 
-    let sdkPath = process.env.ANDROID_HOME;
+    let defualtPath = path.resolve(homedir(), 'AppData/Local/Android/sdk');
+    let sdkPath = fs.existsSync(defualtPath) ? defualtPath : process.env.ANDROID_HOME;
     if (sdkPath) {
       // console.info('installed'.green);
       // process.stdout.write('Check SDK version...'.green);
@@ -41,7 +43,7 @@ export function checkSDK() {
         }
         stdlog.infoln('');
         stdlog.warnln('程序将自动安装...');
-        resolve(installSDK(lack));
+        resolve(installSDK(lack, sdkPath));
       } else {
 
         resolve();
@@ -62,10 +64,10 @@ export function checkSDK() {
  * @param  {Array} lack 缺少的SDK名称
  * @return {Promise}
  */
-export function installSDK(lack) {
+export function installSDK(lack, sdkPath) {
   lack = lack.join(',');
   return new Promise((resolve, reject) => {
-    let android = childProcess.exec(`android update sdk --no-ui --all --filter ${lack}`);
+    let android = childProcess.exec(`${sdkPath}/tools/android update sdk --no-ui --all --filter ${lack}`);
     stdlog.greyPipe(android.stdout);
     stdlog.redPipe(android.stderr);
     // android.stdout.on('data', data => process.stdout.write(data.grey));

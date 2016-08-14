@@ -34,19 +34,19 @@ exports.error = function error (...string) {
 }
 
 exports.textln = function textln (...string) {
-  this.text(...string);
+  exports.text(...string);
   stdoutReturn();
 }
 exports.infoln = function infoln (...string) {
-  this.info(...string);
+  exports.info(...string);
   stdoutReturn();
 }
 exports.warnln = function warnln (...string) {
-  this.warn(...string);
+  exports.warn(...string);
   stdoutReturn();
 }
 exports.errorln = function errorln (...string) {
-  this.error(...string);
+  exports.error(...string);
   stderrReturn();
 }
 
