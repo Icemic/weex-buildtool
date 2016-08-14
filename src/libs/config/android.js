@@ -13,7 +13,7 @@ const configPath = process.cwd() + '/config';
 
 /**
  * 配置处理
- * @param  {[bool]} debug 是否debug模式
+ * @param  {[bool]} release 是否release模式
  * @param  {[string]} curPath 打包文件路径
  * @param  {[string]} debugPath debug的路径
  * @param  {[string]} configFile 配置文件路径

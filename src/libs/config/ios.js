@@ -24,8 +24,8 @@ module.exports = function(release, curPath, debugUrl,configFile) {
 
   checkConfig(config, 'ios'); //检查配置
 
-  console.log("ios config:", arguments);
-  console.log("ios config:", config);
+  // console.log("ios config:", arguments);
+  // console.log("ios config:", config);
 
   return new Promise((resolve, reject) => {
     var launch_path = config.launch_path;
