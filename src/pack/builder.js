@@ -430,7 +430,7 @@ var builder = {
               // process.exit(1);
             } else {
               let pathDir = path.resolve(files[0], '..');
-              fs.copySync(pathDir, 'dist/android/dist/');
+              fs.copySync(pathDir, 'dist/android/');
               resolve();
             }
           })
@@ -495,7 +495,7 @@ var builder = {
               process.exit(1);
             } else {
               let pathDir = path.resolve(files[0], '..');
-              fs.copySync(pathDir, 'dist/ios/dist/');
+              fs.copySync(pathDir, 'dist/ios/');
               resolve();
             }
           })
