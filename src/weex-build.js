@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const exec = require('sync-exec');
 
 import {Builder} from "../build/builder.js";
-// const Promise = require('bluebird');
+const stdlog = require ('./utils/stdlog');
 
 export async function entry (subCommands, release) {
   let rootPath = process.cwd();
@@ -26,7 +26,7 @@ export async function entry (subCommands, release) {
     fs.emptyDirSync(bundleOutputPath);
 
     await new Promise((resolve, reject) => {
-      process.stdout.write('正在生成 JSBundle...'.green);
+      stdlog.infoln('正在生成 JSBundle...');
       fs.walk(bundleInputPath)
       .on('data', item => {
         if (item.stats.isDirectory()) {
