@@ -38,7 +38,7 @@ function checkConfig(config, platform) {
     process.exit(1);
     //android 配置检查
     if (platform == 'android') {
-      if (!validator.matches(config.packagename, /^([A-Za-z\d])+(\.[A-Za-z\d]+)*$/)) {
+      if (!validator.matches(config.packagename, /^([A-Za-z\d])+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.packagename)) {
         npmlog.error('打包配置错误', 'Android packagename必须为英文或数字或.，且以英文字母开头');
         process.exit(1);
       }
@@ -61,7 +61,7 @@ function checkConfig(config, platform) {
     }
     //ios 配置检查
     if (platform == 'ios') {
-      if (!validator.matches(config.packagename, /^([A-Za-z\d])+(\.[A-Za-z\d]+)*$/)) {
+      if (!validator.matches(config.appid, /^([A-Za-z\d])+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.appid)) {
         npmlog.error('打包配置错误', 'appid必须为英文或数字或.，且以英文字母开头');
         process.exit(1);
       }
@@ -81,6 +81,7 @@ function checkConfig(config, platform) {
       }
     }
   }
+  return 1;
 }
 
 module.exports = checkConfig;
