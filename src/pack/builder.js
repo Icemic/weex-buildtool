@@ -460,14 +460,28 @@ var builder = {
       })
       .then(() => {
         let pack = "sim";
-        let info;
+
         if (options.release) {
           pack = "normal";
           let configPath = process.cwd() + '/config';
           let config = require(path.resolve(configPath, 'config.ios.js'))();
+          let info;
           info = config.certificate;
+          info.name = "WeexApp";
+          packIos(PROJECTPATH, options.release, pack, info);
+
+        } else {
+          pack = "sim";
+          let info1 ={};
+          info1.name = "WeexApp";
+          packIos(PROJECTPATH, options.release, pack, info1);
+
+          pack = "normal";
+          let info2 = config.certificate;
+          info2.name = "WeexApp";
+          packIos(PROJECTPATH, options.release, pack, info2);
+
         }
-        packIos(PROJECTPATH, options.release, pack, info);
       })
       .then(() => {
         return new Promise((resolve, reject) => {

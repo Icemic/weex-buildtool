@@ -1,4 +1,5 @@
 const path = require('path');
+const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const adbhelper = require('./libs/adbhelper');
 const simIOS = require('./libs/sim-ios.js');
@@ -46,7 +47,8 @@ export function ios (release) {
     }
   ]).then(function (answers) {
     let isSimulator = answers.target;
-    let filename = path.join(rootPath, `dist/ios/${UserConfig.ios.name}-${release ? 'release' : 'debug'}.${isSimulator ? 'app' : 'ipa'}`);
+    // let filename = path.join(rootPath, `dist/ios/WeexApp-${release ? 'release' : 'debug'}.${isSimulator ? 'app' : 'ipa'}`);
+    let filename = path.join(rootPath, 'dist', 'ios', 'WeexApp.app');
     if (isSimulator) {
       let params = {
         name: UserConfig.ios.name,
