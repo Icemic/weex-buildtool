@@ -11,15 +11,16 @@ const plist = require('plist');
 const checkConfig = require('./check-config.js')
 
 /**
- * 处理ios配置，写入到工程debug 模式才有debugPath
+ * 处理ios配置，写入到工程debug 模式才有debugUrl
  * @param  {[bool]} release   [description]
  * @param  {[string]} curPath   [description]
- * @param  {[string]} debugPath [description]
+ * @param  {[string]} debugUrl [description]
+ * @param  {[string]} configFile 配置文件路径
  * @return {[type]}           [description]
  */
-module.exports = function(release, curPath, debugPath) {
+module.exports = function(release, curPath, debugUrl,configFile) {
   curPath = curPath ? curPath : process.cwd() + '/ios';
-  var config = require(path.resolve(configPath, 'config.ios.js'))();
+  var config = require(path.resolve(configPath, configFile ? configFile : 'config.ios.js'))();
 
   checkConfig(config, 'ios'); //检查配置
 
@@ -29,7 +30,7 @@ module.exports = function(release, curPath, debugPath) {
   return new Promise((resolve, reject) => {
     var launch_path = config.launch_path;
     if (!release) {
-      launch_path = debugPath;
+      launch_path = debugUrl;
       //区分debug还是release
       let podfile = fs.readFileSync(path.resolve(curPath, 'playground/Podfile'), 'utf8');
       podfile = podfile.replace(/# release delete head[\s\S]*?(# release delete tail)/, '');

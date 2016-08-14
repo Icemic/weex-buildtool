@@ -16,11 +16,12 @@ const configPath = process.cwd() + '/config';
  * @param  {[bool]} debug 是否debug模式
  * @param  {[string]} curPath 打包文件路径
  * @param  {[string]} debugPath debug的路径
+ * @param  {[string]} configFile 配置文件路径
  * @return {[type]}           [description]
  */
-module.exports = function(release, curPath, debugPath) {
+module.exports = function(release, curPath, debugPath,configFile) {
   curPath = curPath ? curPath : process.cwd() + '/android';
-  var config = require(path.resolve(configPath, 'config.android.js'))();
+  var config = require(path.resolve(configPath, configFile ? configFile : 'config.android.js'))();
   var launch_path = config.launch_path;
   if (!release) {
     launch_path = debugPath;
