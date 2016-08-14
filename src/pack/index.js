@@ -1,44 +1,54 @@
-const fs = require('fs-extra'),
-  path = require('path'),
-  opener = require('opener'),
-  npmlog = require('npmlog'),
-  httpServer = require('http-server'),
-  wsServer = require('ws').Server,
-  watch = require('node-watch'),
-  os = require('os'),
-  _ = require("underscore"),
-  qrcode = require('qrcode-terminal'),
-  webpack = require('webpack'),
-  webpackLoader = require('weex-loader'),
-  nwUtils = require('../build/nw-utils'),
-  fsUtils = require('../build/fs-utils'),
-  debuggerServer = require('../build/debugger-server'),
-  weFileCreate = require('../build/create'),
-  generator = require('../build/generator'),
-  commands = require('../build/commands'),
-  htmlserver = require('../build/libs/html5-server'),
-  exec = require('sync-exec');
-  // Emulator = require('../build/emulater')
+const inquirer = require('inquirer');
+const configBuild = require('./config-build');
+const configProcess = require('./config-ex');
 
-const pakeex = require('../build/pack/index');
-const weexBuild = require('../build/weex-build');
-const weexEmulate = require('../build/weex-emulate');
+// 所有打包逻辑的处理
+async function pack(argv) {
+  var options = {};
+  // let options = require('./config-yagrs')(yargs, argv);
 
+  if (argv._[0] === "build"){
 
-const VERSION = require('../package.json').version
-const WEEX_FILE_EXT = "we"
-const WEEX_TRANSFORM_TMP = "weex_tmp"
-const H5_Render_DIR = "h5_render"
-const NO_PORT_SPECIFIED = -1
-const DEFAULT_HTTP_PORT = "8081"
-const DEFAULT_WEBSOCKET_PORT = "8082"
-const NO_JSBUNDLE_OUTPUT = "no JSBundle output"
-const DEFAULT_HOST = "127.0.0.1"
+    try {
+      options = await configBuild(argv);
+    } catch (e){
+      console.error(e);
+    }
+    try {
+      var builder = require('./builder');
+      if (options.oprate === "init") {
+        try {
+          await builder.init(options);
+        } catch (e) {
+          console.error(e);
+        }
+      }
 
-//will update when argvProcess function call
-var HTTP_PORT = NO_PORT_SPECIFIED
-var WEBSOCKET_PORT = NO_PORT_SPECIFIED
+      if (options.oprate === "build") {
+        try {
+          await builder.build(options);
+        } catch (e) {
+          console.log(e);
+        }
+      }
 
+    } catch (e) {
+      console.log(e);
+    }
+
+    console.log('build end');
+  }
+
+  if (argv._[0] === "emulate" || argv._[0] === "run") {
+    try {
+      options = await configProcess(argv);
+    } catch (e){
+      console.error(e);
+    }
+    console.log(options);
+  }
+
+}
 
 class Previewer {
 
@@ -313,177 +323,11 @@ class Previewer {
   }
 }
 
-var yargs = require('yargs')
-var argv = yargs
-  .usage('\nUsage: weex foo/bar/we_file_or_dir_path  [options]'
-    + '\nUsage: weex debug [options] [we_file|bundles_dir]'
-    + '\nUsage: weex init'
-  )
-  .boolean('qr')
-  .describe('qr', 'display QR code for native runtime, default action')
-  .option('h', {demand: false})
-  .default('h', DEFAULT_HOST)
-  .alias('h', 'host')
-  .option('o', {demand: false})
-  .alias('o', 'output')
-  .default('o', NO_JSBUNDLE_OUTPUT)
-  .describe('o', 'transform weex we file to JS Bundle, output path must specified (single JS bundle file or dir)\n[for create sub cmd]it specified we file output path')
-  .option('watch', {demand: false})
-  .describe('watch', 'using with -o , watch input path , auto run transform if change happen')
-  .option('s', {demand: false, alias: 'server', type: 'string'})
-  .describe('s', 'start a http file server, weex .we file will be transforme to JS bundle on the server , specify local root path using the option')
-  .boolean('r', {demand: false})
-  .describe('r', '打出来的包是 release 包')
-  .alias('r', 'release')
-  .option('port', {demand: false})
-  .default('port', NO_PORT_SPECIFIED)
-  .describe('port', 'http listening port number ,default is 8081')
-  .option('wsport', {demand: false})
-  .default('wsport', NO_PORT_SPECIFIED)
-  .describe('wsport', 'websocket listening port number ,default is 8082')
-  .boolean('np', {demand: false})
-  .describe('np', 'do not open preview browser automatic')
-  .boolean('f') /* for weex create */
-  .alias('f', 'force')
-  .describe('f', '[for create sub cmd]force to replace exsisting file(s)')
-  .help('help')
-  .epilog('weex debug -h for Weex debug help information.\n\nfor cmd example & more information please visit https://www.npmjs.com/package/weex-toolkit')
-  .argv;
+
+  // await gitDownload('github:zeke/download-github-repo-fixture', 'test/tmp', { clone: true }, function(err) {
+  //   if (err) return done(err);
+  //   console.log('下载 done!');
+  // });
 
 
-// 调试热部署服务器
-function serveForLoad() {
-  const curPath = process.cwd();
-  let transformPath = path.resolve(path.join(curPath, 'src'));
-
-  HTTP_PORT = '8083';
-  new Previewer(null,null,false, DEFAULT_HOST, false, false, transformPath);
-
-}
-
-
-(async function argvProcess() {
-
-  HTTP_PORT = argv.port
-  WEBSOCKET_PORT = argv.wsport
-
-  if (argv.debugger) {
-    let port = (HTTP_PORT == NO_PORT_SPECIFIED) ? debuggerServer.DEBUGGER_SERVER_PORT : HTTP_PORT;
-    debuggerServer.startListen(port)
-    return
-  }
-
-  if (["build", "emulate", "run"].indexOf(argv._[0]) !== -1) {
-
-    pakeex(argv);
-
-  }  else  {
-    if (argv._[0] && commands.exec(argv._[0], process.argv.slice(3))) {
-      return
-    }
-    if (argv.version) {
-      npmlog.info(VERSION)
-      return
-    }
-
-    var inputPath = argv._[0]
-    var transformServerPath = argv.s
-    var badWePath = !!( !inputPath || (inputPath.length < 2)  ) //we path can be we file or dir
-    try {
-      fs.accessSync(inputPath, fs.F_OK);
-    } catch (e) {
-      if (!transformServerPath && !!inputPath) {
-        npmlog.error(`\n ${inputPath} not accessable`)
-      }
-      badWePath = true
-    }
-
-    if (badWePath && !transformServerPath) {
-      npmlog.info(yargs.help())
-      process.exit(1)
-    }
-
-    if (transformServerPath) {
-      var absPath = path.resolve(transformServerPath)
-      try {
-        var res = fs.accessSync(transformServerPath)
-      } catch (e) {
-        npmlog.info(yargs.help())
-        npmlog.info(`path ${absPath} not accessible`)
-        process.exit(1)
-      }
-    }
-
-    var host = argv.h
-    var shouldOpenBrowser = argv.np ? false : true
-    var displayQR = argv.qr  //  ? true : false
-    var outputPath = argv.o  // js bundle file path  or  transform output dir path
-    if (typeof outputPath != "string") {
-      npmlog.info(yargs.help())
-      npmlog.info("must specify output path ")
-      process.exit(1)
-    }
-    var transformWatch = argv.watch;
-    new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath)
-
-  }
-  if (argv._[0] === 'init') {
-    generator.generate();
-    return;
-  }
-
-  if (argv._[0] === "create") {
-    npmlog.warn('\nSorry, "weex create" is no longer supported, we recommand you please try "weex init" instead.')
-    return
-  }
-
-  // if (argv._[0] === "build") {
-  //   let release = argv.r || true;
-  //   weexBuild.entry(argv._, release)
-  //   .catch(e => {
-  //     if (typeof e === 'string') {
-  //       process.stderr.write(e.red);
-  //     } else {
-  //       process.stderr.write(e);
-  //     }
-  //   });
-  //   return;
-  // }
-  //
-  // if (argv._[0] === "emulate") {
-  //   let release = argv.r || true;
-  //   weexEmulate.entry(argv._, release)
-  //   .then(() => {
-  //     if (!release) {
-  //       return serveForLoad()
-  //     }
-  //   })
-  //   .catch(e => {
-  //     if (typeof e === 'string') {
-  //       process.stderr.write(e.red);
-  //     } else {
-  //       process.stderr.write(e);
-  //     }
-  //   });
-  //   return;
-  // }
-  //
-  // if (argv._[0] === "run") {
-  //   let release = argv.r || false;
-  //   weexBuild.entry(argv._, release)
-  //   .then(() => weexEmulate.entry(argv._, release))
-  //   .then(() => {
-  //     if (!release) {
-  //       return serveForLoad()
-  //     }
-  //   })
-  //   .catch(e => {
-  //     if (typeof e === 'string') {
-  //       process.stderr.write(e.red);
-  //     } else {
-  //       process.stderr.write(e);
-  //     }
-  //   });
-  //   return;
-  // }
-})()
+module.exports = pack;
