@@ -79,7 +79,7 @@ async function pack(argv) {
     try {
       options = await configProcess(argv);
       testDarwin(options);
-      let release = argv.target ? (argv.target === 'release') : true;
+      let release = argv.target ? (argv.target === 'release') : false;
       await emulator.handle(options.platform, release);
       serveForLoad();
 
