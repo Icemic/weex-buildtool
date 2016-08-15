@@ -80,7 +80,10 @@ module.exports = function(release, curPath, debugUrl,configFile) {
       try {
         data = fs.readFileSync(path.resolve(curPath, 'playground/local.properties'), { encoding: 'utf8' });
 
-        let sdkPath = process.env.ANDROID_HOME;
+        let defualtPath = path.resolve(homedir(), 'AppData/Local/Android/sdk');
+        defualtPath = fs.existsSync(defualtPath) ? defualtPath : '';
+        let sdkPath = process.env.ANDROID_HOME ? process.env.ANDROID_HOME : defualtPath;
+
         if (config.sdkdir) {
           config.sdkdir = path.resolve(configPath, config.sdkdir).replace(/\\/g, '/');
         } else if (sdkPath) {
