@@ -36,17 +36,7 @@ export function android (release) {
 }
 
 export function ios (release) {
-  return inquirer.prompt([
-    {
-      type: 'list',
-      name: 'target',
-      message: 'Do you want to use real devices or simulator?',
-      choices: [
-        {value: true, name: 'Simulator'},
-        {value: false, name: 'Real Device'}
-      ]
-    }
-  ]).then(function (answers) {
+  return new Promise(1).then(function (answers) {
 
     let isSimulator = answers.target;
 

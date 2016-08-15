@@ -40,6 +40,25 @@ module.exports = function (argv) {
       });
     }
 
+
+    if (options.platform ===  "ios") {
+      await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'type',
+          message: 'Where would you like to install the app',
+          choices: [
+            {value: true, name: 'Simulator'},
+            {value: false, name: 'Real Device'}
+          ]
+        }
+      ]).then(function(value) {
+        // exec(`pakeex ${value.command}`, {cwd: process.cwd()});
+        options.isSimulator = value.type;
+      });
+    }
+
+
     if (sweetAndroid.indexOf(argv1) !== -1) {
       options.platform = "android";
     } else {

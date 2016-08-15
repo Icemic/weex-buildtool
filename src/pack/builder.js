@@ -300,7 +300,7 @@ var builder = {
         fs.ensureDirSync(dirPath);
         stdlog.infoln(`unzip ${filePath}...`);
         // process.exit(1);
-        console.log(exec(`unzip ${filePath} -d ${dirPath}`).stdout);
+        exec(`unzip ${filePath} -d ${dirPath}`);
         // return new Promise((resolve, reject) => {
         //   fs.createReadStream(path.resolve(filePath))
         //     .pipe(unzip.Extract({path: path.resolve(dirPath)}))
