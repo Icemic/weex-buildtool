@@ -81,7 +81,9 @@ module.exports = function configBuild(argv) {
                   options.platform = argv1;
                 }
               }
-              options.giturl = {};
+              options.giturl = {
+                basename: path.basename(argv.url)
+              };
               if (options.platform === "android") {
                 options.giturl.android = argv.url || defaultAndroid;
               }
@@ -105,9 +107,15 @@ module.exports = function configBuild(argv) {
                 options.release = true;
                 options.debug = false;
               }
+
+              if (argv.release) {
+                options.release = true;
+                options.debug = false;
+              }
+
               resolve(options);
 
-            case 15:
+            case 16:
             case 'end':
               return _context.stop();
           }

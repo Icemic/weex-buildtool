@@ -82,7 +82,7 @@ function ios(release, options) {
             for (var _iterator = (0, _getIterator3.default)(files), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               var name = _step.value;
 
-              if (name.indexOf('sim') !== -1) {
+              if (name.endsWith('sim.app')) {
                 filename = path.join(rootPath, 'dist/ios/' + name);
                 var params = {
                   name: _userConfig2.default.ios.name,
@@ -107,7 +107,7 @@ function ios(release, options) {
             }
           }
 
-          console.error(" Install faied!没有可以安装的app!");
+          console.error(" Install faied!没有可以安装的app!请重新打包");
           process.exit(1);
         }
       });
@@ -124,19 +124,9 @@ function ios(release, options) {
             for (var _iterator2 = (0, _getIterator3.default)(files), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
               var name = _step2.value;
 
-              if (name.indexOf('real') !== -1 && name.endsWith('.ipa')) {
+              if (name.indexOf('real.ipa') !== -1 && name.endsWith('.ipa')) {
                 filename = path.join(rootPath, 'dist/ios/' + name);
-                if (isSimulator) {
-                  var params = {
-                    name: _userConfig2.default.ios.name,
-                    appId: _userConfig2.default.ios.appid,
-                    path: filename
-                  };
-                  console.log(params);
-                  return simIOS(params);
-                } else {
-                  return realIOS(filename);
-                }
+                return realIOS(filename);
               }
             }
           } catch (err) {
@@ -153,6 +143,9 @@ function ios(release, options) {
               }
             }
           }
+
+          console.error(" Install faied!没有可以安装的ipa!请重新打包");
+          process.exit(1);
         }
       });
     }

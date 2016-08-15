@@ -280,9 +280,7 @@ var builder = {
         stdlog.info('Unzipping Android project...');
         await unzipFile(androidFile, androidTmpPath);
         let files = fs.readdirSync(androidTmpPath);
-        console.log(files);
         for (let file of files) {
-          console.log(file);
           let absoluteFilePath = path.resolve(androidTmpPath, file);
           let fileInfo = fs.statSync(absoluteFilePath);
           if (fileInfo.isDirectory()) {
@@ -477,17 +475,22 @@ var builder = {
         let config = require(path.resolve(configPath, 'config.ios.js'))();
 
         if (options.release) {
-          // pack = "sim";
-          // let info;
-          // info = {};
-          // info.name = "weexapp-release-sim";
-          // packIos(BUILDPLAYGROUND, options.release, pack, info);
-          // release 只打真机的包
-          pack = "normal";
-          let info2;
-          info2 = config.certificate;
-          info2.name = "weexapp-release-real";
-          packIos(BUILDPLAYGROUND, options.release, pack, info2);
+
+          // 默认是真机
+          if (options.isSimulator) {
+            pack = "sim";
+            let info;
+            info = {};
+            info.name = "weexapp-release-sim";
+            packIos(BUILDPLAYGROUND, options.release, pack, info);
+            // release 只打真机的包
+          } else {
+            pack = "normal";
+            let info2;
+            info2 = config.certificate;
+            info2.name = "weexapp-release-real";
+            packIos(BUILDPLAYGROUND, options.release, pack, info2);
+          }
 
         } else {
 

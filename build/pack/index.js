@@ -99,7 +99,7 @@ var pack = function () {
             options = _context.sent;
 
             testDarwin(options);
-            release = argv.target ? argv.target === 'release' : false;
+            release = options.release;
             _context.next = 31;
             return emulator.handle(options.platform, release, options);
 
@@ -138,7 +138,7 @@ var pack = function () {
             return builder.build(options);
 
           case 46:
-            _release = argv.target ? argv.target === 'release' : false;
+            _release = options.release;
             _context.next = 49;
             return emulator.handle(options.platform, _release, options);
 

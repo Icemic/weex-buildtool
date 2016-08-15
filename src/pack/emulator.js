@@ -50,7 +50,7 @@ export function ios (release, options) {
           console.error("dist > ios 中找不到文件!")
         } else {
           for (let name of files ) {
-            if(name.indexOf('sim') !== -1){
+            if(name.endsWith('sim.app')){
               filename = path.join(rootPath, `dist/ios/${name}`);
               let params = {
                 name: UserConfig.ios.name,
@@ -60,7 +60,7 @@ export function ios (release, options) {
               return simIOS(params);
             }
           }
-          console.error( " Install faied!没有可以安装的app!");
+          console.error( " Install faied!没有可以安装的app!请重新打包");
           process.exit(1);
         }
       })
@@ -71,21 +71,13 @@ export function ios (release, options) {
           console.error("dist > ios 中找不到文件!")
         } else {
           for (let name of files ) {
-            if(name.indexOf('real') !== -1 && name.endsWith('.ipa')){
+            if(name.indexOf('real.ipa') !== -1 && name.endsWith('.ipa')){
               filename = path.join(rootPath, `dist/ios/${name}`);
-              if (isSimulator) {
-                let params = {
-                  name: UserConfig.ios.name,
-                  appId: UserConfig.ios.appid,
-                  path: filename
-                };
-                console.log(params);
-                return simIOS(params);
-              } else {
-                return realIOS(filename);
-              }
+              return realIOS(filename);
             }
           }
+          console.error( " Install faied!没有可以安装的ipa!请重新打包");
+          process.exit(1);
         }
       })
     }

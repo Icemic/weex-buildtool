@@ -406,8 +406,8 @@ var builder = {
                 });
 
               case 24:
-                iosFile = path.resolve(options.root, '.tmp', 'ios', 'master.zip');
-                androidFile = path.resolve(options.root, '.tmp', 'android', 'master.zip');
+                iosFile = path.resolve(options.root, '.tmp', 'ios', options.giturl.basename || 'master.zip');
+                androidFile = path.resolve(options.root, '.tmp', 'android', options.giturl.basename || 'master.zip');
                 iosTmpPath = path.resolve(options.root, '.tmp', String(Math.floor(Math.random() * 10000000)));
                 androidTmpPath = path.resolve(options.root, '.tmp', String(Math.floor(Math.random() * 10000000)));
 
@@ -491,7 +491,7 @@ var builder = {
 
               case 63:
                 if (!options.download.android) {
-                  _context5.next = 101;
+                  _context5.next = 99;
                   break;
                 }
 
@@ -501,83 +501,79 @@ var builder = {
 
               case 67:
                 _files = fs.readdirSync(androidTmpPath);
-
-                console.log(_files);
                 _iteratorNormalCompletion2 = true;
                 _didIteratorError2 = false;
                 _iteratorError2 = undefined;
-                _context5.prev = 72;
+                _context5.prev = 71;
                 _iterator2 = (0, _getIterator3.default)(_files);
 
-              case 74:
+              case 73:
                 if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                  _context5.next = 86;
+                  _context5.next = 84;
                   break;
                 }
 
                 _file = _step2.value;
-
-                console.log(_file);
                 _absoluteFilePath = path.resolve(androidTmpPath, _file);
                 _fileInfo = fs.statSync(_absoluteFilePath);
 
                 if (!_fileInfo.isDirectory()) {
-                  _context5.next = 83;
+                  _context5.next = 81;
                   break;
                 }
 
                 console.log(_absoluteFilePath, androidPath);
                 fs.renameSync(_absoluteFilePath, androidPath);
-                return _context5.abrupt('break', 86);
+                return _context5.abrupt('break', 84);
 
-              case 83:
+              case 81:
                 _iteratorNormalCompletion2 = true;
-                _context5.next = 74;
+                _context5.next = 73;
+                break;
+
+              case 84:
+                _context5.next = 90;
                 break;
 
               case 86:
-                _context5.next = 92;
-                break;
-
-              case 88:
-                _context5.prev = 88;
-                _context5.t1 = _context5['catch'](72);
+                _context5.prev = 86;
+                _context5.t1 = _context5['catch'](71);
                 _didIteratorError2 = true;
                 _iteratorError2 = _context5.t1;
 
-              case 92:
-                _context5.prev = 92;
-                _context5.prev = 93;
+              case 90:
+                _context5.prev = 90;
+                _context5.prev = 91;
 
                 if (!_iteratorNormalCompletion2 && _iterator2.return) {
                   _iterator2.return();
                 }
 
-              case 95:
-                _context5.prev = 95;
+              case 93:
+                _context5.prev = 93;
 
                 if (!_didIteratorError2) {
-                  _context5.next = 98;
+                  _context5.next = 96;
                   break;
                 }
 
                 throw _iteratorError2;
 
+              case 96:
+                return _context5.finish(93);
+
+              case 97:
+                return _context5.finish(90);
+
               case 98:
-                return _context5.finish(95);
-
-              case 99:
-                return _context5.finish(92);
-
-              case 100:
                 stdlog.infoln('done');
 
-              case 101:
+              case 99:
               case 'end':
                 return _context5.stop();
             }
           }
-        }, _callee5, this, [[36, 50, 54, 62], [55,, 57, 61], [72, 88, 92, 100], [93,, 95, 99]]);
+        }, _callee5, this, [[36, 50, 54, 62], [55,, 57, 61], [71, 86, 90, 98], [91,, 93, 97]]);
       }));
 
       function install(_x3) {
@@ -928,17 +924,22 @@ var builder = {
       var config = require(path.resolve(configPath, 'config.ios.js'))();
 
       if (options.release) {
-        // pack = "sim";
-        // let info;
-        // info = {};
-        // info.name = "weexapp-release-sim";
-        // packIos(BUILDPLAYGROUND, options.release, pack, info);
-        // release 只打真机的包
-        pack = "normal";
-        var info2 = void 0;
-        info2 = config.certificate;
-        info2.name = "weexapp-release-real";
-        packIos(BUILDPLAYGROUND, options.release, pack, info2);
+
+        // 默认是真机
+        if (options.isSimulator) {
+          pack = "sim";
+          var info = void 0;
+          info = {};
+          info.name = "weexapp-release-sim";
+          packIos(BUILDPLAYGROUND, options.release, pack, info);
+          // release 只打真机的包
+        } else {
+          pack = "normal";
+          var info2 = void 0;
+          info2 = config.certificate;
+          info2.name = "weexapp-release-real";
+          packIos(BUILDPLAYGROUND, options.release, pack, info2);
+        }
       } else {
 
         if (options.isSimulator) {

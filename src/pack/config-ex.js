@@ -69,14 +69,16 @@ module.exports = function (argv) {
 
     options.root = process.cwd();
     //
-    // if (options.oprate === 'run') {
-    //   options.release = false;
-    //   options.debug = true;
-    // }
-    // if (options.oprate === 'emulate') {
-    //   options.release = true;
-    //   options.debug = false;
-    // }
+    if (options.oprate === 'run') {
+      options.release = false;
+      options.debug = true;
+    }
+
+    if (argv.release) {
+      options.release = true;
+      options.debug = false;
+    }
+
 
     options.name = argv.n || "";
 

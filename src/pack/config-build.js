@@ -87,6 +87,13 @@ module.exports = function configBuild(argv) {
       options.release = true;
       options.debug = false;
     }
+
+    if (argv.release) {
+      options.release = true;
+      options.debug = false;
+    }
+
+
     resolve(options);
   })
 };
