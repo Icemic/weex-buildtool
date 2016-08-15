@@ -1,4 +1,4 @@
-#!/usr/bin/env node 
+#!/usr/bin/env node --harmony_proxies
 
 'use strict';
 
@@ -24,6 +24,7 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+require('harmony-reflect');
 var fs = require('fs-extra'),
     path = require('path'),
     opener = require('opener'),
