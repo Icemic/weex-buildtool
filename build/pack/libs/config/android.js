@@ -16,6 +16,8 @@ var nw_utils = require('../../nw-utils.js');
 var xml2js = require('xml2js');
 var checkConfig = require('./check-config.js');
 var configPath = process.cwd() + '/config';
+var properties = require('properties');
+var homedir = require('homedir');
 
 /**
  * 配置处理
@@ -76,43 +78,39 @@ module.exports = function (release, curPath, debugUrl, configFile) {
     var xml = builder.buildObject(data); //转回xml
     fs.writeFileSync(path.resolve(curPath, 'playground/app/src/main/AndroidManifest.xml'), xml);
   }).then(function () {
-    //playground/local
+    return new _promise2.default(function (resolve, reject) {
+      properties.parse(path.resolve(curPath, 'playground/local.properties'), { path: true }, function (error, obj) {
+        if (error) {
+          process.stderr.write(error.red);
+          process.exit(1);
+        }
+        resolve(obj);
+      });
+    });
+  }).then(function (data) {
+    var defualtPath = path.resolve(homedir(), 'AppData/Local/Android/sdk');
+    defualtPath = fs.existsSync(defualtPath) ? defualtPath : '';
+    var sdkPath = process.env.ANDROID_HOME ? process.env.ANDROID_HOME : defualtPath;
+
+    if (config.sdkdir) {
+      config.sdkdir = path.resolve(configPath, config.sdkdir).replace(/\\/g, '/');
+    } else if (sdkPath) {
+      config.sdkdir = sdkPath.replace(/\\/g, '/');
+    } else {
+      process.stderr.write('请配置 Android SDK 地址'.red);
+      process.exit(1);
+    }
+    data['sdk.dir'] = config.sdkdir;
+    var outString = properties.stringify(data);
+    fs.writeFileSync(path.resolve(curPath, 'playground/local.properties'), outString);
+  }).then(function () {
     var data = void 0;
     try {
-      data = fs.readFileSync(path.resolve(curPath, 'playground/local.properties'), { encoding: 'utf8' });
-
-      var sdkPath = process.env.ANDROID_HOME;
-      if (config.sdkdir) {
-        config.sdkdir = path.resolve(configPath, config.sdkdir).replace(/\\/g, '/');
-      } else if (sdkPath) {
-        config.sdkdir = sdkPath.replace(/\\/g, '/');
-      } else {
-        process.stderr.write('请配置 Android SDK 地址'.red);
-        process.exit(1);
-      }
-
-      var outString = data.replace(/sdk\.dir.*/, 'sdk.dir=' + path.resolve(configPath, config.sdkdir).replace(/\\/g, '/'));
-      fs.writeFileSync(path.resolve(curPath, 'playground/local.properties'), outString);
 
       data = fs.readFileSync(path.resolve(curPath, 'playground/app/build.gradle'), { encoding: 'utf8' });
 
       data = data.replace(/keyAlias.*/, 'keyAlias \'' + config.aliasname + '\'').replace(/applicationId.*/, 'applicationId \'' + config.packagename + '\'').replace(/keyPassword.*/, 'keyPassword \'' + config.password + '\'').replace(/storePassword.*/, 'storePassword \'' + config.storePassword + '\'').replace(/storeFile.*/, 'storeFile file(\'' + path.resolve(configPath, config.keystore).replace(/\\/g, '/') + '\')');
       fs.writeFileSync(path.resolve(curPath, 'playground/app/build.gradle'), data);
-
-      // data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/res/values/strings.xml'),{encoding: 'utf8'});
-      // data = data.replace(/<string name="app_name">.*</,'<string name="app_name">' + config.name + '<');
-      // fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/res/values/strings.xml'), data);
-
-      // data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'),{encoding: 'utf8'});
-
-      // var launch_path = config.launch_path;
-      // if(!release){
-      //   launch_path = debugUrl;
-      // }
-      // data = data.replace(/android:versionCode=".*"/,'android:versionCode="' + config.version.code + '"')
-      // .replace(/android:versionName=".*"/,'android:versionName="' + config.version.name + '"')
-      // .replace(/android:name="weex_index"\sandroid:value=".*"/,'android:name="weex_index" android:value="' + launch_path + '"');
-      // fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'), data);
     } catch (e) {
       npmlog.error(e);
     }

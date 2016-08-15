@@ -38,7 +38,8 @@ function checkSDK() {
   return new _promise2.default(function (resolve, reject) {
 
     var defualtPath = path.resolve(homedir(), 'AppData/Local/Android/sdk');
-    var sdkPath = fs.existsSync(defualtPath) ? defualtPath : process.env.ANDROID_HOME;
+    defualtPath = fs.existsSync(defualtPath) ? defualtPath : '';
+    var sdkPath = process.env.ANDROID_HOME ? process.env.ANDROID_HOME : defualtPath;
     if (sdkPath) {
       // console.info('installed'.green);
       // process.stdout.write('Check SDK version...'.green);
