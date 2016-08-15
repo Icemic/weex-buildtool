@@ -338,10 +338,12 @@ var builder = {
                   fs.ensureDirSync(dirPath);
                   stdlog.infoln('unzip ' + filePath + '...');
                   // process.exit(1);
-                  // exec(`unzip ${filePath} -x ${dirPath}`);
-                  return new _promise2.default(function (resolve, reject) {
-                    fs.createReadStream(path.resolve(filePath)).pipe(unzip.Extract({ path: path.resolve(dirPath) })).on('close', resolve).on('error', reject);
-                  });
+                  console.log(exec('unzip ' + filePath + ' -d ' + dirPath).stdout);
+                  // return new Promise((resolve, reject) => {
+                  //   fs.createReadStream(path.resolve(filePath))
+                  //     .pipe(unzip.Extract({path: path.resolve(dirPath)}))
+                  //     .on('close', resolve).on('error', reject);
+                  // });
                 };
 
                 //console.log("下载安装操作");
@@ -826,12 +828,13 @@ var builder = {
 
               ip = nwUtils.getPublicIP();
               port = '8083';
-              debugPath = 'http://' + ip + ':' + port + '/src/main.we';
+              debugPath = 'http://' + ip + ':' + port + '/main.we';
               jsbundle = path.resolve('main.js');
               return _context8.abrupt('return', (0, _folderSync2.default)(PROJECTPATH, BUILDPATH).then(function () {
                 if (options.release) {
                   debugPath = jsbundle;
-                  var dirPath = fs.ensureDirSync(path.resolve(ROOT, '.build/android/playground/app/src/main/assets/JSBundle'));
+                  var dirPath = path.resolve(ROOT, '.build/android/playground/app/src/main/assets/JSBundle');
+                  fs.ensureDirSync(dirPath);
                   return (0, _folderSync2.default)(path.resolve(ROOT, 'dist', 'js'), dirPath);
                 }
               }).then(function () {
@@ -886,7 +889,7 @@ var builder = {
 
     var ip = nwUtils.getPublicIP();
     var port = '8083';
-    var debugPath = 'http://' + ip + ':' + port + '/src/main.we';
+    var debugPath = 'http://' + ip + ':' + port + '/main.we';
 
     fs.removeSync('dist/ios');
 

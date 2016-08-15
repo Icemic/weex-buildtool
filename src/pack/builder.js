@@ -300,12 +300,12 @@ var builder = {
         fs.ensureDirSync(dirPath);
         stdlog.infoln(`unzip ${filePath}...`);
         // process.exit(1);
-        // exec(`unzip ${filePath} -x ${dirPath}`);
-        return new Promise((resolve, reject) => {
-          fs.createReadStream(path.resolve(filePath))
-            .pipe(unzip.Extract({path: path.resolve(dirPath)}))
-            .on('close', resolve).on('error', reject);
-        });
+        console.log(exec(`unzip ${filePath} -d ${dirPath}`).stdout);
+        // return new Promise((resolve, reject) => {
+        //   fs.createReadStream(path.resolve(filePath))
+        //     .pipe(unzip.Extract({path: path.resolve(dirPath)}))
+        //     .on('close', resolve).on('error', reject);
+        // });
       }
 
     },
@@ -400,7 +400,7 @@ var builder = {
 
     let ip = nwUtils.getPublicIP();
     let port = '8083';
-    let debugPath = `http://${ip}:${port}/src/main.we`;
+    let debugPath = `http://${ip}:${port}/main.we`;
 
     let jsbundle = path.resolve('main.js');
 
@@ -448,7 +448,7 @@ var builder = {
 
     let ip = nwUtils.getPublicIP();
     let port = '8083';
-    let debugPath = `http://${ip}:${port}/src/main.we`;
+    let debugPath = `http://${ip}:${port}/main.we`;
 
     fs.removeSync('dist/ios');
 

@@ -14,10 +14,12 @@ function stringify(string) {
   }
   if (typeof string === 'string') {
     return string;
-  } else if (string.toString) {
+  } else if (string instanceof Buffer) {
     return string.toString();
+  } else if (string instanceof Error) {
+    return '' + e.stack;
   } else {
-    return '';
+    return 'Unknown Error';
   }
 }
 

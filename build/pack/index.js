@@ -77,7 +77,7 @@ var pack = function () {
             if (typeof _context.t0 === 'string') {
               stdlog.errorln('Error: ' + _context.t0);
             } else {
-              stdlog.errorln(_context.t0);
+              stdlog.errorln(_context.t0.stack);
             }
 
           case 21:
@@ -112,7 +112,7 @@ var pack = function () {
             if (typeof _context.t1 === 'string') {
               stdlog.errorln('Error: ' + _context.t1);
             } else {
-              stdlog.errorln(_context.t1);
+              stdlog.errorln(_context.t1.stack);
             }
 
           case 37:
@@ -150,7 +150,7 @@ var pack = function () {
             if (typeof _context.t2 === 'string') {
               stdlog.errorln('Error: ' + _context.t2);
             } else {
-              stdlog.errorln(_context.t2);
+              stdlog.errorln(_context.t2.stack);
             }
 
           case 55:
@@ -212,7 +212,8 @@ function serveForLoad() {
   var transformPath = path.resolve(path.join(curPath, 'src'));
 
   HTTP_PORT = '8083';
-  new Previewer(null, null, false, DEFAULT_HOST, false, false, transformPath);
+  // new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath)
+  new Previewer('./src/main.we', NO_JSBUNDLE_OUTPUT, undefined, '0.0.0.0', false, false, './src');
 }
 
 function testDarwin(options) {
@@ -340,7 +341,7 @@ var Previewer = function () {
       fs.removeSync(WEEX_TRANSFORM_TMP);
 
       fs.mkdirSync(WEEX_TRANSFORM_TMP);
-      fs.copySync(__dirname + '/../node_modules/weex-html5', WEEX_TRANSFORM_TMP + '/' + H5_Render_DIR);
+      fs.copySync(__dirname + '/../../node_modules/weex-html5', WEEX_TRANSFORM_TMP + '/' + H5_Render_DIR);
 
       fs.mkdirsSync(WEEX_TRANSFORM_TMP + '/' + H5_Render_DIR);
     }
