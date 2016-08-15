@@ -226,6 +226,8 @@ var builder = {
             switch (_context4.prev = _context4.next) {
               case 0:
                 // 与用户交互
+
+                // 默认是都需要拷贝
                 options.overwrite = {
                   android: true,
                   ios: true
@@ -309,11 +311,13 @@ var builder = {
           break;
       }
 
-      stdlog.info('Generating assets files...');
+      if (options.overwrite.ios || options.overwrite.android) {
+        stdlog.info('Generating assets files...');
 
-      var assetsPath = path.resolve(options.root, 'assets');
-      fs.ensureDirSync(assetsPath);
-      fs.copySync(path.resolve(options.toolRoot, 'package-template', 'assets'), assetsPath);
+        var assetsPath = path.resolve(options.root, 'assets');
+        fs.ensureDirSync(assetsPath);
+        fs.copySync(path.resolve(options.toolRoot, 'package-template', 'assets'), assetsPath);
+      }
 
       stdlog.infoln('done');
 
@@ -330,6 +334,11 @@ var builder = {
             switch (_context5.prev = _context5.next) {
               case 0:
                 unzipFile = function unzipFile(filePath, dirPath) {
+
+                  fs.ensureDirSync(dirPath);
+                  stdlog.infoln('unzip ' + filePath + '...');
+                  // process.exit(1);
+                  // exec(`unzip ${filePath} -x ${dirPath}`);
                   return new _promise2.default(function (resolve, reject) {
                     fs.createReadStream(path.resolve(filePath)).pipe(unzip.Extract({ path: path.resolve(dirPath) })).on('close', resolve).on('error', reject);
                   });
@@ -480,7 +489,7 @@ var builder = {
 
               case 63:
                 if (!options.download.android) {
-                  _context5.next = 98;
+                  _context5.next = 101;
                   break;
                 }
 
@@ -490,78 +499,83 @@ var builder = {
 
               case 67:
                 _files = fs.readdirSync(androidTmpPath);
+
+                console.log(_files);
                 _iteratorNormalCompletion2 = true;
                 _didIteratorError2 = false;
                 _iteratorError2 = undefined;
-                _context5.prev = 71;
+                _context5.prev = 72;
                 _iterator2 = (0, _getIterator3.default)(_files);
 
-              case 73:
+              case 74:
                 if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                  _context5.next = 83;
+                  _context5.next = 86;
                   break;
                 }
 
                 _file = _step2.value;
+
+                console.log(_file);
                 _absoluteFilePath = path.resolve(androidTmpPath, _file);
                 _fileInfo = fs.statSync(_absoluteFilePath);
 
                 if (!_fileInfo.isDirectory()) {
-                  _context5.next = 80;
+                  _context5.next = 83;
                   break;
                 }
 
+                console.log(_absoluteFilePath, androidPath);
                 fs.renameSync(_absoluteFilePath, androidPath);
-                return _context5.abrupt('break', 83);
-
-              case 80:
-                _iteratorNormalCompletion2 = true;
-                _context5.next = 73;
-                break;
+                return _context5.abrupt('break', 86);
 
               case 83:
-                _context5.next = 89;
+                _iteratorNormalCompletion2 = true;
+                _context5.next = 74;
                 break;
 
-              case 85:
-                _context5.prev = 85;
-                _context5.t1 = _context5['catch'](71);
+              case 86:
+                _context5.next = 92;
+                break;
+
+              case 88:
+                _context5.prev = 88;
+                _context5.t1 = _context5['catch'](72);
                 _didIteratorError2 = true;
                 _iteratorError2 = _context5.t1;
 
-              case 89:
-                _context5.prev = 89;
-                _context5.prev = 90;
+              case 92:
+                _context5.prev = 92;
+                _context5.prev = 93;
 
                 if (!_iteratorNormalCompletion2 && _iterator2.return) {
                   _iterator2.return();
                 }
 
-              case 92:
-                _context5.prev = 92;
+              case 95:
+                _context5.prev = 95;
 
                 if (!_didIteratorError2) {
-                  _context5.next = 95;
+                  _context5.next = 98;
                   break;
                 }
 
                 throw _iteratorError2;
 
-              case 95:
+              case 98:
+                return _context5.finish(95);
+
+              case 99:
                 return _context5.finish(92);
 
-              case 96:
-                return _context5.finish(89);
-
-              case 97:
+              case 100:
                 stdlog.infoln('done');
 
-              case 98:
+              case 101:
               case 'end':
                 return _context5.stop();
             }
           }
-        }, _callee5, this, [[36, 50, 54, 62], [55,, 57, 61], [71, 85, 89, 97], [90,, 92, 96]]);
+        }, _callee5, this, [[36, 50, 54, 62], [55,, 57, 61], [72, 88, 92, 100], [93,, 95, 99]]);
       }));
 
       function install(_x3) {
@@ -770,12 +784,13 @@ var builder = {
 
               ip = nwUtils.getPublicIP();
               port = '8083';
-              debugPath = 'http://' + ip + ':' + port + '/index.we';
-              jsbundle = path.resolve('index.js');
+              debugPath = 'http://' + ip + ':' + port + '/main.we';
+              jsbundle = path.resolve('main.js');
               return _context8.abrupt('return', (0, _folderSync2.default)(PROJECTPATH, BUILDPATH).then(function () {
                 if (options.release) {
                   debugPath = jsbundle;
-                  return (0, _folderSync2.default)(path.resolve(ROOT, 'dist', 'js'), path.resolve(ROOT, '.build/android/playground/app/src/main/assets'));
+                  var dirPath = fs.ensureDirSync(path.resolve(ROOT, '.build/android/playground/app/src/main/assets/JSBundle'));
+                  return (0, _folderSync2.default)(path.resolve(ROOT, 'dist', 'js'), dirPath);
                 }
               }).then(function () {
                 return icons.android(BUILDPATH);
@@ -851,14 +866,13 @@ var builder = {
       var configPath = process.cwd() + '/config';
       var config = require(path.resolve(configPath, 'config.ios.js'))();
 
-      console.log('build start', options.release);
       if (options.release) {
-        pack = "sim";
-        var info = void 0;
-        info = {};
-        info.name = "weexapp-release-sim";
-        packIos(BUILDPLAYGROUND, options.release, pack, info);
-
+        // pack = "sim";
+        // let info;
+        // info = {};
+        // info.name = "weexapp-release-sim";
+        // packIos(BUILDPLAYGROUND, options.release, pack, info);
+        // release 只打真机的包
         pack = "normal";
         var info2 = void 0;
         info2 = config.certificate;

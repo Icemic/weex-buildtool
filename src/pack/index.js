@@ -42,7 +42,8 @@ function serveForLoad() {
   let transformPath = path.resolve(path.join(curPath, 'src'));
 
   HTTP_PORT = '8083';
-  new Previewer(null,null,false, DEFAULT_HOST, false, false, transformPath);
+  // new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath)
+  new Previewer(`./src/main.we`, NO_JSBUNDLE_OUTPUT, undefined, '0.0.0.0', false, false, './src');
 
 }
 
@@ -54,7 +55,7 @@ async function pack(argv) {
 
     try {
       options = await configBuild(argv);
-
+      testDarwin(options);
       if (options.oprate === "init") {
 
           await builder.init(options);
@@ -70,7 +71,7 @@ async function pack(argv) {
       if (typeof e === 'string') {
         stdlog.errorln(`Error: ${e}`);
       } else {
-        stdlog.errorln(e);
+        stdlog.errorln(e.stack);
       }
     }
   }
@@ -78,7 +79,8 @@ async function pack(argv) {
   if (argv._[0] === "emulate") {
     try {
       options = await configProcess(argv);
-      let release = argv.target ? (argv.target === 'release') : true;
+      testDarwin(options);
+      let release = argv.target ? (argv.target === 'release') : false;
       await emulator.handle(options.platform, release);
       serveForLoad();
 
@@ -87,7 +89,7 @@ async function pack(argv) {
       if (typeof e === 'string') {
         stdlog.errorln(`Error: ${e}`);
       } else {
-        stdlog.errorln(e);
+        stdlog.errorln(e.stack);
       }
     }
   }
@@ -95,6 +97,7 @@ async function pack(argv) {
   if (argv._[0] === "run") {
     try {
       options = await configProcess(argv);
+      testDarwin(options);
       await builder.build(options);
       let release = argv.target ? (argv.target === 'release') : false;
       await emulator.handle(options.platform, release);
@@ -104,11 +107,18 @@ async function pack(argv) {
       if (typeof e === 'string') {
         stdlog.errorln(`Error: ${e}`);
       } else {
-        stdlog.errorln(e);
+        stdlog.errorln(e.stack);
       }
     }
   }
 
+}
+
+function testDarwin(options) {
+  if (options.platform=== "ios" && process.platform !== "darwin") {
+    stdlog.errorln("Unsupport platform, Mac only!");
+    process.exit(1);
+  }
 }
 
 class Previewer {
@@ -218,7 +228,7 @@ class Previewer {
     fs.removeSync(WEEX_TRANSFORM_TMP)
 
     fs.mkdirSync(WEEX_TRANSFORM_TMP)
-    fs.copySync(`${__dirname}/../node_modules/weex-html5`, `${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
+    fs.copySync(`${__dirname}/../../node_modules/weex-html5`, `${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
 
     fs.mkdirsSync(`${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
   }
@@ -383,12 +393,6 @@ class Previewer {
     return promiseData.promise
   }
 }
-
-
-  // await gitDownload('github:zeke/download-github-repo-fixture', 'test/tmp', { clone: true }, function(err) {
-  //   if (err) return done(err);
-  //   console.log('下载 done!');
-  // });
 
 
 module.exports = pack;

@@ -31,8 +31,9 @@ function checkConfig(config, platform, release) {
     npmlog.error('打包配置错误', 'App version code 必须是数字');
     process.exit(1);
   }
-  if (validator.isNull(config.launch_path)) {
-    npmlog.error('打包配置错误', 'App launch_path 不能为空');
+  console.log(path.resolve(configPath, '../src/main.we'));
+  if (!fse.existsSync(path.resolve(configPath, '../src/main.we'))) {
+    npmlog.error('打包错误', 'src/main.we不存在');
     process.exit(1);
   }
   if (validator.isNull(config.icon) || !fse.existsSync(path.resolve(configPath, config.icon))) {
@@ -42,7 +43,7 @@ function checkConfig(config, platform, release) {
 
   //android 配置检查
   if (platform == 'android') {
-    if (!validator.matches(config.packagename, /^([A-Za-z\d])+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.packagename)) {
+    if (!validator.matches(config.packagename, /^([A-Za-z])[A-Za-z\d]+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.packagename)) {
       npmlog.error('打包配置错误', 'Android packagename必须为英文或数字或.，且以英文字母开头');
       process.exit(1);
     }
@@ -66,7 +67,7 @@ function checkConfig(config, platform, release) {
   }
   //ios 配置检查
   if (platform == 'ios') {
-    if (!validator.matches(config.appid, /^([A-Za-z\d])+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.appid)) {
+    if (!validator.matches(config.appid, /^([A-Za-z])[A-Za-z\d]+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.appid)) {
       npmlog.error('打包配置错误', 'appid必须为英文或数字或.，且以英文字母开头');
       process.exit(1);
     }
