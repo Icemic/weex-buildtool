@@ -42,7 +42,8 @@ function serveForLoad() {
   let transformPath = path.resolve(path.join(curPath, 'src'));
 
   HTTP_PORT = '8083';
-  new Previewer(null,null,false, DEFAULT_HOST, false, false, transformPath);
+  // new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath)
+  new Previewer(`./src/index.we`, NO_JSBUNDLE_OUTPUT, undefined, '0.0.0.0', false, false, '');
 
 }
 
@@ -70,7 +71,7 @@ async function pack(argv) {
       if (typeof e === 'string') {
         stdlog.errorln(`Error: ${e}`);
       } else {
-        stdlog.errorln(e);
+        stdlog.errorln(e.stack);
       }
     }
   }
@@ -87,7 +88,7 @@ async function pack(argv) {
       if (typeof e === 'string') {
         stdlog.errorln(`Error: ${e}`);
       } else {
-        stdlog.errorln(e);
+        stdlog.errorln(e.stack);
       }
     }
   }
@@ -104,7 +105,7 @@ async function pack(argv) {
       if (typeof e === 'string') {
         stdlog.errorln(`Error: ${e}`);
       } else {
-        stdlog.errorln(e);
+        stdlog.errorln(e.stack);
       }
     }
   }
@@ -218,7 +219,7 @@ class Previewer {
     fs.removeSync(WEEX_TRANSFORM_TMP)
 
     fs.mkdirSync(WEEX_TRANSFORM_TMP)
-    fs.copySync(`${__dirname}/../node_modules/weex-html5`, `${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
+    fs.copySync(`${__dirname}/../../node_modules/weex-html5`, `${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
 
     fs.mkdirsSync(`${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
   }
