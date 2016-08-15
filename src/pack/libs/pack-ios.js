@@ -9,8 +9,6 @@ var fs = require('fs'),
 // sdkType: sim包还是正规包 取值sim 或 normal
 function run (localpath, release, sdkType, info) {
 
-  console.log(arguments);
-
   var config = 'Debug';
   if (release) {
     config = 'Release';
