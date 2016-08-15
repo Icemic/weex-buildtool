@@ -28,7 +28,7 @@ module.exports = function(release, curPath, debugUrl,configFile) {
   // console.log("ios config:", config);
 
   return new Promise((resolve, reject) => {
-    var launch_path = config.launch_path;
+    var launch_path = 'main.js';
     if (!release ) {
       launch_path = debugUrl;
     } else {
