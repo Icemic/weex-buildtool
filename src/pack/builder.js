@@ -460,14 +460,28 @@ var builder = {
       })
       .then(() => {
         let pack = "sim";
-        let info;
+        let configPath = process.cwd() + '/config';
+        let config = require(path.resolve(configPath, 'config.ios.js'))();
+
         if (options.release) {
           pack = "normal";
-          let configPath = process.cwd() + '/config';
-          let config = require(path.resolve(configPath, 'config.ios.js'))();
+          let info;
           info = config.certificate;
+          info.name = "weexapp-release";
+          packIos(PROJECTPATH, options.release, pack, info);
+
+        } else {
+          pack = "sim";
+          let info1 ={};
+          info1.name = "weexapp-debug";
+          packIos(PROJECTPATH, options.release, pack, info1);
+
+          // pack = "normal";
+          // let info2 = config.certificate;
+          // info2.name = "weexapp-debug";
+          // packIos(PROJECTPATH, options.release, pack, info2);
+
         }
-        packIos(PROJECTPATH, options.release, pack, info);
       })
       .then(() => {
         return new Promise((resolve, reject) => {

@@ -3,8 +3,50 @@ const configBuild = require('./config-build');
 const configProcess = require('./config-ex');
 const stdlog = require('./utils/stdlog');
 const emulator = require('./emulator');
+const builder = require('./builder');
+
+const fs = require('fs-extra'),
+  path = require('path'),
+  opener = require('opener'),
+  npmlog = require('npmlog'),
+  httpServer = require('http-server'),
+  wsServer = require('ws').Server,
+  watch = require('node-watch'),
+  os = require('os'),
+  _ = require("underscore"),
+  qrcode = require('qrcode-terminal'),
+  webpack = require('webpack'),
+  nwUtils = require('../../build/nw-utils'),
+  fsUtils = require('../../build/fs-utils'),
+  commands = require('../../build/commands'),
+  exec = require('sync-exec');
+
+const WEEX_FILE_EXT = "we"
+const WEEX_TRANSFORM_TMP = "weex_tmp"
+const H5_Render_DIR = "h5_render"
+const NO_PORT_SPECIFIED = -1
+const DEFAULT_HTTP_PORT = "8081"
+const DEFAULT_WEBSOCKET_PORT = "8082"
+const NO_JSBUNDLE_OUTPUT = "no JSBundle output"
+const DEFAULT_HOST = "127.0.0.1"
+
+//will update when argvProcess function call
+var HTTP_PORT = NO_PORT_SPECIFIED
+var WEBSOCKET_PORT = NO_PORT_SPECIFIED
 
 // 所有打包逻辑的处理
+
+// 调试热部署服务器
+function serveForLoad() {
+  const curPath = process.cwd();
+  let transformPath = path.resolve(path.join(curPath, 'src'));
+
+  HTTP_PORT = '8083';
+  new Previewer(null,null,false, DEFAULT_HOST, false, false, transformPath);
+
+}
+
+
 async function pack(argv) {
   var options = {};
   // let options = require('./config-yagrs')(yargs, argv);
@@ -14,7 +56,7 @@ async function pack(argv) {
     try {
       options = await configBuild(argv);
 
-      var builder = require('./builder');
+
 
       if (options.oprate === "init") {
 
@@ -39,8 +81,8 @@ async function pack(argv) {
       options = await configProcess(argv);
       let release = argv.target ? (argv.target === 'release') : true;
 
-      await emulator.handle(options.platform, release);
-
+      await emulator.handle(options.platform, false);
+      serveForLoad();
 
     } catch (e){
       stdlog.errorln(e);
@@ -50,12 +92,17 @@ async function pack(argv) {
 
   if (argv._[0] === "run") {
     try {
+      console.log('run...');
       options = await configProcess(argv);
-
+      // console.log(options);
+      await builder.build(options);
+      await emulator.handle(options.platform, options.release);
+      serveForLoad();
     } catch (e){
       console.error(e);
     }
     console.log(options);
+
   }
 
 }

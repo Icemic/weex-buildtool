@@ -6,6 +6,8 @@ const nwUtils = require('../build/nw-utils');
 const start = require('./libs/sim-ios.js');
 
 
+
+
 export class Emulator{
   constructor(filePath) {
     this.curPath = process.cwd();

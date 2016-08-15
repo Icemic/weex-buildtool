@@ -3,8 +3,6 @@ const inquirer = require('inquirer');
 const platforms = ["init", "android", "ios", "html"];
 const sweetAndroid = ["android", "an", "a", "andriod"];
 const sweetPlat = platforms.concat(sweetAndroid);
-const defaultAndroid = "https://github.com/phonegap/ios-deploy/archive/master.zip";
-const defaultIos = "https://github.com/phonegap/ios-deploy/archive/master.zip";
 
 module.exports = function (argv) {
 
@@ -47,6 +45,10 @@ module.exports = function (argv) {
     } else {
       options.platform = argv1;
     }
+
+    options.root = process.cwd();
+    options.release = false;
+    options.debug = true;
 
     resolve(options);
   })
