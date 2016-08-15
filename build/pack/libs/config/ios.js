@@ -34,7 +34,7 @@ module.exports = function (release, curPath, debugUrl, configFile) {
   // console.log("ios config:", config);
 
   return new _promise2.default(function (resolve, reject) {
-    var launch_path = config.launch_path;
+    var launch_path = 'main.js';
     if (!release) {
       launch_path = debugUrl;
     } else {
@@ -55,6 +55,5 @@ module.exports = function (release, curPath, debugUrl, configFile) {
 
     fs.writeFileSync(path.resolve(curPath, 'playground/WeexApp/Info.plist'), data);
     resolve();
-    console.log('config-----------------------------ok--------------');
   });
 };

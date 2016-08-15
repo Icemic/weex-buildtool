@@ -57,8 +57,7 @@ module.exports = function (argv) {
       options.debug = false;
     }
 
-
-
+    options.name = argv.n || "";
 
     resolve(options);
   })

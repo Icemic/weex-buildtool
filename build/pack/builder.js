@@ -226,6 +226,8 @@ var builder = {
             switch (_context4.prev = _context4.next) {
               case 0:
                 // 与用户交互
+
+                // 默认是都需要拷贝
                 options.overwrite = {
                   android: true,
                   ios: true
@@ -309,11 +311,13 @@ var builder = {
           break;
       }
 
-      stdlog.info('Generating assets files...');
+      if (options.overwrite.ios || options.overwrite.android) {
+        stdlog.info('Generating assets files...');
 
-      var assetsPath = path.resolve(options.root, 'assets');
-      fs.ensureDirSync(assetsPath);
-      fs.copySync(path.resolve(options.toolRoot, 'package-template', 'assets'), assetsPath);
+        var assetsPath = path.resolve(options.root, 'assets');
+        fs.ensureDirSync(assetsPath);
+        fs.copySync(path.resolve(options.toolRoot, 'package-template', 'assets'), assetsPath);
+      }
 
       stdlog.infoln('done');
 
@@ -780,12 +784,13 @@ var builder = {
 
               ip = nwUtils.getPublicIP();
               port = '8083';
-              debugPath = 'http://' + ip + ':' + port + '/index.we';
-              jsbundle = path.resolve('index.js');
+              debugPath = 'http://' + ip + ':' + port + '/main.we';
+              jsbundle = path.resolve('main.js');
               return _context8.abrupt('return', (0, _folderSync2.default)(PROJECTPATH, BUILDPATH).then(function () {
                 if (options.release) {
                   debugPath = jsbundle;
-                  return (0, _folderSync2.default)(path.resolve(ROOT, 'dist', 'js'), path.resolve(ROOT, '.build/android/playground/app/src/main/assets'));
+                  var dirPath = fs.ensureDirSync(path.resolve(ROOT, '.build/android/playground/app/src/main/assets/JSBundle'));
+                  return (0, _folderSync2.default)(path.resolve(ROOT, 'dist', 'js'), dirPath);
                 }
               }).then(function () {
                 return icons.android(BUILDPATH);

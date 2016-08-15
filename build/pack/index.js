@@ -94,7 +94,7 @@ var pack = function () {
             options = _context.sent;
 
             testDarwin(options);
-            release = argv.target ? argv.target === 'release' : true;
+            release = argv.target ? argv.target === 'release' : false;
             _context.next = 30;
             return emulator.handle(options.platform, release);
 

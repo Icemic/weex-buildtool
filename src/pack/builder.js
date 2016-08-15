@@ -540,7 +540,6 @@ var builder = {
     });
   },
 
-
   existFile (path) {
     fs.accessSync(path, fs.R_OK);
   }
