@@ -5,72 +5,145 @@ const fs = require('fs-extra');
 const npmlog = require('npmlog');
 const path = require('path');
 const crypto = require('crypto');
-const validator = require('validator');
-const async = require('async');
 const icons = require('./icons.js');
 const nw_utils = require('../../nw-utils.js');
-
+const xml2js = require('xml2js');
+const checkConfig = require('./check-config.js');
 const configPath = process.cwd() + '/config';
 
 /**
  * 配置处理
- * @param  {[bool]} debug 是否debug模式
+ * @param  {[bool]} release 是否release模式
  * @param  {[string]} curPath 打包文件路径
- * @param  {[string]} debugPath debug的路径
+ * @param  {[string]} debugUrl debug的路径
+ * @param  {[string]} configFile 配置文件路径
  * @return {[type]}           [description]
  */
-module.exports = function (release, curPath, debugPath) {
+module.exports = function(release, curPath, debugUrl,configFile) {
   curPath = curPath ? curPath : process.cwd() + '/android';
-  var config = require(path.resolve(configPath,'config.android.js'))();
+  var config = require(path.resolve(configPath, configFile ? configFile : 'config.android.js'))();
+  var launch_path = config.launch_path;
+  if (!release && debugUrl) {
+    launch_path = debugUrl;
+  }
+  checkConfig(config, 'android', release); //检查安卓配置
+
   return Promise.resolve()
-  .then(function () {
-    //playground/local
+    .then(function() {
+      return new Promise((resolve, reject) => {
+        var values = fs.readFileSync(path.resolve(curPath, 'playground/app/src/main/res/values/strings.xml'), { encoding: 'utf8' });
+        xml2js.parseString(values, function(err, result) {
+          resolve(result);
+        });
+      });
+    })
+    .then(function(data) {
+      var resources = data.resources.string;
+      for (var i = resources.length - 1; i >= 0; i--) {
+        if (resources[i].$.name == 'app_name') {
+          data.resources.string[i]._ = config.name;
+          break;
+        }
+      }
+      var builder = new xml2js.Builder();
+      var xml = builder.buildObject(data); //转回xml
+      fs.writeFileSync(path.resolve(curPath, 'playground/app/src/main/res/values/strings.xml'), xml);
+    })
+    .then(function() {
+      return new Promise((resolve, reject) => {
+        var values = fs.readFileSync(path.resolve(curPath, 'playground/app/src/main/AndroidManifest.xml'), { encoding: 'utf8' });
+        xml2js.parseString(values, function(err, result) {
+          resolve(result);
+        });
+      });
+    })
+    .then(function(data) {
+      // console.log(data.manifest)
+      data.manifest.$['android:versionCode'] = config.version.code;
+      data.manifest.$['android:versionName'] = config.version.name;
 
+      var metaData = data.manifest.application[0]['meta-data'];
+      for (var i = metaData.length - 1; i >= 0; i--) {
+        if (metaData[i].$['android:name'] == 'weex_index') {
+          data.manifest.application[0]['meta-data'][i].$['android:value'] = launch_path;
+          break;
+        }
+      }
+
+      var builder = new xml2js.Builder();
+      var xml = builder.buildObject(data); //转回xml
+      fs.writeFileSync(path.resolve(curPath, 'playground/app/src/main/AndroidManifest.xml'), xml);
+    })
+    .then(function() {
+      //playground/local
+      let data;
+      try {
+        data = fs.readFileSync(path.resolve(curPath, 'playground/local.properties'), { encoding: 'utf8' });
+
+        let sdkPath = process.env.ANDROID_HOME;
+        if (config.sdkdir) {
+          config.sdkdir = path.resolve(configPath, config.sdkdir).replace(/\\/g, '/');
+        } else if (sdkPath) {
+          config.sdkdir = sdkPath.replace(/\\/g, '/');
+        } else {
+          process.stderr.write('请配置 Android SDK 地址'.red);
+          process.exit(1);
+        }
+
+        let outString = data.replace(/sdk\.dir.*/, 'sdk.dir=' + path.resolve(configPath, config.sdkdir).replace(/\\/g, '/'));
+        fs.writeFileSync(path.resolve(curPath, 'playground/local.properties'), outString);
+
+        data = fs.readFileSync(path.resolve(curPath, 'playground/app/build.gradle'), { encoding: 'utf8' });
+
+        data = data.replace(/keyAlias.*/, 'keyAlias \'' + config.aliasname + '\'')
+          .replace(/applicationId.*/, 'applicationId \'' + config.packagename + '\'')
+          .replace(/keyPassword.*/, 'keyPassword \'' + config.password + '\'')
+          .replace(/storePassword.*/, 'storePassword \'' + config.storePassword + '\'')
+          .replace(/storeFile.*/, 'storeFile file(\'' + path.resolve(configPath, config.keystore).replace(/\\/g, '/') + '\')');
+        fs.writeFileSync(path.resolve(curPath, 'playground/app/build.gradle'), data);
+
+        // data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/res/values/strings.xml'),{encoding: 'utf8'});
+        // data = data.replace(/<string name="app_name">.*</,'<string name="app_name">' + config.name + '<');
+        // fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/res/values/strings.xml'), data);
+
+        // data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'),{encoding: 'utf8'});
+
+        // var launch_path = config.launch_path;
+        // if(!release){
+        //   launch_path = debugUrl;
+        // }
+        // data = data.replace(/android:versionCode=".*"/,'android:versionCode="' + config.version.code + '"')
+        // .replace(/android:versionName=".*"/,'android:versionName="' + config.version.name + '"')
+        // .replace(/android:name="weex_index"\sandroid:value=".*"/,'android:name="weex_index" android:value="' + launch_path + '"');
+        // fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'), data);
+      } catch (e) {
+        npmlog.error(e);
+      }
+    })
+  .then(() => {
+    /**
+     * debug 和 release 区分
+     * 删除特定注释中的代码
+     */
     let data;
-    try {
-      data = fs.readFileSync(path.resolve(curPath,'playground/local.properties'),{encoding: 'utf8'});
+    if (release) {
+      data = fs.readFileSync(path.resolve(curPath,'playground/settings.gradle'), { encoding: 'utf8' });
+      let outString = data.replace(/\/\*\* release delete head \*\/[\s\S]?\/\*\* release delete tail \*\//m,'');
 
-      let sdkPath = process.env.ANDROID_HOME;
-      if(config.sdkdir){
-        config.sdkdir = path.resolve(configPath, config.sdkdir).replace(/\\/g, '/');
-      } else if (sdkPath) {
-        config.sdkdir = sdkPath.replace(/\\/g, '/');
-      } else {
-        process.stderr.write('请配置 Android SDK 地址'.red);
-        process.exit(1);
-      }
+      fs.writeFileSync(path.resolve(curPath,'playground/settings.gradle'),outString);
+      data = fs.readFileSync(path.resolve(curPath,'playground/app/build.gradle'), { encoding: 'utf8' });
+      data = data.replace(/\/\*\* release delete head \*\/[\s\S]?\/\*\* release delete tail \*\//m,'');
+      fs.writeFileSync(path.resolve(curPath,'playground/app/build.gradle'),data);
 
-      let outString = data.replace(/sdk\.dir.*/,'sdk.dir=' + path.resolve(configPath,config.sdkdir).replace(/\\/g, '/'));
-      fs.writeFileSync(path.resolve(curPath,'playground/local.properties'), outString);
+      data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/https/WXOkHttpDispatcher.java'), { encoding: 'utf8' });
+      data = data.replace(/\/\*\* release delete head \*\/[\s\S]?\/\*\* release delete tail \*\//m,'');
+      fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/https/WXOkHttpDispatcher.java'),data);
 
-      data = fs.readFileSync(path.resolve(curPath,'playground/app/build.gradle'),{encoding: 'utf8'});
-
-      data = data.replace(/keyAlias.*/,'keyAlias \'' + config.aliasname + '\'')
-      .replace(/applicationId.*/,'applicationId \'' + config.packagename + '\'')
-      .replace(/keyPassword.*/,'keyPassword \'' + config.password + '\'')
-      .replace(/storePassword.*/,'storePassword \'' + config.storePassword + '\'')
-      .replace(/storeFile.*/,'storeFile file(\'' + path.resolve(configPath,config.keystore).replace(/\\/g, '/') + '\')');
-      fs.writeFileSync(path.resolve(curPath,'playground/app/build.gradle'), data);
-
-      data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/res/values/strings.xml'),{encoding: 'utf8'});
-      data = data.replace(/<string name="app_name">.*</,'<string name="app_name">' + config.name + '<');
-      fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/res/values/strings.xml'), data);
-
-      data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'),{encoding: 'utf8'});
-
-      var launch_path = config.launch_path;
-      if(!release){
-        launch_path = debugPath;
-      }
-      data = data.replace(/android:versionCode=".*"/,'android:versionCode="' + config.version.code + '"')
-      .replace(/android:versionName=".*"/,'android:versionName="' + config.version.name + '"')
-      .replace(/android:name="weex_index"\sandroid:value=".*"/,'android:name="weex_index" android:value="' + launch_path + '"');
-      fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'), data);
-    } catch (e) {
-      npmlog.error(e);
+      data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/IndexActivity.java'), { encoding: 'utf8' });
+      data = data.replace(/\/\*\* release delete head \*\/[\s\S]?\/\*\* release delete tail \*\//m,'');
+      fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/IndexActivity.java'),data);
     }
   })
-
   .then(() => {
     /**
      * 为 WXApplication.java 添加签名数据，以实现签名校验
@@ -106,37 +179,41 @@ module.exports = function (release, curPath, debugPath) {
           hash.update(sha1);
 
           // 插入防反编译代码
-          let data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/WXApplication.java'), 'utf8');
+          let data = fs.readFileSync(path.resolve(curPath, 'playground/app/src/main/java/com/alibaba/weex/WXApplication.java'), 'utf8');
           let insert = `
-            if (mSpUtils.isFirstInstall()) {
-                try {
-                    if (!SignCheck.checkSign(this, this.getPackageName(), TAG)) {
-                        android.os.Process.killProcess(android.os.Process.myPid());
-                        System.exit(-1);
-                    }
-                } catch (CertificateEncodingException e) {
-                    e.printStackTrace();
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                    System.exit(-1);
-                }
+            try {
+                      if (mSpUtils.isFirstInstall()) {
+                          try {
+                              if (!SignCheck.checkSign(this, this.getPackageName(), TAG)) {
+                                  android.os.Process.killProcess(android.os.Process.myPid());
+                                  System.exit(-1);
+                              }
+                          } catch (CertificateEncodingException e) {
+                              e.printStackTrace();
+                              android.os.Process.killProcess(android.os.Process.myPid());
+                              System.exit(-1);
+                          }
 
-                if ((getApplicationInfo().flags &=
-                        ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
+                          if ((getApplicationInfo().flags &=
+                                  ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+                              android.os.Process.killProcess(android.os.Process.myPid());
+                          }
 
-                mSpUtils.setInstalled();
-            }
+                          mSpUtils.setInstalled();
+                      }
+                  }catch (Exception e){
+                      e.printStackTrace();
+                  }
           `;
           data = data.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
-          .replace(/\/\*\* weex package prevent decompile head \*\/.*?($\n^)*([\S\s]*)$\n^.*?\/\*\* weex package prevent decompile tail \*\//m,
-                  `\/\*\* weex package prevent decompile head \*\/\n ${insert} \n\/\*\* weex package prevent decompile tail \*\/`);
+            .replace(/\/\*\* weex package prevent decompile head \*\/.*?($\n^)*([\S\s]*)$\n^.*?\/\*\* weex package prevent decompile tail \*\//m,
+              `\/\*\* weex package prevent decompile head \*\/\n ${insert} \n\/\*\* weex package prevent decompile tail \*\/`);
 
           // 插入原始签名指纹（sha1，不区分大小写）
           data = data
-          .replace(/\/\*\* weex tag head \*\/.*?($\n^)*([\S\s]*)$\n^.*?\/\*\* weex tag tail \*\//m,
-                  `\/\*\* weex tag head \*\/\n    private static final String TAG = "${hash.digest('hex')}"; \n\/\*\* weex tag tail \*\/`);
-          fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/java/com/alibaba/weex/WXApplication.java'), data);
+            .replace(/\/\*\* weex tag head \*\/.*?($\n^)*([\S\s]*)$\n^.*?\/\*\* weex tag tail \*\//m,
+              `\/\*\* weex tag head \*\/\n    private static final String TAG = "${hash.digest('hex')}"; \n\/\*\* weex tag tail \*\/`);
+          fs.writeFileSync(path.resolve(curPath, 'playground/app/src/main/java/com/alibaba/weex/WXApplication.java'), data);
           resolve();
         }
       });

@@ -432,8 +432,8 @@ var builder = {
     // }
     npmlog.info("进入打包流程...");
     const ROOT = process.cwd();
-    const PROJECTPATH = path.resolve(ROOT, 'ios', 'playground');
     const BUILDPATH = path.resolve(ROOT, '.build', 'ios');
+    const BUILDPLAYGROUND = path.resolve(BUILDPATH, 'playground');
     const IOSPATH = path.resolve(ROOT, 'ios');
 
     let ip = nwUtils.getPublicIP();
@@ -456,7 +456,7 @@ var builder = {
         icons.ios(path.resolve(BUILDPATH));
       })
       .then(() => {
-        iosConfig(options.release, IOSPATH, debugPath)
+        iosConfig(options.release, BUILDPATH, debugPath)
       })
       .then(() => {
         let pack = "sim";
@@ -464,29 +464,35 @@ var builder = {
         let config = require(path.resolve(configPath, 'config.ios.js'))();
 
         if (options.release) {
-          pack = "normal";
+          pack = "sim";
           let info;
-          info = config.certificate;
-          info.name = "weexapp-release";
-          packIos(PROJECTPATH, options.release, pack, info);
+          info = {};
+          info.name = "weexapp-release-sim";
+          packIos(BUILDPLAYGROUND, options.release, pack, info);
+
+          pack = "normal";
+          let info2;
+          info2 = config.certificate;
+          info2.name = "weexapp-release-real";
+          packIos(BUILDPLAYGROUND, options.release, pack, info2);
 
         } else {
           pack = "sim";
           let info1 ={};
-          info1.name = "weexapp-debug";
-          packIos(PROJECTPATH, options.release, pack, info1);
+          info1.name = "weexapp-debug-sim";
+          packIos(BUILDPLAYGROUND, options.release, pack, info1);
 
           pack = "normal";
           let info2 = config.certificate;
-          info2.name = "weexapp-debug";
-          packIos(PROJECTPATH, options.release, pack, info2);
+          info2.name = "weexapp-debug-real";
+          packIos(BUILDPLAYGROUND, options.release, pack, info2);
 
         }
       })
       .then(() => {
         return new Promise((resolve, reject) => {
 
-          glob(`${IOSPATH}/**/*.app`, function(er, files) {
+          glob(`${BUILDPATH}/**/*.app`, function(er, files) {
             if (er || files.length === 0) {
               npmlog.error("打包发生错误")
               process.exit(1);

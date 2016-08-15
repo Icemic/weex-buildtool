@@ -1,11 +1,41 @@
 Weex-Toolkit
 ============
+Pakeex CLI tool set
+
+## Pre Install
+some dependencies need recent version of npm to install
+
+if your
+```
+$ npm --version
+```
+output less then `2.15.1`, please run below cmd to upgrade your npm at first
+```
+$ npm install -g npm
+```
+
+### Install node-gyp
+if your
+```
+$ node-gyp --version
+```
+output less then `3.4.0` or no node-gpy installed in your system , please run below cmd to install or upgrade node-gyp
+```
+$ npm install -g node-gyp
+```
+
+## Install
+```
+$ npm install -g @ali/pakeex-cli
+
+```
 
 
 
 
 
-Weex CLI tool set
+
+Pakeex CLI tool set
 
 ## Pre Install
 some dependencies need recent version of npm to install
@@ -33,6 +63,8 @@ $ npm install -g node-gyp
 ```
 $ npm install -g weex-toolkit
 ```
+
+
 
 ## Usage
 

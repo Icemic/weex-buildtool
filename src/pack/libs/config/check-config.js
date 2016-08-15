@@ -1,82 +1,95 @@
-function checkConfig(platforms) {
+const validator = require('validator');
+const npmlog = require('npmlog');
+const fse = require('fs-extra');
+const path = require('path');
+const configPath = process.cwd() + '/config';
+
+/**
+ * 检查配置是否合法
+ * @param  {[object]} config   [description]
+ * @param  {[string]} platform android 或 ios
+ * @return {[type]}          [description]
+ */
+function checkConfig(config, platform,release) {
   if (validator.isNull(config.name)) {
-      npmlog.error('manifest.json name is null');
-      process.exit(1);
-    }
+    npmlog.error('打包配置错误', 'App Name 不能为空');
+    process.exit(1);
+  }
 
   if (validator.isNull(config.version.name)) {
-    npmlog.error('manifest.json version.name is null');
+    npmlog.error('打包配置错误', 'App version Name 不能为空');
     process.exit(1);
   }
 
   if (validator.isNull(config.version.code)) {
-    npmlog.error('manifest.json version.code is null');
+    npmlog.error('打包配置错误', 'App version code 不能为空');
     process.exit(1);
   }
-
+  if (!validator.isNumeric(config.version.code) || config.version.code <= 0) {
+    npmlog.error('打包配置错误', 'App version code 必须是数字');
+    process.exit(1);
+  }
   if (validator.isNull(config.launch_path)) {
-    npmlog.error('manifest.json launch_path is null');
+    npmlog.error('打包配置错误', 'App launch_path 不能为空');
+    process.exit(1);
+  }
+  if (validator.isNull(config.icon) || !fse.existsSync(path.resolve(configPath, config.icon))) {
+    npmlog.error('打包配置错误', 'App icon 不存在');
     process.exit(1);
   }
 
-  if (!config.distribute.orientation) {
-    npmlog.error('manifest.json distribute.orientation is null');
-    process.exit(1);
-  }
   //android 配置检查
-  if (platforms.indexOf('android') > -1) {
-    //判断安卓打包key配置是否正确
-    if (validator.isNull(config.distribute.google.packagename) || validator.isNull(config.distribute.google.storePassword) || validator.isNull(config.distribute.google.keystore) ||validator.isNull(config.distribute.google.password) ||validator.isNull(config.distribute.google.aliasname)) {
-      npmlog.error('in manifest.json distribute.google');
+  if (platform == 'android') {
+    if (!validator.matches(config.packagename, /^([A-Za-z\d])+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.packagename)) {
+      npmlog.error('打包配置错误', 'Android packagename必须为英文或数字或.，且以英文字母开头');
       process.exit(1);
     }
-    //判断icon
-    if (validator.isNull(config.distribute.icons.auto)) {
-      var android = config.distribute.icons.android;
-      for(var pi in android){
-        if (validator.isNull(android[pi])) {
-          npmlog.error('in manifest.json distribute.icons.android');
-          process.exit(1);
-        }
-      }
+    if (!fse.existsSync(path.resolve(configPath, config.splashscreen))) {
+      npmlog.error('打包配置错误', 'Android splashscreen 不存在');
+      process.exit(1);
     }
-    //判断splashscreen
-    var android = config.distribute.splashscreen.android;
-    for(var pi in android){
-      if (validator.isNull(android[pi])) {
-        npmlog.error('in manifest.json distribute.splashscreen.android');
+
+    if (!fse.existsSync(path.resolve(configPath, config.keystore))) {
+      npmlog.error('打包配置错误', 'Android 证书不存在');
+      process.exit(1);
+    }
+
+    //判断安卓打包key配置是否正确
+    if (validator.isNull(config.storePassword) || validator.isNull(config.password) || validator.isNull(config.aliasname)) {
+      npmlog.error('打包配置错误', 'Android证书配置错误，不能为空');
+      if (release) {
         process.exit(1);
       }
     }
+
   }
   //ios 配置检查
-  if(platforms.indexOf('ios') > -1){
-    //判断ios打包key配置是否正确
-    if (validator.isNull(config.distribute.apple.appid) || validator.isNull(config.distribute.apple.mobileprovision) ||validator.isNull(config.distribute.apple.password) ||validator.isNull(config.distribute.apple.p12)) {
-      npmlog.error('in manifest.json distribute.apple');
+  if (platform == 'ios') {
+    if (!validator.matches(config.appid, /^([A-Za-z\d])+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.appid)) {
+      npmlog.error('打包配置错误', 'appid必须为英文或数字或.，且以英文字母开头');
       process.exit(1);
     }
-    //判断icon
-    if (validator.isNull(config.distribute.icons.auto)) {
-      var ios = config.distribute.icons.ios;
-      for(var pl in ios){
-        for(var pi in ios[pl]){
-          if (validator.isNull(ios[pl][pi])) {
-            npmlog.error('in manifest.json distribute.icons.ios');
-            process.exit(1);
-          }
-        }
+    //判断ios打包key配置是否正确
+    if (validator.isNull(config.certificate.codeSignIdentity) || validator.isNull(config.certificate.provisionProfile)) {
+      npmlog.error('打包配置错误', 'iOS 证书配置错误');
+      if (release) {
+        process.exit(1);
       }
     }
-    //判断splashscreen
-    var ios = config.distribute.splashscreen.ios;
-    for(var pl in ios){
-      for(var pi in ios[pl]){
-        if (validator.isNull(ios[pl][pi])) {
-          npmlog.error('in manifest.json distribute.splashscreen.ios');
+    //判断启动图
+    if (config.splashscreen) {
+      for (var splash in config.splashscreen) {
+        if (!fse.existsSync(path.resolve(configPath, config.splashscreen[splash]))) {
+          npmlog.error('打包配置错误', 'ios splashscreen 缺失');
           process.exit(1);
         }
       }
+    }else{
+      npmlog.error('打包配置错误', 'ios splashscreen 缺失');
+      process.exit(1);
     }
   }
+  return 1;
 }
+
+module.exports = checkConfig;

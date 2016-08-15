@@ -4,6 +4,7 @@ var Promise = require('bluebird'),
     inquirer = require('inquirer'),
     colors = require('colors'),
     exec = require('sync-exec'),
+    fs = require('fs'),
     path = require('path');
 
 // var debug = require('debug')('start');
@@ -12,6 +13,7 @@ var config = {
 };
 
 function start(params) {
+  console.log('模拟器v0.1'.green);
   if (!params.name) {
     params.name = 'example';
   }
@@ -28,7 +30,6 @@ function run(params, devicePolymer) {
   return iOSimulatorSelect(iOSCurrentDeviceInfo, iOSDevices, params)
     .then(function(currentDevice) {
       // 打开模拟器
-      console.log(currentDevice);
       // debug(':::iOS simulator start open :::');
       iOSCurrentDeviceInfo = currentDevice;
       return iOSimulatorOpen(currentDevice, params);
@@ -156,7 +157,6 @@ function iOSimulatorOpen(currentDevice, params) {
         std = syncExec(cmd),
         stdout = std.stdout,
         stderr = std.stderr;
-    console.log(cmd);
 
     if (stderr) {
       cmd = 'xcrun instruments -w ' + uuid;
@@ -198,7 +198,6 @@ function iOSimulatorSelect(currentDeviceParam, device, params) {
       resolve(currentDeviceParam);
       return;
     }
-    console.log(2);
 
     getDevicesList(device, params)
       .then(function(device) {
@@ -275,10 +274,15 @@ function installiOSApp(params) {
      */
     var appIdentifier = params.appId,
         appPath = params.path;
+    if(!fs.existsSync(appPath)) {
+      console.log('目标文件不存在！'.red);
+      reject('已停止');
+      return;
+    }
     syncExecPromise('xcrun simctl uninstall booted ' + appIdentifier)
     .then(function() {
       console.log('uninstall %s.app success!'.green, params.name);
-      var cmd = 'xcrun simctl install booted ' + path.resolve(__dirname, '../..', appPath);
+      var cmd = 'xcrun simctl install booted ' + appPath;
       return syncExec(cmd);
     })
     .then(function() {
@@ -294,7 +298,7 @@ function installiOSApp(params) {
 
 //open app
 function iOSAppOpen(currentDeviceInfo, params) {
-  return new Promise(function(resolve) {
+  return new Promise(function(resolve, reject) {
 
     var timeout = 2500;
 
@@ -309,7 +313,12 @@ function iOSAppOpen(currentDeviceInfo, params) {
 
       cmd = 'xcrun simctl launch booted ' + params.appId;
       // cmd = 'xcrun simctl launch booted ' + url;
-      syncExec(cmd);
+      var result = syncExec(cmd);
+      if(result.stderr) {
+        console.log('bundle id 有误！'.red);
+        reject('已停止');
+        return;
+      }
 
       console.log('%s.app launched! '.green, params.name);
 

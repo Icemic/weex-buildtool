@@ -8,7 +8,7 @@ var syncExec = require('sync-exec'),
     fs = require('fs'),
     path = require('path');
 
-var iosDeploy = path.join(__dirname, '../../node_modules/ios-deploy/build/Release/ios-deploy');
+var iosDeploy = path.join(__dirname, '../../../node_modules/ios-deploy/build/Release/ios-deploy');
 function listDevice () {
   console.log('在5秒内插入手机');
   var result = syncExec(iosDeploy + ' -c');

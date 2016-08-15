@@ -46,9 +46,11 @@ export function ios (release) {
       ]
     }
   ]).then(function (answers) {
+
     let isSimulator = answers.target;
-    let filename = path.join(rootPath, `dist/ios/weexapp-${release ? 'release' : 'debug'}.${isSimulator ? 'app' : 'ipa'}`);
+    let filename = path.join(rootPath, `dist/ios/weexapp-${release ? 'release' : 'debug'}-${isSimulator ? 'sim' : 'real'}.${isSimulator ? 'app' : 'ipa'}`);
     // let filename = path.join(rootPath, 'dist', 'ios', 'WeexApp.app');
+    console.log(release,isSimulator,filename);
     if (isSimulator) {
       let params = {
         name: UserConfig.ios.name,
