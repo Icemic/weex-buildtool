@@ -62,6 +62,11 @@ async function pack(argv) {
 
       } else if (options.oprate === "build") {
 
+          if (argv.target) {
+            options.release = (argv.target === 'release');
+            options.debug = !options.release;
+          }
+
           await builder.build(options);
 
       }
@@ -82,7 +87,7 @@ async function pack(argv) {
       testDarwin(options);
       let release = argv.target ? (argv.target === 'release') : false;
       await emulator.handle(options.platform, release);
-      serveForLoad();
+      release && serveForLoad();
 
     } catch (e){
       stdlog.errorln('');
@@ -101,7 +106,7 @@ async function pack(argv) {
       await builder.build(options);
       let release = argv.target ? (argv.target === 'release') : false;
       await emulator.handle(options.platform, release);
-      serveForLoad();
+      release && serveForLoad();
     } catch (e){
       stdlog.errorln('');
       if (typeof e === 'string') {

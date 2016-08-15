@@ -368,6 +368,11 @@ var builder = {
     }
 
     await this.makeJsbundle();
+    if (options.release) {
+      await this.makeJsbundle();
+    } else {
+      stdlog.warnln('Skip JSBundle generation in debug mode');
+    }
 
     if (platform === 'android') {
 
