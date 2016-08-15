@@ -697,62 +697,104 @@ var builder = {
 
             case 2:
               platform = options.platform;
-              _context7.next = 5;
-              return this.makeJsbundle();
 
-            case 5:
-              if (!(platform === 'android')) {
-                _context7.next = 10;
+
+              console.log(options);
+
+              _context7.t0 = platform;
+              _context7.next = _context7.t0 === 'android' ? 7 : _context7.t0 === 'ios' ? 10 : _context7.t0 === 'all' ? 13 : 16;
+              break;
+
+            case 7:
+              if (options.projectandroid) {
+                _context7.next = 9;
                 break;
               }
 
-              _context7.next = 8;
-              return this.buildAndroid(options);
+              throw "Can't find project";
 
-            case 8:
-              _context7.next = 25;
-              break;
+            case 9:
+              return _context7.abrupt('break', 16);
 
             case 10:
-              if (!(platform === 'ios')) {
+              if (options.projectios) {
+                _context7.next = 12;
+                break;
+              }
+
+              throw "Can't find project";
+
+            case 12:
+              return _context7.abrupt('break', 16);
+
+            case 13:
+              if (!(!options.projectandroid || !options.projectios)) {
                 _context7.next = 15;
                 break;
               }
 
-              _context7.next = 13;
-              return this.buildIos(options);
-
-            case 13:
-              _context7.next = 25;
-              break;
+              throw "Can't find projects";
 
             case 15:
-              if (!(platform === 'html')) {
-                _context7.next = 20;
-                break;
-              }
+              return _context7.abrupt('break', 16);
 
+            case 16:
               _context7.next = 18;
-              return this.buildHtml(options);
+              return this.makeJsbundle();
 
             case 18:
-              _context7.next = 25;
-              break;
-
-            case 20:
-              if (!(platform === 'all')) {
-                _context7.next = 25;
+              if (!(platform === 'android')) {
+                _context7.next = 23;
                 break;
               }
 
-              _context7.next = 23;
-              return this.buildAll(options);
+              _context7.next = 21;
+              return this.buildAndroid(options);
 
-            case 23:
-              _context7.next = 25;
+            case 21:
+              _context7.next = 38;
               break;
 
-            case 25:
+            case 23:
+              if (!(platform === 'ios')) {
+                _context7.next = 28;
+                break;
+              }
+
+              _context7.next = 26;
+              return this.buildIos(options);
+
+            case 26:
+              _context7.next = 38;
+              break;
+
+            case 28:
+              if (!(platform === 'html')) {
+                _context7.next = 33;
+                break;
+              }
+
+              _context7.next = 31;
+              return this.buildHtml(options);
+
+            case 31:
+              _context7.next = 38;
+              break;
+
+            case 33:
+              if (!(platform === 'all')) {
+                _context7.next = 38;
+                break;
+              }
+
+              _context7.next = 36;
+              return this.buildAll(options);
+
+            case 36:
+              _context7.next = 38;
+              break;
+
+            case 38:
             case 'end':
               return _context7.stop();
           }
@@ -784,7 +826,7 @@ var builder = {
 
               ip = nwUtils.getPublicIP();
               port = '8083';
-              debugPath = 'http://' + ip + ':' + port + '/main.we';
+              debugPath = 'http://' + ip + ':' + port + '/src/main.we';
               jsbundle = path.resolve('main.js');
               return _context8.abrupt('return', (0, _folderSync2.default)(PROJECTPATH, BUILDPATH).then(function () {
                 if (options.release) {
@@ -844,7 +886,7 @@ var builder = {
 
     var ip = nwUtils.getPublicIP();
     var port = '8083';
-    var debugPath = 'http://' + ip + ':' + port + '/index.we';
+    var debugPath = 'http://' + ip + ':' + port + '/src/main.we';
 
     fs.removeSync('dist/ios');
 
@@ -855,7 +897,7 @@ var builder = {
         fs.ensureDirSync(toPath);
         fs.emptyDirSync(toPath);
         fs.copySync(jsBundle, toPath);
-        debugPath = "index.js";
+        debugPath = "main.js";
       }
     }).then(function () {
       return icons.ios(path.resolve(BUILDPATH));

@@ -9,11 +9,14 @@ var syncExec = require('sync-exec'),
     path = require('path');
 
 var iosDeploy = path.join(__dirname, '../../../node_modules/ios-deploy/build/Release/ios-deploy');
+if (!fs.existsSync(iosDeploy)) {
+  iosDeploy = 'ios-deploy';
+}
 function listDevice() {
   console.log('在5秒内插入手机');
   var result = syncExec(iosDeploy + ' -c');
   if (result.stderr.trim()) {
-    console.log('无法启动ios-deploy，请检查npm依赖安装');
+    console.log('无法启动ios-deploy，请检查npm依赖安装，\n或者自行全局安装ios-deploy\n(sudo npm install -g ios-deploy [--unsafe-perm=true])\n再执行此命令'.red);
     return false;
   }
   if (!result.stdout.split('\n')[1].trim()) {

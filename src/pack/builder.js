@@ -347,6 +347,26 @@ var builder = {
 
     const platform = options.platform;
 
+    console.log(options);
+
+    switch (platform) {
+      case 'android':
+        if( !options.projectandroid ) {
+          throw "Can't find project";
+        }
+        break;
+      case 'ios':
+        if( !options.projectios ) {
+          throw "Can't find project";
+        }
+        break;
+      case 'all':
+        if( !options.projectandroid  || !options.projectios) {
+          throw "Can't find projects";
+        }
+        break;
+    }
+
     await this.makeJsbundle();
 
     if (platform === 'android') {
@@ -380,7 +400,7 @@ var builder = {
 
     let ip = nwUtils.getPublicIP();
     let port = '8083';
-    let debugPath = `http://${ip}:${port}/main.we`;
+    let debugPath = `http://${ip}:${port}/src/main.we`;
 
     let jsbundle = path.resolve('main.js');
 
@@ -427,7 +447,7 @@ var builder = {
 
     let ip = nwUtils.getPublicIP();
     let port = '8083';
-    let debugPath = `http://${ip}:${port}/index.we`;
+    let debugPath = `http://${ip}:${port}/src/main.we`;
 
     fs.removeSync('dist/ios');
 
@@ -440,7 +460,7 @@ var builder = {
           fs.ensureDirSync(toPath);
           fs.emptyDirSync(toPath);
           fs.copySync(jsBundle, toPath);
-          debugPath = "index.js";
+          debugPath = "main.js";
         }
       })
       .then(() => icons.ios(path.resolve(BUILDPATH)))
