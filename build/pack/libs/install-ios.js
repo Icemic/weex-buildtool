@@ -27,7 +27,7 @@ function listDevice() {
 
 function installApp(localpath) {
   return new Promise(function (resolve, reject) {
-    localpath = path.join(__dirname, '../..', localpath);
+    localpath = path.resolve(localpath);
     if (!fs.existsSync(localpath)) {
       console.log('目标文件不存在！');
       reject();
@@ -36,7 +36,7 @@ function installApp(localpath) {
     console.log('正在安装应用');
     var install = exec(iosDeploy + ' -b ' + localpath);
     install.stdout.on('data', function (data) {
-      process.stdout.write(data.grey);
+      process.stdout.write(data.toString().grey);
       // console.log(typeof data);
     });
     install.on('close', function (code) {
@@ -53,7 +53,7 @@ function installApp(localpath) {
 }
 
 function installAppSync(localpath) {
-  localpath = path.join(__dirname, '../..', localpath);
+  localpath = path.join(localpath);
   console.log('正在安装应用');
   var result = syncExec(iosDeploy + ' -b ' + localpath);
   console.log(result.stdout);

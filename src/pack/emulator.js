@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const adbhelper = require('./libs/adbhelper');
 const simIOS = require('./libs/sim-ios.js');
 const realIOS = require('./libs/install-ios.js');
+const glob = require('glob');
 import UserConfig from './userConfig';
 
 const rootPath = process.cwd();
@@ -48,19 +49,61 @@ export function ios (release) {
   ]).then(function (answers) {
 
     let isSimulator = answers.target;
+
     let filename = path.join(rootPath, `dist/ios/weexapp-${release ? 'release' : 'debug'}-${isSimulator ? 'sim' : 'real'}.${isSimulator ? 'app' : 'ipa'}`);
     // let filename = path.join(rootPath, 'dist', 'ios', 'WeexApp.app');
-    console.log(release,isSimulator,filename);
+    let filepath = path.join(rootPath, 'dist/ios');
     if (isSimulator) {
-      let params = {
-        name: UserConfig.ios.name,
-        appId: UserConfig.ios.appid,
-        path: filename
-      };
-      return simIOS(params);
+      fs.readdir(filepath, function(err, files) {
+        if(err || files.length === 0) {
+          console.error("dist > ios 中找不到文件!")
+        } else {
+          for (let name of files ) {
+            if(name.indexOf('sim') !== -1){
+              filename = path.join(rootPath, `dist/ios/${name}`);
+              if (isSimulator) {
+                let params = {
+                  name: UserConfig.ios.name,
+                  appId: UserConfig.ios.appid,
+                  path: filename
+                };
+                console.log(params);
+
+                return simIOS(params);
+              } else {
+                return realIOS(filename);
+              }
+            }
+          }
+        }
+      })
+
     } else {
-      return realIOS(filename);
+      fs.readdir(filepath, function(err, files) {
+        if(err || files.length === 0) {
+          console.error("dist > ios 中找不到文件!")
+        } else {
+          for (let name of files ) {
+            if(name.indexOf('real') !== -1 && name.endsWith('.ipa')){
+              filename = path.join(rootPath, `dist/ios/${name}`);
+              if (isSimulator) {
+                let params = {
+                  name: UserConfig.ios.name,
+                  appId: UserConfig.ios.appid,
+                  path: filename
+                };
+                console.log(params);
+                return simIOS(params);
+              } else {
+                return realIOS(filename);
+              }
+            }
+          }
+        }
+      })
     }
+    console.log(release,isSimulator,filename);
+
   });
 
 }
