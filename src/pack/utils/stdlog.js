@@ -20,6 +20,9 @@ function stringify (string) {
 }
 
 
+exports.debug = function debug (...string) {
+  process.stdout.write(stringify(string).grey);
+}
 exports.text = function text (...string) {
   process.stdout.write(stringify(string));
 }
@@ -33,6 +36,10 @@ exports.error = function error (...string) {
   process.stderr.write(stringify(string).red);
 }
 
+exports.debugln = function debugln (...string) {
+  exports.debug(...string);
+  stdoutReturn();
+}
 exports.textln = function textln (...string) {
   exports.text(...string);
   stdoutReturn();

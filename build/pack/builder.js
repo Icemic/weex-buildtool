@@ -59,65 +59,38 @@ var builder = {
   initialization: {
     initial: function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(options) {
-        var platform, configs, c, configBasePath, configAndroidPath, configIosPath, projectAndroidPath, projectIosPath;
+        var configBasePath, configAndroidPath, configIosPath, projectAndroidPath, projectIosPath;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.prev = 0;
-                _context.prev = 1;
-                _context.next = 4;
+                _context.next = 2;
                 return new _promise2.default(function (resolve, reject) {
                   glob(options.root + '/src/*.we', function (err, files) {
                     if (err || files.length === 0) {
-                      reject(1);
+                      reject("Please exec weex init && npm install first");
                     } else {
-                      resolve(1);
+                      resolve();
                     }
                   });
                 });
 
-              case 4:
-                _context.next = 10;
-                break;
+              case 2:
 
-              case 6:
-                _context.prev = 6;
-                _context.t0 = _context['catch'](1);
+                // 判断文件是否存在
+                // const platform = options.platform;
+                // let configs = ['config.base.js'];
+                //
+                // if (platform === 'all') {
+                //   configs.push('config.android.js');
+                //   configs.push('config.ios.js');
+                // } else {
+                //   if (platform !== "html") {
+                //     let c = `config.${platform}.js`;
+                //     configs.push(c);
+                //   }
+                // }
 
-                stdlog.errorln("Please exec weex init && npm install first");
-                process.exit(1);
-
-              case 10:
-
-                builder.existFile();
-                options.configbase = true;
-                _context.next = 17;
-                break;
-
-              case 14:
-                _context.prev = 14;
-                _context.t1 = _context['catch'](0);
-
-                options.configbase = false;
-
-              case 17:
-
-                console.log('判断文件是否存在');
-                platform = options.platform;
-                configs = ['config.base.js'];
-
-
-                if (platform === 'all') {
-                  configs.push('config.android.js');
-                  configs.push('config.ios.js');
-                } else {
-                  if (platform !== "html") {
-                    c = 'config.' + platform + '.js';
-
-                    configs.push(c);
-                  }
-                }
 
                 configBasePath = path.resolve(options.root, 'config/config.base.js');
                 configAndroidPath = path.resolve(options.root, 'config/config.android.js');
@@ -158,12 +131,12 @@ var builder = {
                   options.projectios = false;
                 }
 
-              case 31:
+              case 12:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 14], [1, 6]]);
+        }, _callee, this);
       }));
 
       function initial(_x) {
@@ -189,7 +162,7 @@ var builder = {
                     return inquirer.prompt([{
                       type: 'confirm',
                       name: 'overwrite',
-                      message: '安卓工程已经存在,需要覆盖吗?',
+                      message: 'Android project has existed, overwrite?',
                       default: false
                     }]).then(function (value) {
                       // exec(`pakeex ${value.command}`, {cwd: process.cwd()});
@@ -226,7 +199,7 @@ var builder = {
                     return inquirer.prompt([{
                       type: 'confirm',
                       name: 'overwrite',
-                      message: 'ios 工程已经存在,需要覆盖吗?',
+                      message: 'IOS project has existed, overwrite?',
                       default: false
                     }]).then(function (value) {
                       // exec(`pakeex ${value.command}`, {cwd: process.cwd()});
@@ -252,40 +225,40 @@ var builder = {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                console.log("与用户交互");
+                // 与用户交互
                 options.overwrite = {
                   android: true,
                   ios: true
                 };
                 _context4.t0 = options.platform;
-                _context4.next = _context4.t0 === "android" ? 5 : _context4.t0 === "ios" ? 9 : _context4.t0 === "all" ? 13 : 17;
+                _context4.next = _context4.t0 === "android" ? 4 : _context4.t0 === "ios" ? 8 : _context4.t0 === "all" ? 12 : 16;
                 break;
 
-              case 5:
+              case 4:
                 options.overwrite.ios = false;
-                _context4.next = 8;
+                _context4.next = 7;
                 return overwriteAndroid();
+
+              case 7:
+                return _context4.abrupt('break', 16);
 
               case 8:
-                return _context4.abrupt('break', 17);
-
-              case 9:
                 options.overwrite.android = false;
-                _context4.next = 12;
+                _context4.next = 11;
                 return overWriteIos();
+
+              case 11:
+                return _context4.abrupt('break', 16);
 
               case 12:
-                return _context4.abrupt('break', 17);
-
-              case 13:
-                _context4.next = 15;
+                _context4.next = 14;
                 return overwriteAndroid();
 
-              case 15:
-                _context4.next = 17;
+              case 14:
+                _context4.next = 16;
                 return overWriteIos();
 
-              case 17:
+              case 16:
               case 'end':
                 return _context4.stop();
             }
@@ -300,47 +273,49 @@ var builder = {
       return prompting;
     }(),
     configuring: function configuring(options) {
-      console.log("配置文件操作");
+      //console.log("配置文件操作");
       var platform = options.platform;
 
       var configPath = path.resolve(options.root, 'config');
       fs.ensureDirSync(configPath);
 
       if (!options.configbase) {
-        stdlog.infoln("创建配置文件: config.base.js");
+        stdlog.textln("create: config.base.js");
         fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.base.js'), path.resolve(configPath, 'config.base.js'));
       }
 
       switch (platform) {
         case "android":
           if (!options.configandroid) {
-            stdlog.infoln("创建配置文件: config.android.js");
+            stdlog.textln("create: config.android.js");
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.android.js'), path.resolve(configPath, 'config.android.js'));
           }
           break;
         case "ios":
           if (!options.configios) {
-            stdlog.infoln("创建配置文件: config.ios.js");
+            stdlog.textln("create: config.ios.js");
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
           }
           break;
         case "all":
           if (!options.configandroid) {
-            stdlog.infoln("创建配置文件: config.android.js");
+            stdlog.textln("create: config.android.js");
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.android.js'), path.resolve(configPath, 'config.android.js'));
           }
           if (!options.configios) {
-            stdlog.infoln("创建配置文件: config.ios.js");
+            stdlog.textln("create: config.ios.js");
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
           }
           break;
       }
 
-      stdlog.infoln('Generate assets files');
+      stdlog.info('Generating assets files...');
 
       var assetsPath = path.resolve(options.root, 'assets');
       fs.ensureDirSync(assetsPath);
       fs.copySync(path.resolve(options.toolRoot, 'package-template', 'assets'), assetsPath);
+
+      stdlog.infoln('done');
 
       var distPath = path.resolve(options.root, 'dist');
       fs.ensureDirSync(distPath);
@@ -360,82 +335,66 @@ var builder = {
                   });
                 };
 
-                console.log("下载安装操作");
+                //console.log("下载安装操作");
+
 
                 options.download = {};
                 iosPath = path.resolve(options.root, 'ios');
                 androidPath = path.resolve(options.root, 'android');
 
                 if (!(options.overwrite.ios && options.overwrite.android)) {
-                  _context5.next = 13;
+                  _context5.next = 12;
                   break;
                 }
 
-                // exec(`rm -rf ${iosPath}`, {cwd: options.root});
-                // exec(`rm -rf ${androidPath}`, {cwd: options.root});
                 fs.removeSync(iosPath);
                 fs.removeSync(androidPath);
-                stdlog.info("Downloading...");
+                stdlog.info("Downloading from internet...");
 
-                _context5.next = 11;
-                return _promise2.default.all([download(options.giturl.ios, path.resolve(options.root, '.tmp', 'ios')), download(options.giturl.android, path.resolve(options.root, '.tmp', 'android'))]).then(function () {
+                _context5.next = 10;
+                return _promise2.default.all([download(options.giturl.ios, path.resolve(options.root, '.tmp', 'ios')), download(options.giturl.android, path.resolve(options.root, '.tmp', 'android'))]).then(function (value) {
                   stdlog.infoln("done");
                   options.download.ios = true;
                   options.download.android = true;
-                }).catch(function (e) {
-                  stdlog.errorln("error");
-                  stdlog.errorln(e);
-                  options.download.ios = false;
-                  options.download.android = false;
                 });
 
-              case 11:
-                _context5.next = 25;
+              case 10:
+                _context5.next = 24;
                 break;
 
-              case 13:
+              case 12:
                 if (!options.overwrite.ios) {
-                  _context5.next = 20;
+                  _context5.next = 19;
                   break;
                 }
 
-                // exec(`rm -rf ${iosPath}`, {cwd: options.root});
                 fs.removeSync(iosPath);
                 stdlog.info("Downloading...");
-                _context5.next = 18;
+                _context5.next = 17;
                 return download(options.giturl.ios, path.resolve(options.root, '.tmp', 'ios')).then(function (value) {
                   stdlog.infoln("done");
                   options.download.ios = true;
-                }).catch(function (e) {
-                  stdlog.errorln("error");
-                  stdlog.errorln(e);
-                  options.download.ios = false;
                 });
 
-              case 18:
-                _context5.next = 25;
+              case 17:
+                _context5.next = 24;
                 break;
 
-              case 20:
+              case 19:
                 if (!options.overwrite.android) {
-                  _context5.next = 25;
+                  _context5.next = 24;
                   break;
                 }
 
-                // exec(`rm -rf ${androidPath}`, {cwd: options.root});
                 fs.removeSync(androidPath);
                 stdlog.info("Downloading...");
-                _context5.next = 25;
-                return download(options.giturl.android, path.resolve(options.root, '.tmp', 'android')).then(function () {
+                _context5.next = 24;
+                return download(options.giturl.android, path.resolve(options.root, '.tmp', 'android')).then(function (value) {
                   stdlog.infoln("done");
                   options.download.android = true;
-                }).catch(function (e) {
-                  stdlog.errorln("error");
-                  stdlog.errorln(e);
-                  options.download.android = false;
                 });
 
-              case 25:
+              case 24:
                 iosFile = path.resolve(options.root, '.tmp', 'ios', 'master.zip');
                 androidFile = path.resolve(options.root, '.tmp', 'android', 'master.zip');
                 iosTmpPath = path.resolve(options.root, '.tmp', String(Math.floor(Math.random() * 10000000)));
@@ -446,6 +405,7 @@ var builder = {
                   break;
                 }
 
+                stdlog.info('Unzipping iOS project...');
                 _context5.next = 32;
                 return unzipFile(iosFile, iosTmpPath);
 
@@ -515,28 +475,30 @@ var builder = {
                 return _context5.finish(54);
 
               case 62:
-                console.log(path.resolve(iosPath, '.tmp'), iosPath);
+                stdlog.infoln('done');
+                // console.log(path.resolve(iosPath, '.tmp'), iosPath);
 
               case 63:
                 if (!options.download.android) {
-                  _context5.next = 96;
+                  _context5.next = 98;
                   break;
                 }
 
-                _context5.next = 66;
+                stdlog.info('Unzipping Android project...');
+                _context5.next = 67;
                 return unzipFile(androidFile, androidTmpPath);
 
-              case 66:
+              case 67:
                 _files = fs.readdirSync(androidTmpPath);
                 _iteratorNormalCompletion2 = true;
                 _didIteratorError2 = false;
                 _iteratorError2 = undefined;
-                _context5.prev = 70;
+                _context5.prev = 71;
                 _iterator2 = (0, _getIterator3.default)(_files);
 
-              case 72:
+              case 73:
                 if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                  _context5.next = 82;
+                  _context5.next = 83;
                   break;
                 }
 
@@ -545,58 +507,61 @@ var builder = {
                 _fileInfo = fs.statSync(_absoluteFilePath);
 
                 if (!_fileInfo.isDirectory()) {
-                  _context5.next = 79;
+                  _context5.next = 80;
                   break;
                 }
 
                 fs.renameSync(_absoluteFilePath, androidPath);
-                return _context5.abrupt('break', 82);
+                return _context5.abrupt('break', 83);
 
-              case 79:
+              case 80:
                 _iteratorNormalCompletion2 = true;
-                _context5.next = 72;
+                _context5.next = 73;
                 break;
 
-              case 82:
-                _context5.next = 88;
+              case 83:
+                _context5.next = 89;
                 break;
 
-              case 84:
-                _context5.prev = 84;
-                _context5.t1 = _context5['catch'](70);
+              case 85:
+                _context5.prev = 85;
+                _context5.t1 = _context5['catch'](71);
                 _didIteratorError2 = true;
                 _iteratorError2 = _context5.t1;
 
-              case 88:
-                _context5.prev = 88;
+              case 89:
                 _context5.prev = 89;
+                _context5.prev = 90;
 
                 if (!_iteratorNormalCompletion2 && _iterator2.return) {
                   _iterator2.return();
                 }
 
-              case 91:
-                _context5.prev = 91;
+              case 92:
+                _context5.prev = 92;
 
                 if (!_didIteratorError2) {
-                  _context5.next = 94;
+                  _context5.next = 95;
                   break;
                 }
 
                 throw _iteratorError2;
 
-              case 94:
-                return _context5.finish(91);
-
               case 95:
-                return _context5.finish(88);
+                return _context5.finish(92);
 
               case 96:
+                return _context5.finish(89);
+
+              case 97:
+                stdlog.infoln('done');
+
+              case 98:
               case 'end':
                 return _context5.stop();
             }
           }
-        }, _callee5, this, [[36, 50, 54, 62], [55,, 57, 61], [70, 84, 88, 96], [89,, 91, 95]]);
+        }, _callee5, this, [[36, 50, 54, 62], [55,, 57, 61], [71, 85, 89, 97], [90,, 92, 96]]);
       }));
 
       function install(_x3) {
@@ -606,7 +571,7 @@ var builder = {
       return install;
     }(),
     clean: function clean(options) {
-      stdlog.textln("Build init succeed");
+      stdlog.infoln("Build init successful!");
       var tmpPath = path.resolve(options.root, '.tmp');
       fs.removeSync(tmpPath);
     }
@@ -631,73 +596,73 @@ var builder = {
                *  5. end, 清除工作,和用户说 bye
                *
                */
-              stdlog.infoln('初始化开始'.green);
+              // stdlog.infoln('初始化开始'.green);
 
               lifecycle = ["initial", "prompting", "configuring", "install", "clean"];
               _iteratorNormalCompletion3 = true;
               _didIteratorError3 = false;
               _iteratorError3 = undefined;
-              _context6.prev = 5;
+              _context6.prev = 4;
               _iterator3 = (0, _getIterator3.default)(lifecycle);
 
-            case 7:
+            case 6:
               if (_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done) {
-                _context6.next = 14;
+                _context6.next = 13;
                 break;
               }
 
               life = _step3.value;
-              _context6.next = 11;
+              _context6.next = 10;
               return this.initialization[life](options);
 
-            case 11:
+            case 10:
               _iteratorNormalCompletion3 = true;
-              _context6.next = 7;
+              _context6.next = 6;
               break;
 
-            case 14:
-              _context6.next = 20;
+            case 13:
+              _context6.next = 19;
               break;
 
-            case 16:
-              _context6.prev = 16;
-              _context6.t0 = _context6['catch'](5);
+            case 15:
+              _context6.prev = 15;
+              _context6.t0 = _context6['catch'](4);
               _didIteratorError3 = true;
               _iteratorError3 = _context6.t0;
 
-            case 20:
+            case 19:
+              _context6.prev = 19;
               _context6.prev = 20;
-              _context6.prev = 21;
 
               if (!_iteratorNormalCompletion3 && _iterator3.return) {
                 _iterator3.return();
               }
 
-            case 23:
-              _context6.prev = 23;
+            case 22:
+              _context6.prev = 22;
 
               if (!_didIteratorError3) {
-                _context6.next = 26;
+                _context6.next = 25;
                 break;
               }
 
               throw _iteratorError3;
 
+            case 25:
+              return _context6.finish(22);
+
             case 26:
-              return _context6.finish(23);
+              return _context6.finish(19);
 
             case 27:
-              return _context6.finish(20);
-
-            case 28:
               return _context6.abrupt('return');
 
-            case 29:
+            case 28:
             case 'end':
               return _context6.stop();
           }
         }
-      }, _callee6, this, [[5, 16, 20, 28], [21,, 23, 27]]);
+      }, _callee6, this, [[4, 15, 19, 27], [20,, 22, 26]]);
     }));
 
     function init(_x4) {
@@ -723,61 +688,57 @@ var builder = {
 
             case 5:
               if (!(platform === 'android')) {
-                _context7.next = 11;
+                _context7.next = 10;
                 break;
               }
 
-              console.log("build android...");
-              _context7.next = 9;
+              _context7.next = 8;
               return this.buildAndroid(options);
 
-            case 9:
-              _context7.next = 29;
+            case 8:
+              _context7.next = 25;
               break;
 
-            case 11:
+            case 10:
               if (!(platform === 'ios')) {
-                _context7.next = 17;
+                _context7.next = 15;
                 break;
               }
 
-              console.log("build ios...");
-              _context7.next = 15;
+              _context7.next = 13;
               return this.buildIos(options);
 
-            case 15:
-              _context7.next = 29;
+            case 13:
+              _context7.next = 25;
               break;
 
-            case 17:
+            case 15:
               if (!(platform === 'html')) {
-                _context7.next = 23;
+                _context7.next = 20;
                 break;
               }
 
-              console.log('build ' + platform);
-              _context7.next = 21;
+              _context7.next = 18;
               return this.buildHtml(options);
 
-            case 21:
-              _context7.next = 29;
+            case 18:
+              _context7.next = 25;
               break;
 
-            case 23:
+            case 20:
               if (!(platform === 'all')) {
-                _context7.next = 29;
+                _context7.next = 25;
                 break;
               }
 
-              console.log('build ' + platform);
-              _context7.next = 27;
+              _context7.next = 23;
               return this.buildAll(options);
 
-            case 27:
-              _context7.next = 29;
+            case 23:
+              _context7.next = 25;
               break;
 
-            case 29:
+            case 25:
             case 'end':
               return _context7.stop();
           }
@@ -805,16 +766,12 @@ var builder = {
               BUILDPATH = path.resolve(ROOT, '.build', 'android');
 
 
-              stdlog.info("Build android start..");
+              stdlog.infoln("Building Android package...");
 
               ip = nwUtils.getPublicIP();
               port = '8083';
               debugPath = 'http://' + ip + ':' + port + '/index.we';
               jsbundle = path.resolve('index.js');
-
-
-              console.log(options);
-
               return _context8.abrupt('return', (0, _folderSync2.default)(PROJECTPATH, BUILDPATH).then(function () {
                 if (options.release) {
                   debugPath = jsbundle;
@@ -830,21 +787,20 @@ var builder = {
                 return new _promise2.default(function (resolve, reject) {
                   glob(BUILDPATH + '/**/*.apk', function (er, files) {
                     if (er || files.length === 0) {
-                      npmlog.error("打包发生错误");
+                      stdlog.errorln("failed");
                       reject(er);
                       // process.exit(1);
                     } else {
                       var pathDir = path.resolve(files[0], '..');
                       fs.copySync(pathDir, 'dist/android/');
+                      stdlog.infoln('Android package build successful');
                       resolve();
                     }
                   });
                 });
-              }).catch(function (e) {
-                console.error(e);
               }));
 
-            case 10:
+            case 9:
             case 'end':
               return _context8.stop();
           }
@@ -860,11 +816,12 @@ var builder = {
   }(),
 
   buildIos: function buildIos(options) {
-    // if (process.platform === 'win32') {
-    //   process.stdout.write('cannot build iOS package in Windows'.red);
-    //   process.exit(1);
-    // }
-    npmlog.info("进入打包流程...");
+    if (process.platform !== 'darwin') {
+      throw 'iOS package can only be build in macOS';
+    }
+
+    stdlog.infoln("Building iOS package...");
+
     var ROOT = process.cwd();
     var BUILDPATH = path.resolve(ROOT, '.build', 'ios');
     var BUILDPLAYGROUND = path.resolve(BUILDPATH, 'playground');
@@ -923,17 +880,16 @@ var builder = {
 
         glob(BUILDPATH + '/**/*.app', function (er, files) {
           if (er || files.length === 0) {
-            npmlog.error("打包发生错误");
-            process.exit(1);
+            stdlog.errorln("failed");
+            reject(er);
           } else {
             var pathDir = path.resolve(files[0], '..');
             fs.copySync(pathDir, 'dist/ios/');
+            stdlog.infoln('iOS package build successful');
             resolve();
           }
         });
       });
-    }).catch(function (e) {
-      console.log(e);
     });
 
     // iosConfig(this.release, IOSPATH, debugPath);//处理配置
@@ -970,17 +926,17 @@ var builder = {
 
               _context9.next = 7;
               return new _promise2.default(function (resolve, reject) {
-                process.stdout.write('正在生成 JSBundle...'.green);
+                stdlog.infoln('Generating JSBundle...');
                 fs.walk(bundleInputPath).on('data', function (item) {
                   if (item.stats.isDirectory()) {
                     var inPath = item.path;
                     var outPath = path.resolve(bundleOutputPath, path.relative(bundleInputPath, item.path));
                     fs.ensureDirSync(outPath);
-                    console.log('weex ' + inPath + ' -o ' + outPath);
+                    stdlog.debugln(inPath);
                     exec('weex ' + inPath + ' -o ' + outPath);
                   }
                 }).on('end', function () {
-                  process.stdout.write('done\n'.green);
+                  stdlog.infoln('Generating JSBundle...done');
                   resolve();
                 });
               });
