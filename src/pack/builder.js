@@ -347,7 +347,11 @@ var builder = {
 
     const platform = options.platform;
 
-    await this.makeJsbundle();
+    if (options.release) {
+      await this.makeJsbundle();
+    } else {
+      stdlog.warnln('Skip JSBundle generation in debug mode');
+    }
 
     if (platform === 'android') {
 
@@ -388,8 +392,7 @@ var builder = {
       .then(() => {
         if (options.release) {
           debugPath = jsbundle;
-          let dirPath = path.resolve(ROOT, '.build/android/playground/app/src/main/assets/JSBundle');
-          fs.ensureDirSync(dirPath);
+          let dirPath = fs.ensureDirSync(path.resolve(ROOT, '.build/android/playground/app/src/main/assets/JSBundle'));
           return folderSync(path.resolve(ROOT, 'dist', 'js'), dirPath);
         }
       })
@@ -428,7 +431,7 @@ var builder = {
 
     let ip = nwUtils.getPublicIP();
     let port = '8083';
-    let debugPath = `http://${ip}:${port}/main.we`;
+    let debugPath = `http://${ip}:${port}/index.we`;
 
     fs.removeSync('dist/ios');
 
@@ -441,7 +444,7 @@ var builder = {
           fs.ensureDirSync(toPath);
           fs.emptyDirSync(toPath);
           fs.copySync(jsBundle, toPath);
-          debugPath = "main.js";
+          debugPath = "index.js";
         }
       })
       .then(() => icons.ios(path.resolve(BUILDPATH)))
