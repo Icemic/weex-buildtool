@@ -38,12 +38,11 @@ export function checkSDK() {
       process.stdout.write('done\n'.green);
       if (lack.length) {
         // console.info('检测到以下内容尚未安装：\n'.yellow);
-        stdlog.warnln('检测到以下内容尚未安装：\n');
+        stdlog.warnln('Detected that the following has not been installed:\n');
         for (let item of lack) {
           stdlog.textln(`    * ${item}`);
         }
         stdlog.infoln('');
-        stdlog.warnln('程序将自动安装...');
         resolve(installSDK(lack, sdkPath));
       } else {
 
@@ -51,8 +50,7 @@ export function checkSDK() {
       }
     } else {
       stdlog.textln('');
-      stdlog.errorln(`未找到 Android SDK，请确定其已经正确安装并添加到系统环境变量，详见 http://xxxxx `);
-      reject();
+      reject(`Cannot find Android SDK，make sure it has been added to environment variables, see more: ${'http://xxxxxx'.underline} `);
     }
 
   });
@@ -66,6 +64,7 @@ export function checkSDK() {
  * @return {Promise}
  */
 export function installSDK(lack, sdkPath) {
+  stdlog.warnln('Auto-installing...');
   lack = lack.join(',');
   return new Promise((resolve, reject) => {
     let android = childProcess.exec(`${sdkPath}/tools/android update sdk --no-ui --all --filter ${lack}`);
@@ -76,10 +75,9 @@ export function installSDK(lack, sdkPath) {
     process.stdin.pipe(android.stdin);
     android.on('close', code => {
       if (code) {
-        stdlog.errorln('安装遇到错误');
-        reject();
+        reject(`exit code ${code}`);
       } else {
-        stdlog.infoln('SDK 安装完成');
+        stdlog.warnln('done');
         resolve();
       }
     });
@@ -95,9 +93,8 @@ export function installSDK(lack, sdkPath) {
  * @return {[type]}           [description]
  */
 export function pack(buildPath, release) {
-  stdlog.infoln('准备生成APK...');
-  return checkSDK()
 
+  return checkSDK()
   .then(() => {
     if (process.platform !== 'win32' && false) {
       return new Promise((resolve, reject) => {
@@ -115,7 +112,7 @@ export function pack(buildPath, release) {
 
     return new Promise((resolve, reject) => {
 
-      stdlog.infoln('正在启动 Gradle...');
+      stdlog.infoln('Starting gradle...');
 
       let gradlew = childProcess.execFile(path.join(buildPath,
         'playground',`gradlew${process.platform === 'win32' ? '.bat' : ''}`), [arg],
@@ -128,12 +125,11 @@ export function pack(buildPath, release) {
 
       gradlew.on('close', code => {
         if (code) {
-          stdlog.errorln('APK 生成遇到错误');
-          reject();
+          reject(`error code ${code}`);
         } else {
-          stdlog.infoln('Android 打包完成');
-          stdlog.textln('生成的文件位于：'.yellow,
-            path.resolve(buildPath, 'playground','app/build/outputs/apk/').underline);
+          // stdlog.infoln('Android 打包完成');
+          // stdlog.textln('生成的文件位于：'.yellow,
+          //   path.resolve(buildPath, 'playground','app/build/outputs/apk/').underline);
           resolve();
         }
       });
@@ -141,5 +137,4 @@ export function pack(buildPath, release) {
     });
 
   })
-    .catch(stdlog.errorln)
 }

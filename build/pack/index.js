@@ -22,16 +22,16 @@ var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
 var pack = function () {
   var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(argv) {
-    var options, release;
+    var options, release, _release;
+
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             options = {};
-            // let options = require('./config-yagrs')(yargs, argv);
 
             if (!(argv._[0] === "build")) {
-              _context.next = 21;
+              _context.next = 20;
               break;
             }
 
@@ -71,40 +71,45 @@ var pack = function () {
             _context.prev = 16;
             _context.t0 = _context['catch'](2);
 
-            stdlog.errorln(_context.t0);
-            stdlog.errorln('Build failed.');
+            stdlog.errorln('');
+            if (typeof _context.t0 === 'string') {
+              stdlog.errorln('Error: ' + _context.t0);
+            } else {
+              stdlog.errorln(_context.t0);
+            }
 
           case 20:
-
-            stdlog.infoln('Build Success');
-
-          case 21:
             if (!(argv._[0] === "emulate")) {
               _context.next = 35;
               break;
             }
 
-            _context.prev = 22;
-            _context.next = 25;
+            _context.prev = 21;
+            _context.next = 24;
             return configProcess(argv);
 
-          case 25:
+          case 24:
             options = _context.sent;
             release = argv.target ? argv.target === 'release' : true;
-            _context.next = 29;
-            return emulator.handle(options.platform, false);
+            _context.next = 28;
+            return emulator.handle(options.platform, release);
 
-          case 29:
+          case 28:
             serveForLoad();
 
             _context.next = 35;
             break;
 
-          case 32:
-            _context.prev = 32;
-            _context.t1 = _context['catch'](22);
+          case 31:
+            _context.prev = 31;
+            _context.t1 = _context['catch'](21);
 
-            stdlog.errorln(_context.t1);
+            stdlog.errorln('');
+            if (typeof _context.t1 === 'string') {
+              stdlog.errorln('Error: ' + _context.t1);
+            } else {
+              stdlog.errorln(_context.t1);
+            }
 
           case 35:
             if (!(argv._[0] === "run")) {
@@ -113,40 +118,41 @@ var pack = function () {
             }
 
             _context.prev = 36;
-
-            console.log('run...');
-            _context.next = 40;
+            _context.next = 39;
             return configProcess(argv);
 
-          case 40:
+          case 39:
             options = _context.sent;
-            _context.next = 43;
+            _context.next = 42;
             return builder.build(options);
 
-          case 43:
+          case 42:
+            _release = argv.target ? argv.target === 'release' : false;
             _context.next = 45;
-            return emulator.handle(options.platform, options.release);
+            return emulator.handle(options.platform, _release);
 
           case 45:
             serveForLoad();
-            _context.next = 51;
+            _context.next = 52;
             break;
 
           case 48:
             _context.prev = 48;
             _context.t2 = _context['catch'](36);
 
-            console.error(_context.t2);
-
-          case 51:
-            console.log(options);
+            stdlog.errorln('');
+            if (typeof _context.t2 === 'string') {
+              stdlog.errorln('Error: ' + _context.t2);
+            } else {
+              stdlog.errorln(_context.t2);
+            }
 
           case 52:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, this, [[2, 16], [22, 32], [36, 48]]);
+    }, _callee, this, [[2, 16], [21, 31], [36, 48]]);
   }));
 
   return function pack(_x) {
