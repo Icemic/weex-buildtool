@@ -18,12 +18,6 @@ function run(localpath, release, sdkType, info) {
     console.log('SDK类型参数错误');
   }
   var name = info.name || 'noName';
-  // var extraName;
-  // if(sdkType == 'sim') {
-  //   extraName = 'Sim';
-  // } else {
-  //   extraName = 'Real';
-  // }
   var sdk = getSDKs(localpath);
   var iosInfo = findPackInfo(localpath);
   var target = iosInfo.target;
@@ -39,10 +33,6 @@ function run(localpath, release, sdkType, info) {
   var appPath = path.resolve(localpath, './build/' + name + '.app');
   // var appRealPath = path.resolve(localpath, './build/' + name + 'Real.app');
   var ipaPath = path.resolve(localpath, './build/' + name + '.ipa');
-  // if (fs.existsSync(appSimPath)) {
-  //   console.log('删除sim app文件');
-  //   exec('rm -r ' + appSimPath);
-  // }
   if (fs.existsSync(appPath)) {
     console.log('删除app文件');
     exec('rm -r ' + appPath);
@@ -174,7 +164,8 @@ function packReal(target, scheme, config, sdk, localpath, info) {
 function packSim(target, scheme, config, sdk, localpath) {
   debugger;
   var cmd;
-  cmd = 'xcodebuild -workspace ' + target + '.xcworkspace -scheme ' + scheme + ' -sdk ' + sdk.simSDK + ' -configuration ' + config + ' -archivePath build';
+  // cmd = 'xcodebuild -workspace '+ target +'.xcworkspace -scheme '+ scheme +' -sdk ' + sdk.simSDK + ' -configuration '+ config +' -archivePath build';
+  cmd = 'xcodebuild ONLY_ACTIVE_ARCH=NO -configuration ' + config + ' -workspace "' + target + '.xcworkspace" -scheme ' + scheme + ' -sdk iphonesimulator  -destination "platform=iOS Simulator,name=iPhone 6s Plus" clean build';
   var result = exec(cmd, { cwd: localpath });
   console.log('output sim pack');
   return result;

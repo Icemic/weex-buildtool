@@ -8,6 +8,10 @@ var _getIterator2 = require('babel-runtime/core-js/get-iterator');
 
 var _getIterator3 = _interopRequireDefault(_getIterator2);
 
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
 exports.handle = handle;
 exports.android = android;
 exports.ios = ios;
@@ -29,11 +33,12 @@ var glob = require('glob');
 
 var rootPath = process.cwd();
 
-function handle(platform, release) {
+function handle(platform, release, options) {
+  console.log('emulator');
   if (platform === 'android') {
     return android(release);
   } else if (platform === 'ios') {
-    return ios(release);
+    return ios(release, options);
     // } else if (platform === 'h5') {
     //   return h5();
   } else {
@@ -54,15 +59,12 @@ function android(release) {
   }
 }
 
-function ios(release) {
-  return inquirer.prompt([{
-    type: 'list',
-    name: 'target',
-    message: 'Do you want to use real devices or simulator?',
-    choices: [{ value: true, name: 'Simulator' }, { value: false, name: 'Real Device' }]
-  }]).then(function (answers) {
+function ios(release, options) {
+  return new _promise2.default(function (resolve) {
+    return resolve(1);
+  }).then(function () {
 
-    var isSimulator = answers.target;
+    var isSimulator = options.isSimulator;
 
     var filename = path.join(rootPath, 'dist/ios/weexapp-' + (release ? 'release' : 'debug') + '-' + (isSimulator ? 'sim' : 'real') + '.' + (isSimulator ? 'app' : 'ipa'));
     // let filename = path.join(rootPath, 'dist', 'ios', 'WeexApp.app');
@@ -82,18 +84,12 @@ function ios(release) {
 
               if (name.indexOf('sim') !== -1) {
                 filename = path.join(rootPath, 'dist/ios/' + name);
-                if (isSimulator) {
-                  var params = {
-                    name: _userConfig2.default.ios.name,
-                    appId: _userConfig2.default.ios.appid,
-                    path: filename
-                  };
-                  console.log(params);
-
-                  return simIOS(params);
-                } else {
-                  return realIOS(filename);
-                }
+                var params = {
+                  name: _userConfig2.default.ios.name,
+                  appId: _userConfig2.default.ios.appid,
+                  path: filename
+                };
+                return simIOS(params);
               }
             }
           } catch (err) {
@@ -110,6 +106,9 @@ function ios(release) {
               }
             }
           }
+
+          console.error(" Install faied!没有可以安装的app!");
+          process.exit(1);
         }
       });
     } else {

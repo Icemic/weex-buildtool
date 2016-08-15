@@ -34,7 +34,7 @@ var buildHtml = function buildHtml() {
             var str = data.replace(reg, '<title>' + manifest.name + '<\/title>');
             str = str.replace(/weex.js/g, 'weex.min.js');
             fse.copySync(curPath + '/dist/js', curPath + '/dist/html5/');
-            str = str.replace(/demo\/build\/index.js/g, '.\/' + manifest.launch_path);
+            str = str.replace(/demo\/build\/index.js/g, '.\/' + 'main.js');
             fs.writeFile(curPath + '/dist/html5/index.html', str, { flag: 'w' }, function (err) {
                 if (err) {
                     throw err;

@@ -98,7 +98,8 @@ export function pack(buildPath, release) {
   .then(() => {
     if (process.platform !== 'win32' && false) {
       return new Promise((resolve, reject) => {
-        let chmod = childProcess.execFile('chmod +x ' + path.join(buildPath, 'playground', 'gradlew'),
+        fs.chmodSync(path.join(buildPath, 'playground'), 0o755);
+        let chmod = childProcess.execFile('chmod -755 ' + path.join(buildPath, 'playground', 'gradlew'),
         {cwd: path.join(buildPath, 'playground')});
         chmod.on('close', resolve).on('error', reject);
       });
@@ -106,7 +107,6 @@ export function pack(buildPath, release) {
       return Promise.resolve();
     }
   })
-
   .then(() => {
     let arg = release ? 'assembleRelease' : 'assembleDebug';
 

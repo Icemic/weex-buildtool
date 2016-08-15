@@ -338,7 +338,7 @@ var builder = {
                   fs.ensureDirSync(dirPath);
                   stdlog.infoln('unzip ' + filePath + '...');
                   // process.exit(1);
-                  console.log(exec('unzip ' + filePath + ' -d ' + dirPath).stdout);
+                  exec('unzip ' + filePath + ' -d ' + dirPath);
                   // return new Promise((resolve, reject) => {
                   //   fs.createReadStream(path.resolve(filePath))
                   //     .pipe(unzip.Extract({path: path.resolve(dirPath)}))
@@ -745,58 +745,74 @@ var builder = {
               return this.makeJsbundle();
 
             case 18:
-              if (!(platform === 'android')) {
+              if (!options.release) {
                 _context7.next = 23;
                 break;
               }
 
               _context7.next = 21;
-              return this.buildAndroid(options);
+              return this.makeJsbundle();
 
             case 21:
-              _context7.next = 38;
+              _context7.next = 24;
               break;
 
             case 23:
-              if (!(platform === 'ios')) {
-                _context7.next = 28;
+              stdlog.warnln('Skip JSBundle generation in debug mode');
+
+            case 24:
+              if (!(platform === 'android')) {
+                _context7.next = 29;
                 break;
               }
 
-              _context7.next = 26;
+              _context7.next = 27;
+              return this.buildAndroid(options);
+
+            case 27:
+              _context7.next = 44;
+              break;
+
+            case 29:
+              if (!(platform === 'ios')) {
+                _context7.next = 34;
+                break;
+              }
+
+              _context7.next = 32;
               return this.buildIos(options);
 
-            case 26:
-              _context7.next = 38;
+            case 32:
+              _context7.next = 44;
               break;
 
-            case 28:
+            case 34:
               if (!(platform === 'html')) {
-                _context7.next = 33;
+                _context7.next = 39;
                 break;
               }
 
-              _context7.next = 31;
+              _context7.next = 37;
               return this.buildHtml(options);
 
-            case 31:
-              _context7.next = 38;
+            case 37:
+              _context7.next = 44;
               break;
 
-            case 33:
+            case 39:
               if (!(platform === 'all')) {
-                _context7.next = 38;
+                _context7.next = 44;
                 break;
               }
 
-              _context7.next = 36;
+              _context7.next = 42;
               return this.buildAll(options);
 
-            case 36:
-              _context7.next = 38;
+            case 42:
+              _context7.next = 44;
               break;
 
-            case 38:
+            case 44:
             case 'end':
               return _context7.stop();
           }
@@ -924,15 +940,18 @@ var builder = {
         info2.name = "weexapp-release-real";
         packIos(BUILDPLAYGROUND, options.release, pack, info2);
       } else {
-        pack = "sim";
-        var info1 = {};
-        info1.name = "weexapp-debug-sim";
-        packIos(BUILDPLAYGROUND, options.release, pack, info1);
 
-        pack = "normal";
-        var _info = config.certificate;
-        _info.name = "weexapp-debug-real";
-        packIos(BUILDPLAYGROUND, options.release, pack, _info);
+        if (options.isSimulator) {
+          pack = "sim";
+          var info1 = {};
+          info1.name = "weexapp-debug-sim";
+          packIos(BUILDPLAYGROUND, options.release, pack, info1);
+        } else {
+          pack = "normal";
+          var _info = config.certificate;
+          _info.name = "weexapp-debug-real";
+          packIos(BUILDPLAYGROUND, options.release, pack, _info);
+        }
       }
     }).then(function () {
       return new _promise2.default(function (resolve, reject) {

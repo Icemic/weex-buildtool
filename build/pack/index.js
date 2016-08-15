@@ -31,7 +31,7 @@ var pack = function () {
             options = {};
 
             if (!(argv._[0] === "build")) {
-              _context.next = 21;
+              _context.next = 22;
               break;
             }
 
@@ -53,24 +53,29 @@ var pack = function () {
             return builder.init(options);
 
           case 10:
-            _context.next = 15;
+            _context.next = 16;
             break;
 
           case 12:
             if (!(options.oprate === "build")) {
-              _context.next = 15;
+              _context.next = 16;
               break;
             }
 
-            _context.next = 15;
+            if (argv.target) {
+              options.release = argv.target === 'release';
+              options.debug = !options.release;
+            }
+
+            _context.next = 16;
             return builder.build(options);
 
-          case 15:
-            _context.next = 21;
+          case 16:
+            _context.next = 22;
             break;
 
-          case 17:
-            _context.prev = 17;
+          case 18:
+            _context.prev = 18;
             _context.t0 = _context['catch'](2);
 
             stdlog.errorln('');
@@ -80,33 +85,33 @@ var pack = function () {
               stdlog.errorln(_context.t0.stack);
             }
 
-          case 21:
+          case 22:
             if (!(argv._[0] === "emulate")) {
-              _context.next = 37;
+              _context.next = 38;
               break;
             }
 
-            _context.prev = 22;
-            _context.next = 25;
+            _context.prev = 23;
+            _context.next = 26;
             return configProcess(argv);
 
-          case 25:
+          case 26:
             options = _context.sent;
 
             testDarwin(options);
             release = argv.target ? argv.target === 'release' : false;
-            _context.next = 30;
-            return emulator.handle(options.platform, release);
+            _context.next = 31;
+            return emulator.handle(options.platform, release, options);
 
-          case 30:
-            serveForLoad();
+          case 31:
+            !release && serveForLoad();
 
-            _context.next = 37;
+            _context.next = 38;
             break;
 
-          case 33:
-            _context.prev = 33;
-            _context.t1 = _context['catch'](22);
+          case 34:
+            _context.prev = 34;
+            _context.t1 = _context['catch'](23);
 
             stdlog.errorln('');
             if (typeof _context.t1 === 'string') {
@@ -115,36 +120,36 @@ var pack = function () {
               stdlog.errorln(_context.t1.stack);
             }
 
-          case 37:
+          case 38:
             if (!(argv._[0] === "run")) {
-              _context.next = 55;
+              _context.next = 56;
               break;
             }
 
-            _context.prev = 38;
-            _context.next = 41;
+            _context.prev = 39;
+            _context.next = 42;
             return configProcess(argv);
 
-          case 41:
+          case 42:
             options = _context.sent;
 
             testDarwin(options);
-            _context.next = 45;
+            _context.next = 46;
             return builder.build(options);
 
-          case 45:
+          case 46:
             _release = argv.target ? argv.target === 'release' : false;
-            _context.next = 48;
-            return emulator.handle(options.platform, _release);
+            _context.next = 49;
+            return emulator.handle(options.platform, _release, options);
 
-          case 48:
-            serveForLoad();
-            _context.next = 55;
+          case 49:
+            !_release && serveForLoad();
+            _context.next = 56;
             break;
 
-          case 51:
-            _context.prev = 51;
-            _context.t2 = _context['catch'](38);
+          case 52:
+            _context.prev = 52;
+            _context.t2 = _context['catch'](39);
 
             stdlog.errorln('');
             if (typeof _context.t2 === 'string') {
@@ -153,12 +158,12 @@ var pack = function () {
               stdlog.errorln(_context.t2.stack);
             }
 
-          case 55:
+          case 56:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, this, [[2, 17], [22, 33], [38, 51]]);
+    }, _callee, this, [[2, 18], [23, 34], [39, 52]]);
   }));
 
   return function pack(_x) {

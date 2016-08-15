@@ -41,7 +41,15 @@ module.exports = function (argv) {
     }
 
 
-    if (options.platform ===  "ios") {
+
+
+    if (sweetAndroid.indexOf(argv1) !== -1) {
+      options.platform = "android";
+    } else {
+      options.platform = argv1;
+    }
+
+    if (options.platform ===  "ios" && options.oprate === "run") {
       await inquirer.prompt([
         {
           type: 'list',
@@ -58,12 +66,6 @@ module.exports = function (argv) {
       });
     }
 
-
-    if (sweetAndroid.indexOf(argv1) !== -1) {
-      options.platform = "android";
-    } else {
-      options.platform = argv1;
-    }
 
     options.root = process.cwd();
     //

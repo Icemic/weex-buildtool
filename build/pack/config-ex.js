@@ -69,22 +69,40 @@ module.exports = function (argv) {
                 options.platform = argv1;
               }
 
-              options.root = process.cwd();
+              if (!(options.platform === "ios" && options.oprate === "run")) {
+                _context.next = 10;
+                break;
+              }
 
-              if (options.oprate === 'run') {
-                options.release = false;
-                options.debug = true;
-              }
-              if (options.oprate === 'emulate') {
-                options.release = true;
-                options.debug = false;
-              }
+              _context.next = 10;
+              return inquirer.prompt([{
+                type: 'list',
+                name: 'type',
+                message: 'Where would you like to install the app',
+                choices: [{ value: true, name: 'Simulator' }, { value: false, name: 'Real Device' }]
+              }]).then(function (value) {
+                // exec(`pakeex ${value.command}`, {cwd: process.cwd()});
+                options.isSimulator = value.type;
+              });
+
+            case 10:
+
+              options.root = process.cwd();
+              //
+              // if (options.oprate === 'run') {
+              //   options.release = false;
+              //   options.debug = true;
+              // }
+              // if (options.oprate === 'emulate') {
+              //   options.release = true;
+              //   options.debug = false;
+              // }
 
               options.name = argv.n || "";
 
               resolve(options);
 
-            case 12:
+            case 13:
             case "end":
               return _context.stop();
           }

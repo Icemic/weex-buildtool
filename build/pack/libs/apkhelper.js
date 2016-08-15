@@ -135,7 +135,8 @@ function pack(buildPath, release) {
   return checkSDK().then(function () {
     if (process.platform !== 'win32' && false) {
       return new _promise2.default(function (resolve, reject) {
-        var chmod = childProcess.execFile('chmod +x ' + path.join(buildPath, 'playground', 'gradlew'), { cwd: path.join(buildPath, 'playground') });
+        fs.chmodSync(path.join(buildPath, 'playground'), 493);
+        var chmod = childProcess.execFile('chmod -755 ' + path.join(buildPath, 'playground', 'gradlew'), { cwd: path.join(buildPath, 'playground') });
         chmod.on('close', resolve).on('error', reject);
       });
     } else {

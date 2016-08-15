@@ -9,11 +9,12 @@ import UserConfig from './userConfig';
 
 const rootPath = process.cwd();
 
-export function handle(platform, release) {
+export function handle(platform, release, options) {
+  console.log('emulator');
   if (platform === 'android') {
     return android(release);
   } else if (platform === 'ios') {
-    return ios(release);
+    return ios(release, options);
   // } else if (platform === 'h5') {
   //   return h5();
   } else {
@@ -35,10 +36,10 @@ export function android (release) {
   }
 }
 
-export function ios (release) {
-  return new Promise(1).then(function (answers) {
+export function ios (release, options) {
+  return new Promise( (resolve) => resolve(1)).then(function () {
 
-    let isSimulator = answers.target;
+    let isSimulator = options.isSimulator;
 
     let filename = path.join(rootPath, `dist/ios/weexapp-${release ? 'release' : 'debug'}-${isSimulator ? 'sim' : 'real'}.${isSimulator ? 'app' : 'ipa'}`);
     // let filename = path.join(rootPath, 'dist', 'ios', 'WeexApp.app');
@@ -51,20 +52,16 @@ export function ios (release) {
           for (let name of files ) {
             if(name.indexOf('sim') !== -1){
               filename = path.join(rootPath, `dist/ios/${name}`);
-              if (isSimulator) {
-                let params = {
-                  name: UserConfig.ios.name,
-                  appId: UserConfig.ios.appid,
-                  path: filename
-                };
-                console.log(params);
-
-                return simIOS(params);
-              } else {
-                return realIOS(filename);
-              }
+              let params = {
+                name: UserConfig.ios.name,
+                appId: UserConfig.ios.appid,
+                path: filename
+              };
+              return simIOS(params);
             }
           }
+          console.error( " Install faied!没有可以安装的app!");
+          process.exit(1);
         }
       })
 

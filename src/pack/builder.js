@@ -490,15 +490,19 @@ var builder = {
           packIos(BUILDPLAYGROUND, options.release, pack, info2);
 
         } else {
-          pack = "sim";
-          let info1 ={};
-          info1.name = "weexapp-debug-sim";
-          packIos(BUILDPLAYGROUND, options.release, pack, info1);
 
-          pack = "normal";
-          let info2 = config.certificate;
-          info2.name = "weexapp-debug-real";
-          packIos(BUILDPLAYGROUND, options.release, pack, info2);
+          if (options.isSimulator) {
+            pack = "sim";
+            let info1 ={};
+            info1.name = "weexapp-debug-sim";
+            packIos(BUILDPLAYGROUND, options.release, pack, info1);
+
+          } else {
+            pack = "normal";
+            let info2 = config.certificate;
+            info2.name = "weexapp-debug-real";
+            packIos(BUILDPLAYGROUND, options.release, pack, info2);
+          }
 
         }
       })
