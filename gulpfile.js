@@ -34,7 +34,7 @@ gulp.task('babel',['clean'],function(){
 
 gulp.task('weex',['babel'],function(){
   return gulp.src('./build/weex.js')
-  .pipe(wrap("#!/usr/bin/env node \n\n<%= contents %>"))
+  .pipe(wrap("#!/usr/bin/env node --harmony_proxies\n\n<%= contents %>"))
   .pipe(gulp.dest('./bin'))
 })
 

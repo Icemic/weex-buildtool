@@ -1,3 +1,4 @@
+require('harmony-reflect');
 const fs = require('fs-extra'),
   path = require('path'),
   opener = require('opener'),
