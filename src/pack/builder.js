@@ -408,7 +408,8 @@ var builder = {
       .then(() => {
         if (options.release) {
           debugPath = jsbundle;
-          let dirPath = fs.ensureDirSync(path.resolve(ROOT, '.build/android/playground/app/src/main/assets/JSBundle'));
+          let dirPath = path.resolve(ROOT, '.build/android/playground/app/src/main/assets/JSBundle');
+          fs.ensureDirSync(dirPath);
           return folderSync(path.resolve(ROOT, 'dist', 'js'), dirPath);
         }
       })

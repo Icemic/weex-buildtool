@@ -7,7 +7,6 @@ module.exports = function () {
         "code": "1"/*必选，数字*/
     },
     "description": "Weex",/*可选，应用描述信息*/
-    "launch_path": "index.js",/*必选，应用的入口页面，默认为根目录下的index.js；*/
     "developer": {
         "email": "",/*可选，开发者名称*/
         "name": "",/*可选，开发者邮箱地址*/
