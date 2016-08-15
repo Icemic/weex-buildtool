@@ -24,8 +24,8 @@ const homedir = require('homedir');
 module.exports = function(release, curPath, debugUrl, configFile) {
   curPath = curPath ? curPath : process.cwd() + '/android';
   var config = require(path.resolve(configPath, configFile ? configFile : 'config.android.js'))();
-  var launch_path = config.launch_path;
-  if (!release && debugUrl) {
+  var launch_path = 'main.js';
+  if (!release) {
     launch_path = debugUrl;
   }
   checkConfig(config, 'android', release); //检查安卓配置
