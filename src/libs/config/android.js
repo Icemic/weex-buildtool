@@ -15,19 +15,18 @@ const configPath = process.cwd() + '/config';
  * 配置处理
  * @param  {[bool]} release 是否release模式
  * @param  {[string]} curPath 打包文件路径
- * @param  {[string]} debugPath debug的路径
+ * @param  {[string]} debugUrl debug的路径
  * @param  {[string]} configFile 配置文件路径
  * @return {[type]}           [description]
  */
-module.exports = function(release, curPath, debugPath,configFile) {
+module.exports = function(release, curPath, debugUrl,configFile) {
   curPath = curPath ? curPath : process.cwd() + '/android';
   var config = require(path.resolve(configPath, configFile ? configFile : 'config.android.js'))();
   var launch_path = config.launch_path;
-  if (!release) {
-    launch_path = debugPath;
+  if (!release && debugUrl) {
+    launch_path = debugUrl;
   }
-
-  checkConfig(config, 'android'); //检查安卓配置
+  checkConfig(config, 'android', release); //检查安卓配置
 
   return Promise.resolve()
     .then(function() {
@@ -67,8 +66,10 @@ module.exports = function(release, curPath, debugPath,configFile) {
       for (var i = metaData.length - 1; i >= 0; i--) {
         if (metaData[i].$['android:name'] == 'weex_index') {
           data.manifest.application[0]['meta-data'][i].$['android:value'] = launch_path;
+          break;
         }
       }
+
       var builder = new xml2js.Builder();
       var xml = builder.buildObject(data); //转回xml
       fs.writeFileSync(path.resolve(curPath, 'playground/app/src/main/AndroidManifest.xml'), xml);
@@ -109,7 +110,7 @@ module.exports = function(release, curPath, debugPath,configFile) {
 
         // var launch_path = config.launch_path;
         // if(!release){
-        //   launch_path = debugPath;
+        //   launch_path = debugUrl;
         // }
         // data = data.replace(/android:versionCode=".*"/,'android:versionCode="' + config.version.code + '"')
         // .replace(/android:versionName=".*"/,'android:versionName="' + config.version.name + '"')
@@ -180,25 +181,29 @@ module.exports = function(release, curPath, debugPath,configFile) {
           // 插入防反编译代码
           let data = fs.readFileSync(path.resolve(curPath, 'playground/app/src/main/java/com/alibaba/weex/WXApplication.java'), 'utf8');
           let insert = `
-            if (mSpUtils.isFirstInstall()) {
-                try {
-                    if (!SignCheck.checkSign(this, this.getPackageName(), TAG)) {
-                        android.os.Process.killProcess(android.os.Process.myPid());
-                        System.exit(-1);
-                    }
-                } catch (CertificateEncodingException e) {
-                    e.printStackTrace();
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                    System.exit(-1);
-                }
+            try {
+                      if (mSpUtils.isFirstInstall()) {
+                          try {
+                              if (!SignCheck.checkSign(this, this.getPackageName(), TAG)) {
+                                  android.os.Process.killProcess(android.os.Process.myPid());
+                                  System.exit(-1);
+                              }
+                          } catch (CertificateEncodingException e) {
+                              e.printStackTrace();
+                              android.os.Process.killProcess(android.os.Process.myPid());
+                              System.exit(-1);
+                          }
 
-                if ((getApplicationInfo().flags &=
-                        ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
+                          if ((getApplicationInfo().flags &=
+                                  ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+                              android.os.Process.killProcess(android.os.Process.myPid());
+                          }
 
-                mSpUtils.setInstalled();
-            }
+                          mSpUtils.setInstalled();
+                      }
+                  }catch (Exception e){
+                      e.printStackTrace();
+                  }
           `;
           data = data.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
             .replace(/\/\*\* weex package prevent decompile head \*\/.*?($\n^)*([\S\s]*)$\n^.*?\/\*\* weex package prevent decompile tail \*\//m,
