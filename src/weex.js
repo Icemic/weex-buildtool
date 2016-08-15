@@ -22,8 +22,6 @@ const fs = require('fs-extra'),
   // Emulator = require('../build/emulater')
 
 const pakeex = require('../build/pack/index');
-const weexBuild = require('../build/weex-build');
-const weexEmulate = require('../build/weex-emulate');
 
 
 const VERSION = require('../package.json').version
@@ -325,10 +323,6 @@ var argv = yargs
   .option('h', {demand: false})
   .default('h', DEFAULT_HOST)
   .alias('h', 'host')
-  .option('d', {demand: false})
-  .alias('d', 'debug')
-  .option('u', {demand: false})
-  .alias('u', 'url')
   .option('o', {demand: false})
   .alias('o', 'output')
   .default('o', NO_JSBUNDLE_OUTPUT)

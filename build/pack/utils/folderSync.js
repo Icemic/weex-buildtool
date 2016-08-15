@@ -68,7 +68,7 @@ function getMd5(p) {
  * @return {[type]}             [description]
  */
 function syncFull(projectPath, buildPath, excludes) {
-  fs.copySync(projectPath, buildPath);
+  fs.copySync(projectPath, buildPath, { clobber: true });
   return _promise2.default.resolve();
 }
 
@@ -148,7 +148,8 @@ function syncIncremental(projectPath, buildPath, excludes) {
         if (buildItem !== md5) {
           var absolutePath = path.resolve(buildPath, key);
           process.stdout.write(('  copy: ' + absolutePath + '\n').grey);
-          fs.copySync(path.resolve(projectPath, key), absolutePath);
+          fs.removeSync(absolutePath);
+          fs.copySync(path.resolve(projectPath, key), absolutePath, { clobber: true });
         }
       }
     } catch (err) {

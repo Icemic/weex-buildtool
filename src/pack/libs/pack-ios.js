@@ -18,12 +18,12 @@ function run (localpath, release, sdkType, info) {
     console.log('SDK类型参数错误');
   }
   var name = info.name || 'noName';
-  var extraName;
-  if(sdkType == 'sim') {
-    extraName = 'Sim';
-  } else {
-    extraName = 'Real';
-  }
+  // var extraName;
+  // if(sdkType == 'sim') {
+  //   extraName = 'Sim';
+  // } else {
+  //   extraName = 'Real';
+  // }
   var sdk = getSDKs(localpath);
   var iosInfo = findPackInfo(localpath);
   var target = iosInfo.target;
@@ -36,16 +36,16 @@ function run (localpath, release, sdkType, info) {
   //清除目标目录
   // var appPath = path.resolve(localpath, './build/real/'+ target +'.app');
   // var appSimPath = path.resolve(localpath, './build/sim/'+ target +'.app');
-  var appSimPath = path.resolve(localpath, './build/'+ name + 'Sim.app');
-  var appRealPath = path.resolve(localpath, './build/' + name + 'Real.app');
-  var ipaPath = path.resolve(localpath, './build/'+ name + 'Real.ipa');
-  if (fs.existsSync(appSimPath)) {
-    console.log('删除sim app文件');
-    exec('rm -r ' + appSimPath);
-  }
-  if (fs.existsSync(appRealPath)) {
-    console.log('删除real app文件');
-    exec('rm -r ' + appRealPath);
+  var appPath = path.resolve(localpath, './build/'+ name + '.app');
+  // var appRealPath = path.resolve(localpath, './build/' + name + 'Real.app');
+  var ipaPath = path.resolve(localpath, './build/'+ name + '.ipa');
+  // if (fs.existsSync(appSimPath)) {
+  //   console.log('删除sim app文件');
+  //   exec('rm -r ' + appSimPath);
+  // }
+  if (fs.existsSync(appPath)) {
+    console.log('删除app文件');
+    exec('rm -r ' + appPath);
   }
   if (fs.existsSync(ipaPath)) {
     console.log('删除ipa文件');
@@ -90,7 +90,7 @@ function run (localpath, release, sdkType, info) {
     console.log('拷贝完成！');
     if(sdkType == 'normal') {
       debugger;
-      app2ipa(name, localpath, extraName);
+      app2ipa(name, localpath);
     }
   } else {
     console.log('文件位置不正确');
@@ -181,7 +181,7 @@ function packSim(target, scheme, config, sdk, localpath) {
   return result;
 }
 
-function app2ipa(name, localpath, extraName) {
+function app2ipa(name, localpath) {
   var abPath = path.resolve(localpath, './build/'+ name + '.ipa');
   var cmd = 'xcrun -sdk iphoneos -v PackageApplication ./build/'+ name +'.app -o ' + abPath;
   console.log('转换app文件为ipa');

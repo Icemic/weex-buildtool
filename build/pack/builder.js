@@ -880,18 +880,21 @@ var builder = {
       if (options.release) {
         var jsBundle = path.resolve(ROOT, 'dist', 'js');
         var toPath = path.resolve(ROOT, '.build', 'ios', 'playground', 'js.bundle');
+        fs.ensureDirSync(toPath);
+        fs.emptyDirSync(toPath);
         fs.copySync(jsBundle, toPath);
         debugPath = "index.js";
       }
     }).then(function () {
-      icons.ios(path.resolve(BUILDPATH));
+      return icons.ios(path.resolve(BUILDPATH));
     }).then(function () {
-      iosConfig(options.release, BUILDPATH, debugPath);
+      return iosConfig(options.release, BUILDPATH, debugPath);
     }).then(function () {
       var pack = "sim";
       var configPath = process.cwd() + '/config';
       var config = require(path.resolve(configPath, 'config.ios.js'))();
 
+      console.log('build start', options.release);
       if (options.release) {
         pack = "sim";
         var info = void 0;

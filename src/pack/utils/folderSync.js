@@ -100,6 +100,7 @@ function syncIncremental (projectPath, buildPath, excludes) {
       if (buildItem !== md5) {
         let absolutePath = path.resolve(buildPath, key);
         process.stdout.write(`  copy: ${absolutePath}\n`.grey);
+        fs.removeSync(absolutePath);
         fs.copySync(path.resolve(projectPath, key), absolutePath, {clobber: true});
       }
     }
