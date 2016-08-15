@@ -254,8 +254,8 @@ var builder = {
       }
 
 
-      var iosFile = path.resolve(options.root, '.tmp', 'ios', 'master.zip');
-      var androidFile = path.resolve(options.root, '.tmp', 'android', 'master.zip');
+      var iosFile = path.resolve(options.root, '.tmp', 'ios', options.giturl.basename || 'master.zip');
+      var androidFile = path.resolve(options.root, '.tmp', 'android', options.giturl.basename || 'master.zip');
 
       var iosTmpPath = path.resolve(options.root, '.tmp', String(Math.floor(Math.random() * 10000000)));
       var androidTmpPath = path.resolve(options.root, '.tmp', String(Math.floor(Math.random() * 10000000)));

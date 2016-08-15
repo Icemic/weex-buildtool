@@ -61,7 +61,9 @@ module.exports = function configBuild(argv) {
         options.platform = argv1;
       }
     }
-    options.giturl = {};
+    options.giturl = {
+      basename: path.basename(argv.url)
+    };
     if (options.platform === "android") {
       options.giturl.android = argv.url || defaultAndroid;
     }
