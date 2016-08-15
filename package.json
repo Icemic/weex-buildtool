@@ -15,9 +15,7 @@
   "dependencies": {
     "adbkit": "^2.5.1",
     "async": "^2.0.1",
-
     "babel-plugin-transform-runtime": "^6.7.5",
-
     "babel-runtime": "^6.6.1",
     "bluebird": "^3.4.1",
     "co": "^4.6.0",
@@ -47,7 +45,7 @@
     "plist": "^1.2.0",
     "promise": "^7.1.1",
     "prompt": "^1.0.0",
-
+    "properties": "^1.2.1",
     "qrcode-terminal": "^0.10.0",
     "sync-exec": "~0.6.2",
     "underscore": "^1.8.3",
@@ -62,8 +60,8 @@
     "weex-html5": "^0.2.23-beta",
     "weex-loader": "^0.1.5",
     "ws": "^1.1.0",
-    "yargs": "^3.32.0",
-    "xml2js": "^0.4.17"
+    "xml2js": "^0.4.17",
+    "yargs": "^3.32.0"
   },
   "optionalDependencies": {
     "ios-deploy": "^1.8.6"
