@@ -427,7 +427,7 @@ var builder = {
 
     let ip = nwUtils.getPublicIP();
     let port = '8083';
-    let debugPath = `http://${ip}:${port}/index.we`;
+    let debugPath = `http://${ip}:${port}/main.we`;
 
     fs.removeSync('dist/ios');
 
@@ -440,7 +440,7 @@ var builder = {
           fs.ensureDirSync(toPath);
           fs.emptyDirSync(toPath);
           fs.copySync(jsBundle, toPath);
-          debugPath = "index.js";
+          debugPath = "main.js";
         }
       })
       .then(() => icons.ios(path.resolve(BUILDPATH)))

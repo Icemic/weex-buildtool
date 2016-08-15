@@ -43,7 +43,7 @@ function serveForLoad() {
 
   HTTP_PORT = '8083';
   // new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath)
-  new Previewer(`./src/main.we`, NO_JSBUNDLE_OUTPUT, undefined, '0.0.0.0', false, false, '');
+  new Previewer(`./src/main.we`, NO_JSBUNDLE_OUTPUT, undefined, '0.0.0.0', false, false, './src');
 
 }
 
