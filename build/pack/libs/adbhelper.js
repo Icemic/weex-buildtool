@@ -89,7 +89,7 @@ function runApp(apkFile, packageName, activityName) {
   }).then(function (r) {
     console.info('done'.green);
   }).catch(function (err) {
-    if (err.message.includes('INSTALL_FAILED_UPDATE_INCOMPATIBLE')) {
+    if (err.message && err.message.includes('INSTALL_FAILED_UPDATE_INCOMPATIBLE')) {
       throw 'INSTALL_FAILED_UPDATE_INCOMPATIBLE, please uninstall before installing with another sign.';
     } else {
       throw err;

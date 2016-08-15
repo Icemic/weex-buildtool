@@ -275,10 +275,14 @@ var builder = {
         stdlog.info('Unzipping Android project...');
         await unzipFile(androidFile, androidTmpPath);
         let files = fs.readdirSync(androidTmpPath);
+        console.log(files);
         for (let file of files) {
+          console.log(file);
           let absoluteFilePath = path.resolve(androidTmpPath, file);
           let fileInfo = fs.statSync(absoluteFilePath);
           if (fileInfo.isDirectory()) {
+
+            console.log(absoluteFilePath, androidPath);
             fs.renameSync(absoluteFilePath, androidPath);
             break;
           }
@@ -287,6 +291,11 @@ var builder = {
       }
 
       function unzipFile(filePath, dirPath) {
+
+        fs.ensureDirSync(dirPath);
+        stdlog.infoln(`unzip ${filePath}...`);
+        // process.exit(1);
+        // exec(`unzip ${filePath} -x ${dirPath}`);
         return new Promise((resolve, reject) => {
           fs.createReadStream(path.resolve(filePath))
             .pipe(unzip.Extract({path: path.resolve(dirPath)}))
@@ -436,14 +445,13 @@ var builder = {
         let configPath = process.cwd() + '/config';
         let config = require(path.resolve(configPath, 'config.ios.js'))();
 
-        console.log('build start', options.release);
         if (options.release) {
-          pack = "sim";
-          let info;
-          info = {};
-          info.name = "weexapp-release-sim";
-          packIos(BUILDPLAYGROUND, options.release, pack, info);
-
+          // pack = "sim";
+          // let info;
+          // info = {};
+          // info.name = "weexapp-release-sim";
+          // packIos(BUILDPLAYGROUND, options.release, pack, info);
+          // release 只打真机的包
           pack = "normal";
           let info2;
           info2 = config.certificate;

@@ -54,7 +54,7 @@ async function pack(argv) {
 
     try {
       options = await configBuild(argv);
-
+      testDarwin(options);
       if (options.oprate === "init") {
 
           await builder.init(options);
@@ -78,6 +78,7 @@ async function pack(argv) {
   if (argv._[0] === "emulate") {
     try {
       options = await configProcess(argv);
+      testDarwin(options);
       let release = argv.target ? (argv.target === 'release') : true;
       await emulator.handle(options.platform, release);
       serveForLoad();
@@ -95,6 +96,7 @@ async function pack(argv) {
   if (argv._[0] === "run") {
     try {
       options = await configProcess(argv);
+      testDarwin(options);
       await builder.build(options);
       let release = argv.target ? (argv.target === 'release') : false;
       await emulator.handle(options.platform, release);
@@ -109,6 +111,13 @@ async function pack(argv) {
     }
   }
 
+}
+
+function testDarwin(options) {
+  if (options.platform=== "ios" && process.platform !== "darwin") {
+    stdlog.errorln("Unsupport platform, Mac only!");
+    process.exit(1);
+  }
 }
 
 class Previewer {
@@ -383,12 +392,6 @@ class Previewer {
     return promiseData.promise
   }
 }
-
-
-  // await gitDownload('github:zeke/download-github-repo-fixture', 'test/tmp', { clone: true }, function(err) {
-  //   if (err) return done(err);
-  //   console.log('下载 done!');
-  // });
 
 
 module.exports = pack;
