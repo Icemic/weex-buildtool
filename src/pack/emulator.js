@@ -55,7 +55,6 @@ export function ios (release) {
         appId: UserConfig.ios.appid,
         path: filename
       };
-      console.log(params);
       return simIOS(params);
     } else {
       return realIOS(filename);

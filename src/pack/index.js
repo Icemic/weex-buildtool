@@ -96,7 +96,8 @@ async function pack(argv) {
       options = await configProcess(argv);
       // console.log(options);
       await builder.build(options);
-      await emulator.handle(options.platform, options.release);
+      let release = argv.target ? (argv.target === 'release') : true;
+      await emulator.handle(options.platform, release);
       serveForLoad();
     } catch (e){
       console.error(e);

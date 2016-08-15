@@ -47,8 +47,11 @@ module.exports = function (argv) {
     }
 
     options.root = process.cwd();
+
+
     options.release = false;
     options.debug = true;
+
 
     resolve(options);
   })

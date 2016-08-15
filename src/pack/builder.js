@@ -476,10 +476,10 @@ var builder = {
           info1.name = "weexapp-debug";
           packIos(PROJECTPATH, options.release, pack, info1);
 
-          // pack = "normal";
-          // let info2 = config.certificate;
-          // info2.name = "weexapp-debug";
-          // packIos(PROJECTPATH, options.release, pack, info2);
+          pack = "normal";
+          let info2 = config.certificate;
+          info2.name = "weexapp-debug";
+          packIos(PROJECTPATH, options.release, pack, info2);
 
         }
       })
