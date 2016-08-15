@@ -17,7 +17,7 @@ function start(params) {
   if (!params.name) {
     params.name = 'example';
   }
-  currentSimulator(params, function(devicePolymer){
+  return currentSimulator().then(function(devicePolymer){
     return run(params, devicePolymer);
   });
 }
@@ -49,26 +49,28 @@ function run(params, devicePolymer) {
 }
 
 // 判断当前运行设备
-function currentSimulator (params, callback) {
-  var devicePolymer = {};
+function currentSimulator () {
+  return new Promise(function(resolve){
+    var devicePolymer = {};
 
-  getDevicesList(null)
-  .then(function(device){
-    var currentDevice = findCurrentDevice(device.devices);
+    getDevicesList(null)
+    .then(function(device){
+      var currentDevice = findCurrentDevice(device.devices);
 
-    devicePolymer.iOSDevice = device;
+      devicePolymer.iOSDevice = device;
 
-    // if(currentDevice && currentDevice.name.indexOf('simctl') > -1){
+      // if(currentDevice && currentDevice.name.indexOf('simctl') > -1){
 
-      // debug('iOS simulator running:::' + JSON.stringify(currentDevice,null,2));
-      // 确定iOS模拟器已经启动
-      // callback(false, 'iOS', currentDevice, device);
-      devicePolymer.iOSCurrentDevice = currentDevice;
-      devicePolymer.iOS = true;
-      devicePolymer.simulator = 'iOS';
-      callback(devicePolymer);
-
+        // debug('iOS simulator running:::' + JSON.stringify(currentDevice,null,2));
+        // 确定iOS模拟器已经启动
+        // callback(false, 'iOS', currentDevice, device);
+        devicePolymer.iOSCurrentDevice = currentDevice;
+        devicePolymer.iOS = true;
+        devicePolymer.simulator = 'iOS';
+        resolve(devicePolymer);
+    });
   });
+  
 }
 
 //ios
@@ -281,7 +283,6 @@ function installiOSApp(params) {
     }
     syncExecPromise('xcrun simctl uninstall booted ' + appIdentifier)
     .then(function() {
-      console.log('uninstall %s.app success!'.green, params.name);
       var cmd = 'xcrun simctl install booted ' + appPath;
       return syncExec(cmd);
     })
