@@ -38,7 +38,8 @@ function checkSDK() {
   return new _promise2.default(function (resolve, reject) {
 
     var defualtPath = path.resolve(homedir(), 'AppData/Local/Android/sdk');
-    var sdkPath = fs.existsSync(defualtPath) ? defualtPath : process.env.ANDROID_HOME;
+    defualtPath = fs.existsSync(defualtPath) ? defualtPath : '';
+    var sdkPath = process.env.ANDROID_HOME ? process.env.ANDROID_HOME : defualtPath;
     if (sdkPath) {
       // console.info('installed'.green);
       // process.stdout.write('Check SDK version...'.green);
@@ -55,7 +56,7 @@ function checkSDK() {
       process.stdout.write('done\n'.green);
       if (lack.length) {
         // console.info('检测到以下内容尚未安装：\n'.yellow);
-        stdlog.warnln('检测到以下内容尚未安装：\n');
+        stdlog.warnln('Detected that the following has not been installed:\n');
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
         var _iteratorError = undefined;
@@ -82,7 +83,6 @@ function checkSDK() {
         }
 
         stdlog.infoln('');
-        stdlog.warnln('程序将自动安装...');
         resolve(installSDK(lack, sdkPath));
       } else {
 
@@ -90,8 +90,7 @@ function checkSDK() {
       }
     } else {
       stdlog.textln('');
-      stdlog.errorln('未找到 Android SDK，请确定其已经正确安装并添加到系统环境变量，详见 http://xxxxx ');
-      reject();
+      reject('Cannot find Android SDK，make sure it has been added to environment variables, see more: ' + 'http://xxxxxx'.underline + ' ');
     }
   });
 }
@@ -103,6 +102,7 @@ function checkSDK() {
  * @return {Promise}
  */
 function installSDK(lack, sdkPath) {
+  stdlog.warnln('Auto-installing...');
   lack = lack.join(',');
   return new _promise2.default(function (resolve, reject) {
     var android = childProcess.exec(sdkPath + '/tools/android update sdk --no-ui --all --filter ' + lack);
@@ -113,10 +113,9 @@ function installSDK(lack, sdkPath) {
     process.stdin.pipe(android.stdin);
     android.on('close', function (code) {
       if (code) {
-        stdlog.errorln('安装遇到错误');
-        reject();
+        reject('exit code ' + code);
       } else {
-        stdlog.infoln('SDK 安装完成');
+        stdlog.warnln('done');
         resolve();
       }
     });
@@ -132,7 +131,7 @@ function installSDK(lack, sdkPath) {
  * @return {[type]}           [description]
  */
 function pack(buildPath, release) {
-  stdlog.infoln('准备生成APK...');
+
   return checkSDK().then(function () {
     if (process.platform !== 'win32' && false) {
       return new _promise2.default(function (resolve, reject) {
@@ -147,7 +146,7 @@ function pack(buildPath, release) {
 
     return new _promise2.default(function (resolve, reject) {
 
-      stdlog.infoln('正在启动 Gradle...');
+      stdlog.infoln('Starting gradle...');
 
       var gradlew = childProcess.execFile(path.join(buildPath, 'playground', 'gradlew' + (process.platform === 'win32' ? '.bat' : '')), [arg], { cwd: path.join(buildPath, 'playground') });
 
@@ -158,14 +157,14 @@ function pack(buildPath, release) {
 
       gradlew.on('close', function (code) {
         if (code) {
-          stdlog.errorln('APK 生成遇到错误');
-          reject();
+          reject('error code ' + code);
         } else {
-          stdlog.infoln('Android 打包完成');
-          stdlog.textln('生成的文件位于：'.yellow, path.resolve(buildPath, 'playground', 'app/build/outputs/apk/').underline);
+          // stdlog.infoln('Android 打包完成');
+          // stdlog.textln('生成的文件位于：'.yellow,
+          //   path.resolve(buildPath, 'playground','app/build/outputs/apk/').underline);
           resolve();
         }
       });
     });
-  }).catch(stdlog.errorln);
+  });
 }

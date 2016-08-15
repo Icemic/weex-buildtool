@@ -13,10 +13,9 @@ const crypto = require('crypto');
  * @return {Promise}             [description]
  */
 export default function folderSync(projectPath, buildPath, excludes) {
-  process.stdout.write('准备生成构建目录\n'.green);
   let exist = !fs.ensureDirSync(buildPath);
   if (!exist) {
-    process.stdout.write('目标文件夹不存在，将执行全量同步\n'.yellow);
+    process.stdout.write('Tartget folder not exist, fallback to folder copy.\n'.grey);
     return syncFull(projectPath, buildPath, excludes);
   } else {
     // process.stdout.write('使用增量同步...\n'.yellow);
@@ -58,7 +57,7 @@ function syncFull (projectPath, buildPath, excludes) {
 function syncIncremental (projectPath, buildPath, excludes) {
   let buildFileInfo = new Map();
   let projectFileInfo = new Map();
-  process.stdout.write('读取目录信息...'.grey);
+  process.stdout.write('Reading directory info...'.grey);
   return new Promise((resolve, reject) => {
     fs.walk(buildPath)
     .on('data', item => {
@@ -104,6 +103,6 @@ function syncIncremental (projectPath, buildPath, excludes) {
         fs.copySync(path.resolve(projectPath, key), absolutePath, {clobber: true});
       }
     }
-    process.stdout.write('完成\n'.green);
+    process.stdout.write('Folder sync done\n'.grey);
   })
 }
