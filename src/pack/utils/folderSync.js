@@ -44,7 +44,7 @@ function getMd5(p){
  * @return {[type]}             [description]
  */
 function syncFull (projectPath, buildPath, excludes) {
-  fs.copySync(projectPath, buildPath);
+  fs.copySync(projectPath, buildPath, {clobber: true});
   return Promise.resolve();
 }
 
@@ -100,7 +100,7 @@ function syncIncremental (projectPath, buildPath, excludes) {
       if (buildItem !== md5) {
         let absolutePath = path.resolve(buildPath, key);
         process.stdout.write(`  copy: ${absolutePath}\n`.grey);
-        fs.copySync(path.resolve(projectPath, key), absolutePath);
+        fs.copySync(path.resolve(projectPath, key), absolutePath, {clobber: true});
       }
     }
     process.stdout.write('完成\n'.green);
