@@ -10,7 +10,7 @@ const configPath = process.cwd() + '/config';
  * @param  {[string]} platform android 或 ios
  * @return {[type]}          [description]
  */
-function checkConfig(config, platform) {
+function checkConfig(config, platform,release) {
   if (validator.isNull(config.name)) {
     npmlog.error('打包配置错误', 'App Name 不能为空');
     process.exit(1);
@@ -57,7 +57,9 @@ function checkConfig(config, platform) {
     //判断安卓打包key配置是否正确
     if (validator.isNull(config.storePassword) || validator.isNull(config.password) || validator.isNull(config.aliasname)) {
       npmlog.error('打包配置错误', 'Android证书配置错误，不能为空');
-      process.exit(1);
+      if (release) {
+        process.exit(1);
+      }
     }
 
   }
@@ -70,7 +72,9 @@ function checkConfig(config, platform) {
     //判断ios打包key配置是否正确
     if (validator.isNull(config.certificate.codeSignIdentity) || validator.isNull(config.certificate.provisionProfile)) {
       npmlog.error('打包配置错误', 'iOS 证书配置错误');
-      process.exit(1);
+      if (release) {
+        process.exit(1);
+      }
     }
     //判断启动图
     if (config.splashscreen) {

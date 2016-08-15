@@ -22,14 +22,14 @@ module.exports = function(release, curPath, debugUrl,configFile) {
   curPath = curPath ? curPath : process.cwd() + '/ios';
   var config = require(path.resolve(configPath, configFile ? configFile : 'config.ios.js'))();
 
-  checkConfig(config, 'ios'); //检查配置
+  checkConfig(config, 'ios', release); //检查配置
 
   // console.log("ios config:", arguments);
   // console.log("ios config:", config);
 
   return new Promise((resolve, reject) => {
     var launch_path = config.launch_path;
-    if (!release) {
+    if (!release && debugUrl) {
       launch_path = debugUrl;
       //区分debug还是release
       let podfile = fs.readFileSync(path.resolve(curPath, 'playground/Podfile'), 'utf8');
