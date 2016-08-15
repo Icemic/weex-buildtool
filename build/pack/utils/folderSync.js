@@ -37,10 +37,9 @@ var crypto = require('crypto');
  * @return {Promise}             [description]
  */
 function folderSync(projectPath, buildPath, excludes) {
-  process.stdout.write('准备生成构建目录\n'.green);
   var exist = !fs.ensureDirSync(buildPath);
   if (!exist) {
-    process.stdout.write('目标文件夹不存在，将执行全量同步\n'.yellow);
+    process.stdout.write('Tartget folder not exist, fallback to folder copy.\n'.grey);
     return syncFull(projectPath, buildPath, excludes);
   } else {
     // process.stdout.write('使用增量同步...\n'.yellow);
@@ -68,7 +67,7 @@ function getMd5(p) {
  * @return {[type]}             [description]
  */
 function syncFull(projectPath, buildPath, excludes) {
-  fs.copySync(projectPath, buildPath);
+  fs.copySync(projectPath, buildPath, { clobber: true });
   return _promise2.default.resolve();
 }
 
@@ -82,7 +81,7 @@ function syncFull(projectPath, buildPath, excludes) {
 function syncIncremental(projectPath, buildPath, excludes) {
   var buildFileInfo = new _map2.default();
   var projectFileInfo = new _map2.default();
-  process.stdout.write('读取目录信息...'.grey);
+  process.stdout.write('Reading directory info...'.grey);
   return new _promise2.default(function (resolve, reject) {
     fs.walk(buildPath).on('data', function (item) {
       if (item.stats.isFile()) {
@@ -148,7 +147,7 @@ function syncIncremental(projectPath, buildPath, excludes) {
         if (buildItem !== md5) {
           var absolutePath = path.resolve(buildPath, key);
           process.stdout.write(('  copy: ' + absolutePath + '\n').grey);
-          fs.copySync(path.resolve(projectPath, key), absolutePath);
+          fs.copySync(path.resolve(projectPath, key), absolutePath, { clobber: true });
         }
       }
     } catch (err) {
@@ -166,6 +165,6 @@ function syncIncremental(projectPath, buildPath, excludes) {
       }
     }
 
-    process.stdout.write('完成\n'.green);
+    process.stdout.write('Folder sync done\n'.grey);
   });
 }

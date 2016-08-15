@@ -49,14 +49,11 @@ function serveForLoad() {
 
 async function pack(argv) {
   var options = {};
-  // let options = require('./config-yagrs')(yargs, argv);
 
   if (argv._[0] === "build"){
 
     try {
       options = await configBuild(argv);
-
-
 
       if (options.oprate === "init") {
 
@@ -69,41 +66,47 @@ async function pack(argv) {
       }
 
     } catch (e) {
-      stdlog.errorln(e);
-      stdlog.errorln('Build failed.');
+      stdlog.errorln('');
+      if (typeof e === 'string') {
+        stdlog.errorln(`Error: ${e}`);
+      } else {
+        stdlog.errorln(e);
+      }
     }
-
-    stdlog.infoln('Build Success');
   }
 
   if (argv._[0] === "emulate") {
     try {
       options = await configProcess(argv);
       let release = argv.target ? (argv.target === 'release') : true;
-
-      await emulator.handle(options.platform, false);
+      await emulator.handle(options.platform, release);
       serveForLoad();
 
     } catch (e){
-      stdlog.errorln(e);
+      stdlog.errorln('');
+      if (typeof e === 'string') {
+        stdlog.errorln(`Error: ${e}`);
+      } else {
+        stdlog.errorln(e);
+      }
     }
-    // console.log(options);
   }
 
   if (argv._[0] === "run") {
     try {
-      console.log('run...');
       options = await configProcess(argv);
-      // console.log(options);
       await builder.build(options);
-      // let release = argv.target ? (argv.target === 'release') : true;
-      await emulator.handle(options.platform, options.release);
+      let release = argv.target ? (argv.target === 'release') : false;
+      await emulator.handle(options.platform, release);
       serveForLoad();
     } catch (e){
-      console.error(e);
+      stdlog.errorln('');
+      if (typeof e === 'string') {
+        stdlog.errorln(`Error: ${e}`);
+      } else {
+        stdlog.errorln(e);
+      }
     }
-    console.log(options);
-
   }
 
 }
