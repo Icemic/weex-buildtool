@@ -6,6 +6,7 @@ const npmlog = require('npmlog');
 const path = require('path');
 const crypto = require('crypto');
 const icons = require('./icons.js');
+const homedir = require('homedir');
 const nw_utils = require('../../nw-utils.js');
 const xml2js = require('xml2js');
 const checkConfig = require('./check-config.js');
@@ -92,7 +93,7 @@ module.exports = function(release, curPath, debugUrl,configFile) {
           process.stderr.write('请配置 Android SDK 地址'.red);
           process.exit(1);
         }
-
+        console.log(config.sdkdir)
         let outString = data.replace(/sdk\.dir.*/, 'sdk.dir=' + path.resolve(configPath, config.sdkdir).replace(/\\/g, '/'));
         fs.writeFileSync(path.resolve(curPath, 'playground/local.properties'), outString);
 
