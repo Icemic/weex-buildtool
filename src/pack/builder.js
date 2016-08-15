@@ -454,13 +454,8 @@ var builder = {
           debugPath = "index.js";
         }
       })
-      .then(() => {
-        icons.ios(path.resolve(BUILDPATH));
-      })
-      .then(() => {
-        iosConfig(options.release, BUILDPATH, debugPath)
-        console.log('config ok');
-      })
+      .then(() => icons.ios(path.resolve(BUILDPATH)))
+      .then(() => iosConfig(options.release, BUILDPATH, debugPath))
       .then(() => {
         let pack = "sim";
         let configPath = process.cwd() + '/config';

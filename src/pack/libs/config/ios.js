@@ -49,5 +49,6 @@ module.exports = function(release, curPath, debugUrl,configFile) {
 
     fs.writeFileSync(path.resolve(curPath, 'playground/WeexApp/Info.plist'), data);
     resolve();
+    console.log('config-----------------------------ok--------------')
   });
 };

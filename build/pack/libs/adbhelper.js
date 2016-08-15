@@ -67,19 +67,18 @@ function getDeviceList() {
 function runApp(apkFile, packageName, activityName) {
   return getDeviceList().then(function (r) {
     if (!r.length) {
-      console.info('没有检测到可用的设备，请检查后重试'.red);
-      process.exit(0);
+      throw 'No device available, please check and try again.';
     }
     return inquirer.prompt([{
       type: 'list',
       name: 'device',
-      message: '请选择用于调试的设备（含虚拟机）：',
+      message: 'Please choose a device or simulator:',
       choices: r
     }]).then(function (answers) {
       return answers.device;
     });
   }).then(function (deviceId) {
-    process.stdout.write('正在向设备安装应用...'.green);
+    process.stdout.write('Deploying to device...'.green);
     return client.install(deviceId, apkFile).then(function () {
       return client.startActivity(deviceId, {
         debug: false,
@@ -90,6 +89,10 @@ function runApp(apkFile, packageName, activityName) {
   }).then(function (r) {
     console.info('done'.green);
   }).catch(function (err) {
-    console.info('\n遇到错误，详情：'.red, err.stack);
+    if (err.message.includes('INSTALL_FAILED_UPDATE_INCOMPATIBLE')) {
+      throw 'INSTALL_FAILED_UPDATE_INCOMPATIBLE, please uninstall before installing with another sign.';
+    } else {
+      throw err;
+    }
   });
 }

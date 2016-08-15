@@ -886,10 +886,9 @@ var builder = {
         debugPath = "index.js";
       }
     }).then(function () {
-      icons.ios(path.resolve(BUILDPATH));
+      return icons.ios(path.resolve(BUILDPATH));
     }).then(function () {
-      iosConfig(options.release, BUILDPATH, debugPath);
-      console.log('config ok');
+      return iosConfig(options.release, BUILDPATH, debugPath);
     }).then(function () {
       var pack = "sim";
       var configPath = process.cwd() + '/config';
