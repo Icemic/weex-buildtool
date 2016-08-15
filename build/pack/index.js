@@ -31,7 +31,7 @@ var pack = function () {
             options = {};
 
             if (!(argv._[0] === "build")) {
-              _context.next = 20;
+              _context.next = 21;
               break;
             }
 
@@ -42,33 +42,35 @@ var pack = function () {
           case 5:
             options = _context.sent;
 
+            testDarwin(options);
+
             if (!(options.oprate === "init")) {
-              _context.next = 11;
+              _context.next = 12;
               break;
             }
 
-            _context.next = 9;
+            _context.next = 10;
             return builder.init(options);
 
-          case 9:
-            _context.next = 14;
+          case 10:
+            _context.next = 15;
             break;
 
-          case 11:
+          case 12:
             if (!(options.oprate === "build")) {
-              _context.next = 14;
+              _context.next = 15;
               break;
             }
 
-            _context.next = 14;
+            _context.next = 15;
             return builder.build(options);
 
-          case 14:
-            _context.next = 20;
+          case 15:
+            _context.next = 21;
             break;
 
-          case 16:
-            _context.prev = 16;
+          case 17:
+            _context.prev = 17;
             _context.t0 = _context['catch'](2);
 
             stdlog.errorln('');
@@ -78,31 +80,33 @@ var pack = function () {
               stdlog.errorln(_context.t0);
             }
 
-          case 20:
+          case 21:
             if (!(argv._[0] === "emulate")) {
-              _context.next = 35;
+              _context.next = 37;
               break;
             }
 
-            _context.prev = 21;
-            _context.next = 24;
+            _context.prev = 22;
+            _context.next = 25;
             return configProcess(argv);
 
-          case 24:
+          case 25:
             options = _context.sent;
-            release = argv.target ? argv.target === 'release' : true;
-            _context.next = 28;
+
+            testDarwin(options);
+            release = argv.target ? argv.target === 'release' : false;
+            _context.next = 30;
             return emulator.handle(options.platform, release);
 
-          case 28:
+          case 30:
             serveForLoad();
 
-            _context.next = 35;
+            _context.next = 37;
             break;
 
-          case 31:
-            _context.prev = 31;
-            _context.t1 = _context['catch'](21);
+          case 33:
+            _context.prev = 33;
+            _context.t1 = _context['catch'](22);
 
             stdlog.errorln('');
             if (typeof _context.t1 === 'string') {
@@ -111,34 +115,36 @@ var pack = function () {
               stdlog.errorln(_context.t1);
             }
 
-          case 35:
+          case 37:
             if (!(argv._[0] === "run")) {
-              _context.next = 52;
+              _context.next = 55;
               break;
             }
 
-            _context.prev = 36;
-            _context.next = 39;
+            _context.prev = 38;
+            _context.next = 41;
             return configProcess(argv);
 
-          case 39:
+          case 41:
             options = _context.sent;
-            _context.next = 42;
+
+            testDarwin(options);
+            _context.next = 45;
             return builder.build(options);
 
-          case 42:
+          case 45:
             _release = argv.target ? argv.target === 'release' : false;
-            _context.next = 45;
+            _context.next = 48;
             return emulator.handle(options.platform, _release);
 
-          case 45:
+          case 48:
             serveForLoad();
-            _context.next = 52;
+            _context.next = 55;
             break;
 
-          case 48:
-            _context.prev = 48;
-            _context.t2 = _context['catch'](36);
+          case 51:
+            _context.prev = 51;
+            _context.t2 = _context['catch'](38);
 
             stdlog.errorln('');
             if (typeof _context.t2 === 'string') {
@@ -147,12 +153,12 @@ var pack = function () {
               stdlog.errorln(_context.t2);
             }
 
-          case 52:
+          case 55:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, this, [[2, 16], [21, 31], [36, 48]]);
+    }, _callee, this, [[2, 17], [22, 33], [38, 51]]);
   }));
 
   return function pack(_x) {
@@ -207,6 +213,13 @@ function serveForLoad() {
 
   HTTP_PORT = '8083';
   new Previewer(null, null, false, DEFAULT_HOST, false, false, transformPath);
+}
+
+function testDarwin(options) {
+  if (options.platform === "ios" && process.platform !== "darwin") {
+    stdlog.errorln("Unsupport platform, Mac only!");
+    process.exit(1);
+  }
 }
 
 var Previewer = function () {
@@ -498,11 +511,5 @@ var Previewer = function () {
   }]);
   return Previewer;
 }();
-
-// await gitDownload('github:zeke/download-github-repo-fixture', 'test/tmp', { clone: true }, function(err) {
-//   if (err) return done(err);
-//   console.log('下载 done!');
-// });
-
 
 module.exports = pack;

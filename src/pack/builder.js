@@ -97,6 +97,8 @@ var builder = {
     },
     prompting: async function(options) {
       // 与用户交互
+
+      // 默认是都需要拷贝
       options.overwrite = {
         android: true,
         ios: true
@@ -189,11 +191,14 @@ var builder = {
           break;
       }
 
-      stdlog.info('Generating assets files...');
 
-      let assetsPath = path.resolve(options.root, 'assets');
-      fs.ensureDirSync(assetsPath);
-      fs.copySync(path.resolve(options.toolRoot, 'package-template', 'assets'), assetsPath);
+      if (options.overwrite.ios || options.overwrite.android) {
+        stdlog.info('Generating assets files...');
+
+        let assetsPath = path.resolve(options.root, 'assets');
+        fs.ensureDirSync(assetsPath);
+        fs.copySync(path.resolve(options.toolRoot, 'package-template', 'assets'), assetsPath);
+      }
 
       stdlog.infoln('done');
 
@@ -275,10 +280,14 @@ var builder = {
         stdlog.info('Unzipping Android project...');
         await unzipFile(androidFile, androidTmpPath);
         let files = fs.readdirSync(androidTmpPath);
+        console.log(files);
         for (let file of files) {
+          console.log(file);
           let absoluteFilePath = path.resolve(androidTmpPath, file);
           let fileInfo = fs.statSync(absoluteFilePath);
           if (fileInfo.isDirectory()) {
+
+            console.log(absoluteFilePath, androidPath);
             fs.renameSync(absoluteFilePath, androidPath);
             break;
           }
@@ -287,6 +296,11 @@ var builder = {
       }
 
       function unzipFile(filePath, dirPath) {
+
+        fs.ensureDirSync(dirPath);
+        stdlog.infoln(`unzip ${filePath}...`);
+        // process.exit(1);
+        // exec(`unzip ${filePath} -x ${dirPath}`);
         return new Promise((resolve, reject) => {
           fs.createReadStream(path.resolve(filePath))
             .pipe(unzip.Extract({path: path.resolve(dirPath)}))
@@ -366,16 +380,16 @@ var builder = {
 
     let ip = nwUtils.getPublicIP();
     let port = '8083';
-    let debugPath = `http://${ip}:${port}/index.we`;
+    let debugPath = `http://${ip}:${port}/main.we`;
 
-    let jsbundle = path.resolve('index.js');
+    let jsbundle = path.resolve('main.js');
 
     return folderSync(PROJECTPATH, BUILDPATH)
       .then(() => {
         if (options.release) {
           debugPath = jsbundle;
-          return folderSync(path.resolve(ROOT, 'dist', 'js'),
-            path.resolve(ROOT, '.build/android/playground/app/src/main/assets'));
+          let dirPath = fs.ensureDirSync(path.resolve(ROOT, '.build/android/playground/app/src/main/assets/JSBundle'));
+          return folderSync(path.resolve(ROOT, 'dist', 'js'), dirPath);
         }
       })
       .then(() => icons.android(BUILDPATH))
@@ -436,14 +450,13 @@ var builder = {
         let configPath = process.cwd() + '/config';
         let config = require(path.resolve(configPath, 'config.ios.js'))();
 
-        console.log('build start', options.release);
         if (options.release) {
-          pack = "sim";
-          let info;
-          info = {};
-          info.name = "weexapp-release-sim";
-          packIos(BUILDPLAYGROUND, options.release, pack, info);
-
+          // pack = "sim";
+          // let info;
+          // info = {};
+          // info.name = "weexapp-release-sim";
+          // packIos(BUILDPLAYGROUND, options.release, pack, info);
+          // release 只打真机的包
           pack = "normal";
           let info2;
           info2 = config.certificate;
@@ -526,7 +539,6 @@ var builder = {
         });
     });
   },
-
 
   existFile (path) {
     fs.accessSync(path, fs.R_OK);

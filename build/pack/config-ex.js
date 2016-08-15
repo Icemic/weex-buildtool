@@ -80,9 +80,11 @@ module.exports = function (argv) {
                 options.debug = false;
               }
 
+              options.name = argv.n || "";
+
               resolve(options);
 
-            case 11:
+            case 12:
             case "end":
               return _context.stop();
           }
