@@ -15,8 +15,8 @@ export function handle(platform, release, options) {
     return android(release);
   } else if (platform === 'ios') {
     return ios(release, options);
-  // } else if (platform === 'h5') {
-  //   return h5();
+  } else if (platform === 'html') {
+    // return h5();
   } else {
     throw `Unrecognized platform <${platform}>`;
   }

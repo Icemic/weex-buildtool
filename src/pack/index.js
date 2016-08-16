@@ -84,10 +84,16 @@ async function pack(argv) {
   if (argv._[0] === "emulate") {
     try {
       options = await configProcess(argv);
-      testDarwin(options);
-      let release = options.release;
-      await emulator.handle(options.platform, release, options);
-      !release && serveForLoad();
+      if (options.platform === "html") {
+        builder.build(options);
+      } else {
+        testDarwin(options);
+        let release = options.release;
+        await emulator.handle(options.platform, release, options);
+        !release && serveForLoad();
+      }
+
+
 
     } catch (e){
       stdlog.errorln('');
@@ -101,12 +107,17 @@ async function pack(argv) {
 
   if (argv._[0] === "run") {
     try {
-      options = await configProcess(argv);
-      testDarwin(options);
-      await builder.build(options);
-      let release = options.release;
-      await emulator.handle(options.platform, release, options);
-      !release && serveForLoad();
+      if (options.platform === "html") {
+        builder.build(options);
+      } else {
+        options = await configProcess(argv);
+        testDarwin(options);
+        await builder.build(options);
+        let release = options.release;
+        await emulator.handle(options.platform, release, options);
+        !release && serveForLoad();
+      }
+
     } catch (e){
       stdlog.errorln('');
       if (typeof e === 'string') {

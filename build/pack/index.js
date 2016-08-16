@@ -87,7 +87,7 @@ var pack = function () {
 
           case 22:
             if (!(argv._[0] === "emulate")) {
-              _context.next = 38;
+              _context.next = 42;
               break;
             }
 
@@ -98,19 +98,30 @@ var pack = function () {
           case 26:
             options = _context.sent;
 
-            testDarwin(options);
-            release = options.release;
-            _context.next = 31;
-            return emulator.handle(options.platform, release, options);
+            if (!(options.platform === "html")) {
+              _context.next = 31;
+              break;
+            }
 
-          case 31:
-            !release && serveForLoad();
-
-            _context.next = 38;
+            builder.build(options);
+            _context.next = 36;
             break;
 
-          case 34:
-            _context.prev = 34;
+          case 31:
+            testDarwin(options);
+            release = options.release;
+            _context.next = 35;
+            return emulator.handle(options.platform, release, options);
+
+          case 35:
+            !release && serveForLoad();
+
+          case 36:
+            _context.next = 42;
+            break;
+
+          case 38:
+            _context.prev = 38;
             _context.t1 = _context['catch'](23);
 
             stdlog.errorln('');
@@ -120,36 +131,49 @@ var pack = function () {
               stdlog.errorln(_context.t1.stack);
             }
 
-          case 38:
+          case 42:
             if (!(argv._[0] === "run")) {
-              _context.next = 56;
+              _context.next = 64;
               break;
             }
 
-            _context.prev = 39;
-            _context.next = 42;
+            _context.prev = 43;
+
+            if (!(options.platform === "html")) {
+              _context.next = 48;
+              break;
+            }
+
+            builder.build(options);
+            _context.next = 58;
+            break;
+
+          case 48:
+            _context.next = 50;
             return configProcess(argv);
 
-          case 42:
+          case 50:
             options = _context.sent;
 
             testDarwin(options);
-            _context.next = 46;
+            _context.next = 54;
             return builder.build(options);
 
-          case 46:
+          case 54:
             _release = options.release;
-            _context.next = 49;
+            _context.next = 57;
             return emulator.handle(options.platform, _release, options);
 
-          case 49:
+          case 57:
             !_release && serveForLoad();
-            _context.next = 56;
+
+          case 58:
+            _context.next = 64;
             break;
 
-          case 52:
-            _context.prev = 52;
-            _context.t2 = _context['catch'](39);
+          case 60:
+            _context.prev = 60;
+            _context.t2 = _context['catch'](43);
 
             stdlog.errorln('');
             if (typeof _context.t2 === 'string') {
@@ -158,12 +182,12 @@ var pack = function () {
               stdlog.errorln(_context.t2.stack);
             }
 
-          case 56:
+          case 64:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, this, [[2, 18], [23, 34], [39, 52]]);
+    }, _callee, this, [[2, 18], [23, 38], [43, 60]]);
   }));
 
   return function pack(_x) {

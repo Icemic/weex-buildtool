@@ -695,120 +695,116 @@ var builder = {
 
             case 2:
               platform = options.platform;
-
-
-              console.log(options);
-
               _context7.t0 = platform;
-              _context7.next = _context7.t0 === 'android' ? 7 : _context7.t0 === 'ios' ? 10 : _context7.t0 === 'all' ? 13 : 16;
+              _context7.next = _context7.t0 === 'android' ? 6 : _context7.t0 === 'ios' ? 9 : _context7.t0 === 'all' ? 12 : 15;
               break;
 
-            case 7:
+            case 6:
               if (options.projectandroid) {
-                _context7.next = 9;
+                _context7.next = 8;
                 break;
               }
 
               throw "Can't find project";
+
+            case 8:
+              return _context7.abrupt('break', 15);
 
             case 9:
-              return _context7.abrupt('break', 16);
-
-            case 10:
               if (options.projectios) {
-                _context7.next = 12;
+                _context7.next = 11;
                 break;
               }
 
               throw "Can't find project";
 
-            case 12:
-              return _context7.abrupt('break', 16);
+            case 11:
+              return _context7.abrupt('break', 15);
 
-            case 13:
+            case 12:
               if (!(!options.projectandroid || !options.projectios)) {
-                _context7.next = 15;
+                _context7.next = 14;
                 break;
               }
 
               throw "Can't find projects";
 
-            case 15:
-              return _context7.abrupt('break', 16);
+            case 14:
+              return _context7.abrupt('break', 15);
 
-            case 16:
-              _context7.next = 18;
+            case 15:
+              _context7.next = 17;
               return this.makeJsbundle();
 
-            case 18:
+            case 17:
               if (!options.release) {
-                _context7.next = 23;
+                _context7.next = 22;
                 break;
               }
 
-              _context7.next = 21;
+              _context7.next = 20;
               return this.makeJsbundle();
 
-            case 21:
-              _context7.next = 24;
+            case 20:
+              _context7.next = 23;
               break;
 
-            case 23:
+            case 22:
               stdlog.warnln('Skip JSBundle generation in debug mode');
 
-            case 24:
+            case 23:
               if (!(platform === 'android')) {
-                _context7.next = 29;
+                _context7.next = 28;
                 break;
               }
 
-              _context7.next = 27;
+              _context7.next = 26;
               return this.buildAndroid(options);
 
-            case 27:
-              _context7.next = 44;
+            case 26:
+              _context7.next = 43;
               break;
 
-            case 29:
+            case 28:
               if (!(platform === 'ios')) {
-                _context7.next = 34;
+                _context7.next = 33;
                 break;
               }
 
-              _context7.next = 32;
+              _context7.next = 31;
               return this.buildIos(options);
 
-            case 32:
-              _context7.next = 44;
+            case 31:
+              _context7.next = 43;
               break;
 
-            case 34:
+            case 33:
               if (!(platform === 'html')) {
-                _context7.next = 39;
+                _context7.next = 38;
                 break;
               }
 
-              _context7.next = 37;
+              _context7.next = 36;
               return this.buildHtml(options);
 
-            case 37:
-              _context7.next = 44;
+            case 36:
+              _context7.next = 43;
               break;
 
-            case 39:
+            case 38:
               if (!(platform === 'all')) {
-                _context7.next = 44;
+                _context7.next = 43;
                 break;
               }
 
-              _context7.next = 42;
+              _context7.next = 41;
               return this.buildAll(options);
 
-            case 42:
-              _context7.next = 44;
+            case 41:
+              _context7.next = 43;
               break;
 
-            case 44:
+            case 43:
             case 'end':
               return _context7.stop();
           }

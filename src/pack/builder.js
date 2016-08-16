@@ -345,8 +345,6 @@ var builder = {
 
     const platform = options.platform;
 
-    console.log(options);
-
     switch (platform) {
       case 'android':
         if( !options.projectandroid ) {
