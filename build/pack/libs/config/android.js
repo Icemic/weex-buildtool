@@ -94,7 +94,6 @@ module.exports = function (release, curPath, debugUrl, configFile) {
         process.stderr.write('please fill Android SDK adress in configuration file'.red);
         process.exit(1);
       }
-      // console.log(config.sdkDir)
       var outString = data.replace(/sdk\.dir.*/, 'sdk.dir=' + path.resolve(configPath, config.sdkDir).replace(/\\/g, '/'));
       fs.writeFileSync(path.resolve(curPath, 'playground/local.properties'), outString);
 
@@ -142,7 +141,7 @@ module.exports = function (release, curPath, debugUrl, configFile) {
       var keytool = childProcess.exec('keytool -list -keystore ' + path.resolve(configPath, config.keystore).replace(/\\/g, '/'), function (err, stdout, stderr) {
 
         if (err) {
-          console.log(err);
+          // console.log(err)
           reject(err);
         } else {
 
@@ -154,7 +153,7 @@ module.exports = function (release, curPath, debugUrl, configFile) {
           if (r && r.length) {
             sha1 = r[1].replace(/:/g, '');
           } else {
-            console.error(stdout);
+            // console.error(stdout)
             reject('reading certification error, password and aliasname might be incorrect');
             return;
           }

@@ -54,7 +54,7 @@ module.exports = function (argv) {
               return inquirer.prompt([{
                 type: 'list',
                 name: 'command',
-                message: '请选择你所需要的操作',
+                message: 'Choose an operation: ',
                 choices: [options.oprate + " android", options.oprate + " ios", options.oprate + " html"]
               }]).then(function (value) {
                 // exec(`pakeex ${value.command}`, {cwd: process.cwd()});
@@ -82,7 +82,7 @@ module.exports = function (argv) {
               return inquirer.prompt([{
                 type: 'list',
                 name: 'type',
-                message: 'Where would you like to install the app',
+                message: 'Where would you like to install the app: ',
                 choices: [{ value: true, name: 'Simulator' }, { value: false, name: 'Real Device' }]
               }]).then(function (value) {
                 // exec(`pakeex ${value.command}`, {cwd: process.cwd()});

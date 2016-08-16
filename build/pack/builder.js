@@ -45,6 +45,7 @@ var npmlog = require('npmlog');
 var glob = require("glob");
 var unzip = require('unzip');
 var exec = require('sync-exec');
+var childProcess = require('child_process');
 var stdlog = require('./utils/stdlog');
 
 var packIos = require('./libs/pack-ios');
@@ -282,31 +283,41 @@ var builder = {
       fs.ensureDirSync(configPath);
 
       if (!options.configbase) {
-        stdlog.textln("create: config.base.js");
         fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.base.js'), path.resolve(configPath, 'config.base.js'));
+        stdlog.debugln("config.base.js...created");
+      } else {
+        stdlog.debugln("config.base.js...exists");
       }
 
       switch (platform) {
         case "android":
           if (!options.configandroid) {
-            stdlog.textln("create: config.android.js");
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.android.js'), path.resolve(configPath, 'config.android.js'));
+            stdlog.debugln("config.android.js...created");
+          } else {
+            stdlog.debugln("config.android.js...exists");
           }
           break;
         case "ios":
           if (!options.configios) {
-            stdlog.textln("create: config.ios.js");
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
+            stdlog.debugln("config.ios.js...created");
+          } else {
+            stdlog.debugln("config.ios.js...exists");
           }
           break;
         case "all":
           if (!options.configandroid) {
-            stdlog.textln("create: config.android.js");
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.android.js'), path.resolve(configPath, 'config.android.js'));
+            stdlog.debugln("config.android.js...created");
+          } else {
+            stdlog.debugln("config.android.js...exists");
           }
           if (!options.configios) {
-            stdlog.textln("create: config.ios.js");
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
+            stdlog.debugln("config.ios.js...created");
+          } else {
+            stdlog.debugln("config.ios.js...exists");
           }
           break;
       }
@@ -338,12 +349,10 @@ var builder = {
                   fs.ensureDirSync(dirPath);
                   stdlog.infoln('unzip ' + filePath + '...');
                   // process.exit(1);
-                  exec('unzip ' + filePath + ' -d ' + dirPath);
-                  // return new Promise((resolve, reject) => {
-                  //   fs.createReadStream(path.resolve(filePath))
-                  //     .pipe(unzip.Extract({path: path.resolve(dirPath)}))
-                  //     .on('close', resolve).on('error', reject);
-                  // });
+                  // exec(`unzip ${filePath} -d ${dirPath}`);
+                  return new _promise2.default(function (resolve, reject) {
+                    fs.createReadStream(path.resolve(filePath)).pipe(unzip.Extract({ path: path.resolve(dirPath) })).on('close', resolve).on('error', reject);
+                  });
                 };
 
                 //console.log("下载安装操作");
@@ -491,7 +500,7 @@ var builder = {
 
               case 63:
                 if (!options.download.android) {
-                  _context5.next = 99;
+                  _context5.next = 98;
                   break;
                 }
 
@@ -509,7 +518,7 @@ var builder = {
 
               case 73:
                 if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                  _context5.next = 84;
+                  _context5.next = 83;
                   break;
                 }
 
@@ -518,62 +527,61 @@ var builder = {
                 _fileInfo = fs.statSync(_absoluteFilePath);
 
                 if (!_fileInfo.isDirectory()) {
-                  _context5.next = 81;
+                  _context5.next = 80;
                   break;
                 }
 
-                console.log(_absoluteFilePath, androidPath);
                 fs.renameSync(_absoluteFilePath, androidPath);
-                return _context5.abrupt('break', 84);
+                return _context5.abrupt('break', 83);
 
-              case 81:
+              case 80:
                 _iteratorNormalCompletion2 = true;
                 _context5.next = 73;
                 break;
 
-              case 84:
-                _context5.next = 90;
+              case 83:
+                _context5.next = 89;
                 break;
 
-              case 86:
-                _context5.prev = 86;
+              case 85:
+                _context5.prev = 85;
                 _context5.t1 = _context5['catch'](71);
                 _didIteratorError2 = true;
                 _iteratorError2 = _context5.t1;
 
-              case 90:
+              case 89:
+                _context5.prev = 89;
                 _context5.prev = 90;
-                _context5.prev = 91;
 
                 if (!_iteratorNormalCompletion2 && _iterator2.return) {
                   _iterator2.return();
                 }
 
-              case 93:
-                _context5.prev = 93;
+              case 92:
+                _context5.prev = 92;
 
                 if (!_didIteratorError2) {
-                  _context5.next = 96;
+                  _context5.next = 95;
                   break;
                 }
 
                 throw _iteratorError2;
 
+              case 95:
+                return _context5.finish(92);
+
               case 96:
-                return _context5.finish(93);
+                return _context5.finish(89);
 
               case 97:
-                return _context5.finish(90);
-
-              case 98:
                 stdlog.infoln('done');
 
-              case 99:
+              case 98:
               case 'end':
                 return _context5.stop();
             }
           }
-        }, _callee5, this, [[36, 50, 54, 62], [55,, 57, 61], [71, 86, 90, 98], [91,, 93, 97]]);
+        }, _callee5, this, [[36, 50, 54, 62], [55,, 57, 61], [71, 85, 89, 97], [90,, 92, 96]]);
       }));
 
       function install(_x3) {
@@ -996,6 +1004,11 @@ var builder = {
               fs.emptyDirSync(bundleOutputPath);
 
               stdlog.info('Generating JSBundle...');
+              // await new Promise((resolve, reject) => {
+              //   let weex = childProcess.exec(`weex ${bundleInputPath}/main.we -o ${bundleOutputPath}/main.js`);
+              //   weex.on('error', reject);
+              //   weex.on('close', resolve);
+              // })
               exec('weex ' + bundleInputPath + '/main.we -o ' + bundleOutputPath + '/main.js');
               stdlog.infoln('done');
 

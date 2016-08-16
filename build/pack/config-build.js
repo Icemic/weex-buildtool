@@ -49,7 +49,7 @@ module.exports = function () {
             return inquirer.prompt([{
               type: 'list',
               name: 'command',
-              message: '请选择你所需要的操作',
+              message: 'Choose an operation: ',
               choices: ['build init', 'build android', 'build ios', 'build all']
             }]).then(function (value) {
               // exec(`pakeex ${value.command}`, {cwd: process.cwd()});

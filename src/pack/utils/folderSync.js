@@ -85,24 +85,28 @@ function syncIncremental (projectPath, buildPath, excludes) {
   .then(() => {
     process.stdout.write('done\n'.grey);
     let buildKeys = buildFileInfo.keys();
+    process.stdout.write(`  removing files...`.grey);
     for (let key of buildKeys) {
       if (!projectFileInfo.has(key)) {
         let absolutePath = path.resolve(buildPath, key);
-        process.stdout.write(`  remove: ${absolutePath}\n`.grey);
+        // process.stdout.write(`  remove: ${absolutePath}\n`.grey);
         fs.removeSync(absolutePath);
       }
     }
+    process.stdout.write('done\n'.grey);
   })
   .then(() => {
+    process.stdout.write(`  copying files...`.grey);
     for (let [key, md5] of projectFileInfo) {
       let buildItem = buildFileInfo.get(key);
       if (buildItem !== md5) {
         let absolutePath = path.resolve(buildPath, key);
-        process.stdout.write(`  copy: ${absolutePath}\n`.grey);
+        // process.stdout.write(`  copy: ${absolutePath}\n`.grey);
         fs.removeSync(absolutePath);
         fs.copySync(path.resolve(projectPath, key), absolutePath, {clobber: true});
       }
     }
-    process.stdout.write('Folder sync done\n'.grey);
+    process.stdout.write('done\n'.grey);
+    // process.stdout.write('Folder sync done\n'.grey);
   })
 }

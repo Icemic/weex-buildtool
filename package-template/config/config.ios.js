@@ -16,8 +16,8 @@ module.exports = function () {
       "Default-Portrait~ipad.png": "../assets/splash/Default-Portrait~ipad.png"/*768*1024 启动图片*/
     },
     "certificate":{
-      "codeSignIdentity": "iPhone Developer: zhuiqian wu (22RMUQ2DWW)",
-      "provisionProfile": "603293e6-841f-4488-a720-94f399ecb07f"
+      "codeSignIdentity": "iPhone Developer: zhuiqian wu (22RMUQ2DWW)",/*必选，开发者证书ID*/
+      "provisionProfile": "603293e6-841f-4488-a720-94f399ecb07f"/*必选，签名描述文件*/
     }
   };
   return Object.assign(baseConfig,iosCfg);

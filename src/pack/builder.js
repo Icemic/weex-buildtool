@@ -7,6 +7,7 @@ const npmlog = require('npmlog');
 const glob = require("glob");
 const unzip = require('unzip');
 const exec = require('sync-exec');
+const childProcess = require('child_process');
 const stdlog = require('./utils/stdlog');
 
 const packIos = require('./libs/pack-ios');
@@ -162,31 +163,41 @@ var builder = {
       fs.ensureDirSync(configPath);
 
       if (!options.configbase) {
-        stdlog.textln("create: config.base.js");
         fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.base.js'), path.resolve(configPath, 'config.base.js'));
+        stdlog.debugln("config.base.js...created");
+      } else {
+        stdlog.debugln("config.base.js...exists");
       }
 
       switch (platform) {
         case "android":
           if (!options.configandroid) {
-            stdlog.textln("create: config.android.js");
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.android.js'), path.resolve(configPath, 'config.android.js'));
+            stdlog.debugln("config.android.js...created");
+          } else {
+            stdlog.debugln("config.android.js...exists");
           }
           break;
         case "ios":
           if (!options.configios) {
-            stdlog.textln("create: config.ios.js");
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
+            stdlog.debugln("config.ios.js...created");
+          } else {
+            stdlog.debugln("config.ios.js...exists");
           }
           break;
         case "all":
           if (!options.configandroid) {
-            stdlog.textln("create: config.android.js");
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.android.js'), path.resolve(configPath, 'config.android.js'));
+            stdlog.debugln("config.android.js...created");
+          } else {
+            stdlog.debugln("config.android.js...exists");
           }
           if (!options.configios) {
-            stdlog.textln("create: config.ios.js");
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
+            stdlog.debugln("config.ios.js...created");
+          } else {
+            stdlog.debugln("config.ios.js...exists");
           }
           break;
       }
@@ -284,8 +295,6 @@ var builder = {
           let absoluteFilePath = path.resolve(androidTmpPath, file);
           let fileInfo = fs.statSync(absoluteFilePath);
           if (fileInfo.isDirectory()) {
-
-            console.log(absoluteFilePath, androidPath);
             fs.renameSync(absoluteFilePath, androidPath);
             break;
           }
@@ -298,12 +307,12 @@ var builder = {
         fs.ensureDirSync(dirPath);
         stdlog.infoln(`unzip ${filePath}...`);
         // process.exit(1);
-        exec(`unzip ${filePath} -d ${dirPath}`);
-        // return new Promise((resolve, reject) => {
-        //   fs.createReadStream(path.resolve(filePath))
-        //     .pipe(unzip.Extract({path: path.resolve(dirPath)}))
-        //     .on('close', resolve).on('error', reject);
-        // });
+        // exec(`unzip ${filePath} -d ${dirPath}`);
+        return new Promise((resolve, reject) => {
+          fs.createReadStream(path.resolve(filePath))
+            .pipe(unzip.Extract({path: path.resolve(dirPath)}))
+            .on('close', resolve).on('error', reject);
+        });
       }
 
     },
@@ -552,7 +561,12 @@ var builder = {
     fs.emptyDirSync(bundleOutputPath);
 
     stdlog.info('Generating JSBundle...');
-    exec(`weex ${bundleInputPath}/main.we -o ${bundleOutputPath}/main.js`);
+    await new Promise((resolve, reject) => {
+      let weex = childProcess.exec(`weex ${bundleInputPath}/main.we -o ${bundleOutputPath}/main.js`);
+      weex.on('error', reject);
+      weex.on('close', resolve);
+    })
+    // exec(`weex ${bundleInputPath}/main.we -o ${bundleOutputPath}/main.js`);
     stdlog.infoln('done');
 
     // await new Promise((resolve, reject) => {

@@ -34,7 +34,6 @@ var glob = require('glob');
 var rootPath = process.cwd();
 
 function handle(platform, release, options) {
-  console.log('emulator');
   if (platform === 'android') {
     return android(release);
   } else if (platform === 'ios') {
@@ -73,7 +72,7 @@ function ios(release, options) {
     if (isSimulator) {
       fs.readdir(filepath, function (err, files) {
         if (err || files.length === 0) {
-          console.error("dist > ios 中找不到文件!");
+          throw "Cannot find file at dist/ios";
         } else {
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
@@ -108,14 +107,13 @@ function ios(release, options) {
             }
           }
 
-          console.error(" Install faied!没有可以安装的app!请重新打包");
-          process.exit(1);
+          throw "Install failed, no .app file found, may be solved by re-building";
         }
       });
     } else {
       fs.readdir(filepath, function (err, files) {
         if (err || files.length === 0) {
-          console.error("dist > ios 中找不到文件!");
+          throw "Cannot find file at dist/ios";
         } else {
           var _iteratorNormalCompletion2 = true;
           var _didIteratorError2 = false;
@@ -145,12 +143,10 @@ function ios(release, options) {
             }
           }
 
-          console.error(" Install faied!没有可以安装的ipa!请重新打包");
-          process.exit(1);
+          throw "Install failed, no .ipa file found, may be solved by re-building";
         }
       });
     }
-    console.log(release, isSimulator, filename);
   });
 }
 
