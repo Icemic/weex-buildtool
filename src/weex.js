@@ -317,6 +317,10 @@ var argv = yargs
   .usage('\nUsage: weex foo/bar/we_file_or_dir_path  [options]'
     + '\nUsage: weex debug [options] [we_file|bundles_dir]'
     + '\nUsage: weex init'
+    + '\nUsage: weex build init [android|ios|all] [options]'
+    + '\nUsage: weex run   [android|ios] [options]'
+    + '\nUsage: weex build [android|ios] [options]'
+    + '\nUsage: weex emulate [android|ios] [options]'
   )
   .boolean('qr')
   .describe('qr', 'display QR code for native runtime, default action')
@@ -325,9 +329,9 @@ var argv = yargs
   .alias('h', 'host')
   .boolean('d', {demand: false})
   .alias('d', 'debug')
-  .describe('d', 'debug pattern')
+  .describe('d', 'create debug package')
   .boolean('r', {demand: false})
-  .describe('r', '打出来的包是 release 包')
+  .describe('r', 'create release package')
   .alias('r', 'release')
   .option('u', {demand: false})
   .alias('u', 'url')

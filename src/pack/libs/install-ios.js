@@ -20,7 +20,6 @@ function listDevice () {
     return false;
   }
   if (!result.stdout.split('\n')[1].trim()) {
-    console.log('no valid device');
     return false;
   } else {
     console.log(result.stdout.split('\n')[1]);
@@ -73,7 +72,8 @@ function runInstall(localpath) {
   if(listDevice()) {
     return installApp(localpath);
   }
-  return Promise.resolve();
+
+  return Promise.reject("No valid devices!");
 }
 
 module.exports = runInstall;

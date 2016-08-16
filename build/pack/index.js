@@ -238,7 +238,6 @@ var WEBSOCKET_PORT = NO_PORT_SPECIFIED;
 // 调试热部署服务器
 function serveForLoad() {
   var curPath = process.cwd();
-  var transformPath = path.resolve(path.join(curPath, 'src'));
 
   HTTP_PORT = '8083';
   // new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath)

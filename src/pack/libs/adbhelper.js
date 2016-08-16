@@ -1,5 +1,4 @@
 'use strict';
-// const childProcess = require('child_process');
 require('colors');
 const Promise = require('bluebird')
 const fs = require('fs-extra');

@@ -36,52 +36,20 @@ export function android (release) {
 }
 
 export function ios (release, options) {
-  return new Promise((resolve, reject) => {
 
-    let isSimulator = options.isSimulator;
-
-    let filename = path.join(rootPath, `dist/ios/weexapp-${release ? 'release' : 'debug'}-${isSimulator ? 'sim' : 'real'}.${isSimulator ? 'app' : 'ipa'}`);
-    // let filename = path.join(rootPath, 'dist', 'ios', 'WeexApp.app');
-    let filepath = path.join(rootPath, 'dist/ios');
+    const isSimulator = options.isSimulator;
+    const filename = path.join(rootPath, `dist/ios/weexapp-${release ? 'release' : 'debug'}-${isSimulator ? 'sim' : 'real'}.${isSimulator ? 'app' : 'ipa'}`);
+    const params = {
+      name: UserConfig.ios.name,
+      appId: UserConfig.ios.appId,
+      path: filename
+    };
+    checkFileExist(filename);
     if (isSimulator) {
-      fs.readdir(filepath, function(err, files) {
-        if(err || files.length === 0) {
-          reject( "Cannot find file at dist/ios");
-        } else {
-          for (let name of files ) {
-            if(name.endsWith('sim.app')){
-              filename = path.join(rootPath, `dist/ios/${name}`);
-              let params = {
-                name: UserConfig.ios.name,
-                appId: UserConfig.ios.appId,
-                path: filename
-              };
-
-              return resolve(simIOS(params));
-            }
-          }
-          reject("Install failed, no .app file found, may be solved by re-building");
-        }
-      })
-
+      return simIOS(params);
     } else {
-      fs.readdir(filepath, function(err, files) {
-        if(err || files.length === 0) {
-          reject( "Cannot find file at dist/ios");
-        } else {
-          for (let name of files ) {
-            if(name.indexOf('real.ipa') !== -1 && name.endsWith('.ipa')){
-              filename = path.join(rootPath, `dist/ios/${name}`);
-              return resolve(realIOS(filename));
-            }
-          }
-          reject("Install failed, no .ipa file found, may be solved by re-building");
-        }
-      })
+      return realIOS(filename);
     }
-
-  });
-
 }
 
 function checkFileExist(file) {

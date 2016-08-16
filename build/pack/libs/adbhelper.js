@@ -1,5 +1,4 @@
 'use strict';
-// const childProcess = require('child_process');
 
 Object.defineProperty(exports, "__esModule", {
   value: true

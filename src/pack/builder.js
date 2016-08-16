@@ -94,7 +94,6 @@ var builder = {
       }
 
 
-
     },
     prompting: async function(options) {
       // 与用户交互
@@ -179,11 +178,13 @@ var builder = {
           }
           break;
         case "ios":
-          if (!options.configios && process.platform !== "darwin") {
-            fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
-            stdlog.debugln("config.ios.js...created");
-          } else {
-            stdlog.debugln("config.ios.js...exists");
+          if (process.platform === 'darwin') {
+            if (!options.configios) {
+              fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
+              stdlog.debugln("config.ios.js...created");
+            } else {
+              stdlog.debugln("config.ios.js...exists");
+            }
           }
           break;
         case "all":
@@ -219,48 +220,42 @@ var builder = {
     },
     install: async function(options) {
       //console.log("下载安装操作");
-
-
       options.download = {};
       var iosPath = path.resolve(options.root, 'ios');
       var androidPath = path.resolve(options.root, 'android');
-
-
       if (options.overwrite.ios && options.overwrite.android) {
-
         fs.removeSync(iosPath);
         fs.removeSync(androidPath);
         stdlog.info("Downloading from internet...");
-
         await Promise.all([
           download(options.giturl.ios, path.resolve(options.root, '.tmp', 'ios')),
           download(options.giturl.android, path.resolve(options.root, '.tmp', 'android'))
         ])
-        .then((value) => {
-          stdlog.infoln("done");
-          options.download.ios = true;
-          options.download.android = true;
-        });
+          .then((value) => {
+            stdlog.infoln("done");
+            options.download.ios = true;
+            options.download.android = true;
+          });
 
       } else if (options.overwrite.ios) {
 
         fs.removeSync(iosPath);
         stdlog.info("Downloading...");
         await download(options.giturl.ios, path.resolve(options.root, '.tmp', 'ios'))
-        .then((value) => {
-          stdlog.infoln("done");
-          options.download.ios = true;
-        });
+          .then((value) => {
+            stdlog.infoln("done");
+            options.download.ios = true;
+          });
 
       } else if (options.overwrite.android) {
 
         fs.removeSync(androidPath);
         stdlog.info("Downloading...");
         await download(options.giturl.android, path.resolve(options.root, '.tmp', 'android'))
-        .then((value) => {
-          stdlog.infoln("done");
-          options.download.android = true;
-        });
+          .then((value) => {
+            stdlog.infoln("done");
+            options.download.android = true;
+          });
 
       }
 
@@ -306,7 +301,6 @@ var builder = {
 
         fs.ensureDirSync(dirPath);
         stdlog.infoln(`unzip ${filePath}...`);
-        // process.exit(1);
         return new Promise((resolve, reject) => {
           fs.createReadStream(path.resolve(filePath))
             .pipe(unzip.Extract({path: path.resolve(dirPath)}))
@@ -355,17 +349,17 @@ var builder = {
 
     switch (platform) {
       case 'android':
-        if( !options.projectandroid ) {
+        if (!options.projectandroid) {
           throw "Can't find project! Execute build init android first!";
         }
         break;
       case 'ios':
-        if( !options.projectios ) {
+        if (!options.projectios) {
           throw "Can't find project! Execute build init ios first!";
         }
         break;
       case 'all':
-        if( !options.projectandroid  || !options.projectios) {
+        if (!options.projectandroid || !options.projectios) {
           throw "Can't find projects! Execute build init first!";
         }
         break;
@@ -498,7 +492,7 @@ var builder = {
 
           if (options.isSimulator) {
             pack = "sim";
-            let info1 ={};
+            let info1 = {};
             info1.name = "weexapp-debug-sim";
             packIos(BUILDPLAYGROUND, options.release, pack, info1);
 
@@ -547,11 +541,11 @@ var builder = {
     this.buildAndroid();
   },
 
-  makeJsbundle: async function (wePath, jsPath) {
+  makeJsbundle: async function(wePath, jsPath) {
 
     const rootPath = this.root;
-    const bundleInputPath = wePath ||path.resolve(rootPath, 'src');
-    const bundleOutputPath = jsPath ||path.resolve(rootPath, 'dist', 'js');
+    const bundleInputPath = wePath || path.resolve(rootPath, 'src');
+    const bundleOutputPath = jsPath || path.resolve(rootPath, 'dist', 'js');
 
     fs.ensureDirSync(bundleOutputPath);
     fs.emptyDirSync(bundleOutputPath);

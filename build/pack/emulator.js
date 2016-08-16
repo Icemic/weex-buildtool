@@ -3,15 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _getIterator2 = require('babel-runtime/core-js/get-iterator');
-
-var _getIterator3 = _interopRequireDefault(_getIterator2);
-
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
 exports.handle = handle;
 exports.android = android;
 exports.ios = ios;
@@ -59,93 +50,20 @@ function android(release) {
 }
 
 function ios(release, options) {
-  return new _promise2.default(function (resolve, reject) {
 
-    var isSimulator = options.isSimulator;
-
-    var filename = path.join(rootPath, 'dist/ios/weexapp-' + (release ? 'release' : 'debug') + '-' + (isSimulator ? 'sim' : 'real') + '.' + (isSimulator ? 'app' : 'ipa'));
-    // let filename = path.join(rootPath, 'dist', 'ios', 'WeexApp.app');
-    var filepath = path.join(rootPath, 'dist/ios');
-    if (isSimulator) {
-      fs.readdir(filepath, function (err, files) {
-        if (err || files.length === 0) {
-          reject("Cannot find file at dist/ios");
-        } else {
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
-
-          try {
-            for (var _iterator = (0, _getIterator3.default)(files), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              var name = _step.value;
-
-              if (name.endsWith('sim.app')) {
-                filename = path.join(rootPath, 'dist/ios/' + name);
-                var params = {
-                  name: _userConfig2.default.ios.name,
-                  appId: _userConfig2.default.ios.appId,
-                  path: filename
-                };
-
-                return resolve(simIOS(params));
-              }
-            }
-          } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator.return) {
-                _iterator.return();
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
-              }
-            }
-          }
-
-          reject("Install failed, no .app file found, may be solved by re-building");
-        }
-      });
-    } else {
-      fs.readdir(filepath, function (err, files) {
-        if (err || files.length === 0) {
-          reject("Cannot find file at dist/ios");
-        } else {
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
-
-          try {
-            for (var _iterator2 = (0, _getIterator3.default)(files), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var name = _step2.value;
-
-              if (name.indexOf('real.ipa') !== -1 && name.endsWith('.ipa')) {
-                filename = path.join(rootPath, 'dist/ios/' + name);
-                return resolve(realIOS(filename));
-              }
-            }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                _iterator2.return();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
-            }
-          }
-
-          reject("Install failed, no .ipa file found, may be solved by re-building");
-        }
-      });
-    }
-  });
+  var isSimulator = options.isSimulator;
+  var filename = path.join(rootPath, 'dist/ios/weexapp-' + (release ? 'release' : 'debug') + '-' + (isSimulator ? 'sim' : 'real') + '.' + (isSimulator ? 'app' : 'ipa'));
+  var params = {
+    name: _userConfig2.default.ios.name,
+    appId: _userConfig2.default.ios.appId,
+    path: filename
+  };
+  checkFileExist(filename);
+  if (isSimulator) {
+    return simIOS(params);
+  } else {
+    return realIOS(filename);
+  }
 }
 
 function checkFileExist(file) {

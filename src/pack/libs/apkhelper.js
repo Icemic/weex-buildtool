@@ -118,7 +118,7 @@ export function pack(buildPath, release) {
         'playground',`gradlew${process.platform === 'win32' ? '.bat' : ''}`), [arg],
         {cwd: path.join(buildPath, 'playground')});
 
-      stdlog.greenPipe(gradlew.stdout);
+      stdlog.greyPipe(gradlew.stdout);
       stdlog.redPipe(gradlew.stderr);
       // gradlew.stdout.on('data', data => process.stdout.write(data.toString().grey));
       // gradlew.stderr.on('data', data => process.stdout.write(data.toString().red));

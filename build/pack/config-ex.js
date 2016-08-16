@@ -93,10 +93,8 @@ module.exports = function (argv) {
 
               options.root = process.cwd();
               //
-              if (options.oprate === 'run') {
-                options.release = false;
-                options.debug = true;
-              }
+              options.release = false;
+              options.debug = true;
 
               if (argv.release) {
                 options.release = true;
@@ -107,7 +105,7 @@ module.exports = function (argv) {
 
               resolve(options);
 
-            case 16:
+            case 17:
             case "end":
               return _context.stop();
           }

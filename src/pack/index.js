@@ -39,7 +39,6 @@ var WEBSOCKET_PORT = NO_PORT_SPECIFIED
 // 调试热部署服务器
 function serveForLoad() {
   const curPath = process.cwd();
-  let transformPath = path.resolve(path.join(curPath, 'src'));
 
   HTTP_PORT = '8083';
   // new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath)
@@ -92,8 +91,6 @@ async function pack(argv) {
         await emulator.handle(options.platform, release, options);
         !release && serveForLoad();
       }
-
-
 
     } catch (e){
       stdlog.errorln('');

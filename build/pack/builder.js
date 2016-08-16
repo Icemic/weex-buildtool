@@ -299,11 +299,13 @@ var builder = {
           }
           break;
         case "ios":
-          if (!options.configios && process.platform !== "darwin") {
-            fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
-            stdlog.debugln("config.ios.js...created");
-          } else {
-            stdlog.debugln("config.ios.js...exists");
+          if (process.platform === 'darwin') {
+            if (!options.configios) {
+              fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
+              stdlog.debugln("config.ios.js...created");
+            } else {
+              stdlog.debugln("config.ios.js...exists");
+            }
           }
           break;
         case "all":
@@ -348,15 +350,12 @@ var builder = {
 
                   fs.ensureDirSync(dirPath);
                   stdlog.infoln('unzip ' + filePath + '...');
-                  // process.exit(1);
                   return new _promise2.default(function (resolve, reject) {
                     fs.createReadStream(path.resolve(filePath)).pipe(unzip.Extract({ path: path.resolve(dirPath) })).on('close', resolve).on('error', reject);
                   });
                 };
 
                 //console.log("下载安装操作");
-
-
                 options.download = {};
                 iosPath = path.resolve(options.root, 'ios');
                 androidPath = path.resolve(options.root, 'android');
@@ -369,7 +368,6 @@ var builder = {
                 fs.removeSync(iosPath);
                 fs.removeSync(androidPath);
                 stdlog.info("Downloading from internet...");
-
                 _context5.next = 10;
                 return _promise2.default.all([download(options.giturl.ios, path.resolve(options.root, '.tmp', 'ios')), download(options.giturl.android, path.resolve(options.root, '.tmp', 'android'))]).then(function (value) {
                   stdlog.infoln("done");
