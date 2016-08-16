@@ -24,7 +24,7 @@ export function handle(platform, release, options) {
 
 
 export function android (release) {
-  const packageName = UserConfig.android.packagename;
+  const packageName = UserConfig.android.packageName;
   if (release) {
     const filename = path.join(rootPath, 'dist/android/app-release.apk');
     checkFileExist(filename);
@@ -54,7 +54,7 @@ export function ios (release, options) {
               filename = path.join(rootPath, `dist/ios/${name}`);
               let params = {
                 name: UserConfig.ios.name,
-                appId: UserConfig.ios.appid,
+                appId: UserConfig.ios.appId,
                 path: filename
               };
               return simIOS(params);

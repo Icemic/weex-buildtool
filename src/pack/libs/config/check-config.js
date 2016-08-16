@@ -41,12 +41,12 @@ function checkConfig(config, platform,release) {
 
   //android 配置检查
   if (platform == 'android') {
-    if (!validator.matches(config.packagename, /^([A-Za-z])[A-Za-z\d]+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.packagename)) {
-      npmlog.error('打包配置错误', 'Android packagename必须为英文或数字或.，且以英文字母开头');
+    if (!validator.matches(config.packageName, /^([A-Za-z])[A-Za-z\d]+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.packageName)) {
+      npmlog.error('打包配置错误', 'Android packageName必须为英文或数字或.，且以英文字母开头');
       process.exit(1);
     }
-    if (!fse.existsSync(path.resolve(configPath, config.splashscreen))) {
-      npmlog.error('打包配置错误', 'Android splashscreen 不存在');
+    if (!fse.existsSync(path.resolve(configPath, config.splashScreen))) {
+      npmlog.error('打包配置错误', 'Android splashScreen 不存在');
       process.exit(1);
     }
 
@@ -56,7 +56,7 @@ function checkConfig(config, platform,release) {
     }
 
     //判断安卓打包key配置是否正确
-    if (validator.isNull(config.storePassword) || validator.isNull(config.password) || validator.isNull(config.aliasname)) {
+    if (validator.isNull(config.storePassword) || validator.isNull(config.password) || validator.isNull(config.aliasName)) {
       npmlog.error('打包配置错误', 'Android证书配置错误，不能为空');
       if (release) {
         process.exit(1);
@@ -66,8 +66,8 @@ function checkConfig(config, platform,release) {
   }
   //ios 配置检查
   if (platform == 'ios') {
-    if (!validator.matches(config.appid, /^([A-Za-z])[A-Za-z\d]+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.appid)) {
-      npmlog.error('打包配置错误', 'appid必须为英文或数字或.，且以英文字母开头');
+    if (!validator.matches(config.appId, /^([A-Za-z])[A-Za-z\d]+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.appId)) {
+      npmlog.error('打包配置错误', 'appId必须为英文或数字或.，且以英文字母开头');
       process.exit(1);
     }
     //判断ios打包key配置是否正确
@@ -78,15 +78,15 @@ function checkConfig(config, platform,release) {
       }
     }
     //判断启动图
-    if (config.splashscreen) {
-      for (var splash in config.splashscreen) {
-        if (!fse.existsSync(path.resolve(configPath, config.splashscreen[splash]))) {
-          npmlog.error('打包配置错误', 'ios splashscreen 缺失');
+    if (config.splashScreen) {
+      for (var splash in config.splashScreen) {
+        if (!fse.existsSync(path.resolve(configPath, config.splashScreen[splash]))) {
+          npmlog.error('打包配置错误', 'ios splashScreen 缺失');
           process.exit(1);
         }
       }
     }else{
-      npmlog.error('打包配置错误', 'ios splashscreen 缺失');
+      npmlog.error('打包配置错误', 'ios splashScreen 缺失');
       process.exit(1);
     }
   }
