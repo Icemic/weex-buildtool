@@ -2,8 +2,8 @@ var baseConfig = require('./config.base.js')();
 
 module.exports = function () {
   var iosCfg = {
-    "appid": "com.app.ids",/*iOS必选，苹果开发网站申请的appid，如com.alibaba.weex*/
-    "splashscreen":{
+    "appId": "com.app.ids",/*iOS必选，苹果开发网站申请的appid，如com.alibaba.weex*/
+    "splashScreen":{
       "Default~iphone.png": "../assets/splash/Default~iphone.png", /*必选，320x480，iPhone3启动图片*/
       "Default@2x~iphone.png": "../assets/splash/Default@2x~iphone.png",/*必选，640x960，3.5英寸设备(iPhone4)启动图片*/
       "Default-568h@2x~iphone.png": "../assets/splash/Default-568h@2x~iphone.png", /*640*1136 4.0 英寸设备(iPhone5)启动图片*/
@@ -16,8 +16,8 @@ module.exports = function () {
       "Default-Portrait~ipad.png": "../assets/splash/Default-Portrait~ipad.png"/*768*1024 启动图片*/
     },
     "certificate":{
-      codeSignIdentity: "iPhone Developer: zhuiqian wu (22RMUQ2DWW)",
-      provisionProfile: "603293e6-841f-4488-a720-94f399ecb07f"
+      "codeSignIdentity": "iPhone Developer: zhuiqian wu (22RMUQ2DWW)",
+      "provisionProfile": "603293e6-841f-4488-a720-94f399ecb07f"
     }
   };
   return Object.assign(baseConfig,iosCfg);

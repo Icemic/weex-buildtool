@@ -41,12 +41,12 @@ function checkConfig(config, platform,release) {
 
   //android 配置检查
   if (platform == 'android') {
-    if (!validator.matches(config.packagename, /^([A-Za-z])[A-Za-z\d]+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.packagename)) {
-      npmlog.error('configuration err', 'Android packagename must be formated by characters, number or ".", and begin with a character');
+    if (!validator.matches(config.packageName, /^([A-Za-z])[A-Za-z\d]+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.packageName)) {
+      npmlog.error('configuration err', 'Android packageName must be formated by characters, number or ".", and begin with a character');
       process.exit(1);
     }
-    if (!fse.existsSync(path.resolve(configPath, config.splashscreen))) {
-      npmlog.error('configuration err', 'Android splashscreen not existed');
+    if (!fse.existsSync(path.resolve(configPath, config.splashScreen))) {
+      npmlog.error('configuration err', 'Android splashScreen not existed');
       process.exit(1);
     }
 
@@ -56,7 +56,7 @@ function checkConfig(config, platform,release) {
     }
 
     //判断安卓打包key配置是否正确
-    if (validator.isNull(config.storePassword) || validator.isNull(config.password) || validator.isNull(config.aliasname)) {
+    if (validator.isNull(config.storePassword) || validator.isNull(config.password) || validator.isNull(config.aliasName)) {
       npmlog.error('configuration err', 'Android certificate configuration err, should not be empty');
       if (release) {
         process.exit(1);
@@ -66,8 +66,8 @@ function checkConfig(config, platform,release) {
   }
   //ios 配置检查
   if (platform == 'ios') {
-    if (!validator.matches(config.appid, /^([A-Za-z])[A-Za-z\d]+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.appid)) {
-      npmlog.error('configuration err', 'appid must be formated by characters, number or ".", and begin with a character');
+    if (!validator.matches(config.appId, /^([A-Za-z])[A-Za-z\d]+(\.[A-Za-z\d]+)*$/) || validator.isNull(config.appId)) {
+      npmlog.error('configuration err', 'appId must be formated by characters, number or ".", and begin with a character');
       process.exit(1);
     }
     //判断ios打包key配置是否正确
@@ -78,15 +78,15 @@ function checkConfig(config, platform,release) {
       }
     }
     //判断启动图
-    if (config.splashscreen) {
-      for (var splash in config.splashscreen) {
-        if (!fse.existsSync(path.resolve(configPath, config.splashscreen[splash]))) {
-          npmlog.error('configuration err', 'ios splashscreen invalid');
+    if (config.splashScreen) {
+      for (var splash in config.splashScreen) {
+        if (!fse.existsSync(path.resolve(configPath, config.splashScreen[splash]))) {
+          npmlog.error('configuration err', 'ios splashScreen invalid');
           process.exit(1);
         }
       }
     }else{
-      npmlog.error('configuration err', 'ios splashscreen invalid');
+      npmlog.error('configuration err', 'ios splashScreen invalid');
       process.exit(1);
     }
   }
