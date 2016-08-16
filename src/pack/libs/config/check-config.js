@@ -81,12 +81,12 @@ function checkConfig(config, platform,release) {
     if (config.splashscreen) {
       for (var splash in config.splashscreen) {
         if (!fse.existsSync(path.resolve(configPath, config.splashscreen[splash]))) {
-          npmlog.error('configuration err', 'ios splashscreen missed');
+          npmlog.error('configuration err', 'ios splashscreen invalid');
           process.exit(1);
         }
       }
     }else{
-      npmlog.error('configuration err', 'ios splashscreen missed');
+      npmlog.error('configuration err', 'ios splashscreen invalid');
       process.exit(1);
     }
   }
