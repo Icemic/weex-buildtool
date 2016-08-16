@@ -47,7 +47,7 @@ function handle(platform, release, options) {
 }
 
 function android(release) {
-  var packageName = _userConfig2.default.android.packagename;
+  var packageName = _userConfig2.default.android.packageName;
   if (release) {
     var filename = path.join(rootPath, 'dist/android/app-release.apk');
     checkFileExist(filename);
@@ -86,7 +86,7 @@ function ios(release, options) {
                 filename = path.join(rootPath, 'dist/ios/' + name);
                 var params = {
                   name: _userConfig2.default.ios.name,
-                  appId: _userConfig2.default.ios.appid,
+                  appId: _userConfig2.default.ios.appId,
                   path: filename
                 };
                 return simIOS(params);
