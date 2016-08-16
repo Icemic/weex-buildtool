@@ -75,9 +75,12 @@ module.exports = async function configBuild(argv) {
   }
 
   if (options.platform === "all") {
-    throw 'You can only use -u with a specific platform';
-    // options.giturl.android = argv.url || defaultAndroid;
-    // options.giturl.ios = argv.url ||defaultIos;
+    if (argv.url) {
+      throw 'You can only use -u with a specific platform';
+    } else {
+      options.giturl.android = defaultAndroid;
+      options.giturl.ios = defaultIos;
+    }
   }
 
   options.root = process.cwd();
