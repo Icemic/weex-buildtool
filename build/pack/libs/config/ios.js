@@ -46,7 +46,7 @@ module.exports = function (release, curPath, debugUrl, configFile) {
 
     var data = fs.readFileSync(path.resolve(curPath, 'playground/WeexApp/Info.plist'), 'utf8');
     data = plist.parse(data); //转成json
-    data.CFBundleIdentifier = config.appid;
+    data.CFBundleIdentifier = config.appId;
     data.CFBundleName = config.name;
     data.CFBundleShortVersionString = config.version.name;
     data.BUNDLE_URL = launch_path;

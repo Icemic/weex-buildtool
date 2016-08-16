@@ -13,14 +13,14 @@ if (!fs.existsSync(iosDeploy)) {
   iosDeploy = 'ios-deploy';
 }
 function listDevice() {
-  console.log('在5秒内插入手机');
+  console.log('Waiting up to 5 seconds for iOS device to be connected');
   var result = syncExec(iosDeploy + ' -c');
   if (result.stderr.trim()) {
-    console.log('无法启动ios-deploy，请检查npm依赖安装，\n或者自行全局安装ios-deploy\n(sudo npm install -g ios-deploy [--unsafe-perm=true])\n再执行此命令'.red);
+    console.log('cant find ios-deploy，please check npm dependencies installation，\nor manually install ios-deploy globally\n(sudo npm install -g ios-deploy [--unsafe-perm=true])\nthen run this command'.red);
     return false;
   }
   if (!result.stdout.split('\n')[1].trim()) {
-    console.log('没有可用设备');
+    console.log('no valid device');
     return false;
   } else {
     console.log(result.stdout.split('\n')[1]);
@@ -32,11 +32,11 @@ function installApp(localpath) {
   return new Promise(function (resolve, reject) {
     localpath = path.resolve(localpath);
     if (!fs.existsSync(localpath)) {
-      console.log('目标文件不存在！');
+      console.log('target file do not exist！');
       reject();
       return;
     }
-    console.log('正在安装应用');
+    console.log('installing app ...');
     var install = exec(iosDeploy + ' -b ' + localpath);
     install.stdout.on('data', function (data) {
       process.stdout.write(data.toString().grey);
@@ -44,17 +44,18 @@ function installApp(localpath) {
     });
     install.on('close', function (code) {
       if (code) {
-        console.log('安装错误'.red);
+        console.log('installation failed'.red);
         reject();
         return;
       } else {
-        console.log('安装完成');
+        console.log('installation completed'.green);
         resolve();
       }
     });
   });
 }
 
+// deprecated sync method
 function installAppSync(localpath) {
   localpath = path.join(localpath);
   console.log('正在安装应用');

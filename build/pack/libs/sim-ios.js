@@ -23,7 +23,6 @@ var config = {
 };
 
 function start(params) {
-  console.log('模拟器v0.1'.green);
   if (!params.name) {
     params.name = 'example';
   }
@@ -226,7 +225,7 @@ function selectDevices(device, params, callback) {
     'type': 'list',
     'name': 'type',
     'choices': devicesType,
-    'message': '请选择设备类型创建模拟器',
+    'message': 'please choose a device to open simulator',
     'default': defaultType || ''
   }];
 
@@ -261,8 +260,8 @@ function installiOSApp(params) {
     var appIdentifier = params.appId,
         appPath = params.path;
     if (!fs.existsSync(appPath)) {
-      console.log('目标文件不存在！'.red);
-      reject('已停止');
+      console.log('target file not existed'.red);
+      reject('canceled');
       return;
     }
     syncExecPromise('xcrun simctl uninstall booted ' + appIdentifier).then(function () {
@@ -296,8 +295,8 @@ function iOSAppOpen(currentDeviceInfo, params) {
       // cmd = 'xcrun simctl launch booted ' + url;
       var result = syncExec(cmd);
       if (result.stderr) {
-        console.log('bundle id 有误！'.red);
-        reject('已停止');
+        console.log('bundle id invalid'.red);
+        reject('canceled');
         return;
       }
 

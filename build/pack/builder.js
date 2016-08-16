@@ -733,78 +733,74 @@ var builder = {
               return _context7.abrupt('break', 15);
 
             case 15:
-              _context7.next = 17;
-              return this.makeJsbundle();
-
-            case 17:
               if (!options.release) {
-                _context7.next = 22;
+                _context7.next = 20;
                 break;
               }
 
-              _context7.next = 20;
+              _context7.next = 18;
               return this.makeJsbundle();
+
+            case 18:
+              _context7.next = 21;
+              break;
 
             case 20:
-              _context7.next = 23;
-              break;
-
-            case 22:
               stdlog.warnln('Skip JSBundle generation in debug mode');
 
-            case 23:
+            case 21:
               if (!(platform === 'android')) {
-                _context7.next = 28;
+                _context7.next = 26;
                 break;
               }
 
-              _context7.next = 26;
+              _context7.next = 24;
               return this.buildAndroid(options);
 
-            case 26:
-              _context7.next = 43;
+            case 24:
+              _context7.next = 41;
               break;
 
-            case 28:
+            case 26:
               if (!(platform === 'ios')) {
-                _context7.next = 33;
+                _context7.next = 31;
                 break;
               }
 
-              _context7.next = 31;
+              _context7.next = 29;
               return this.buildIos(options);
 
-            case 31:
-              _context7.next = 43;
+            case 29:
+              _context7.next = 41;
               break;
 
-            case 33:
+            case 31:
               if (!(platform === 'html')) {
-                _context7.next = 38;
+                _context7.next = 36;
                 break;
               }
 
-              _context7.next = 36;
+              _context7.next = 34;
               return this.buildHtml(options);
 
-            case 36:
-              _context7.next = 43;
+            case 34:
+              _context7.next = 41;
               break;
 
-            case 38:
+            case 36:
               if (!(platform === 'all')) {
-                _context7.next = 43;
+                _context7.next = 41;
                 break;
               }
 
-              _context7.next = 41;
+              _context7.next = 39;
               return this.buildAll(options);
 
-            case 41:
-              _context7.next = 43;
+            case 39:
+              _context7.next = 41;
               break;
 
-            case 43:
+            case 41:
             case 'end':
               return _context7.stop();
           }
@@ -999,24 +995,29 @@ var builder = {
               fs.ensureDirSync(bundleOutputPath);
               fs.emptyDirSync(bundleOutputPath);
 
-              _context9.next = 7;
-              return new _promise2.default(function (resolve, reject) {
-                stdlog.infoln('Generating JSBundle...');
-                fs.walk(bundleInputPath).on('data', function (item) {
-                  if (item.stats.isDirectory()) {
-                    var inPath = item.path;
-                    var outPath = path.resolve(bundleOutputPath, path.relative(bundleInputPath, item.path));
-                    fs.ensureDirSync(outPath);
-                    stdlog.debugln(inPath);
-                    exec('weex ' + inPath + ' -o ' + outPath);
-                  }
-                }).on('end', function () {
-                  stdlog.infoln('Generating JSBundle...done');
-                  resolve();
-                });
-              });
+              stdlog.info('Generating JSBundle...');
+              exec('weex ' + bundleInputPath + '/main.we -o ' + bundleOutputPath + '/main.js');
+              stdlog.infoln('done');
 
-            case 7:
+              // await new Promise((resolve, reject) => {
+              //   stdlog.infoln('Generating JSBundle...');
+              //   fs.walk(bundleInputPath)
+              //     .on('data', item => {
+              //       if (item.stats.isDirectory()) {
+              //         const inPath = item.path;
+              //         const outPath = path.resolve(bundleOutputPath, path.relative(bundleInputPath, item.path));
+              //         fs.ensureDirSync(outPath);
+              //         stdlog.debugln(inPath);
+              //         exec(`weex ${inPath} -o ${outPath}`);
+              //       }
+              //     })
+              //     .on('end', () => {
+              //       stdlog.infoln('Generating JSBundle...done');
+              //       resolve();
+              //     });
+              // });
+
+            case 8:
             case 'end':
               return _context9.stop();
           }
