@@ -79,6 +79,10 @@ module.exports = function (argv) {
       options.debug = false;
     }
 
+    if (options.oprate === "emulate") {
+      options.isSimulator = true;
+    }
+
 
     options.name = argv.n || "";
 
