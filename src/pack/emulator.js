@@ -39,6 +39,7 @@ export function android (release) {
 export function ios (release, options) {
   return new Promise( (resolve) => resolve(1)).then(function () {
 
+    console.log(options);
     let isSimulator = options.isSimulator;
 
     let filename = path.join(rootPath, `dist/ios/weexapp-${release ? 'release' : 'debug'}-${isSimulator ? 'sim' : 'real'}.${isSimulator ? 'app' : 'ipa'}`);

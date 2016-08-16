@@ -69,12 +69,16 @@ module.exports = function (argv) {
                 options.platform = argv1;
               }
 
-              if (!(options.platform === "ios" && options.oprate === "run")) {
-                _context.next = 10;
+              if (options.oprate === "emulate") {
+                options.isSimulator = true;
+              }
+
+              if (!(options.platform === "ios")) {
+                _context.next = 11;
                 break;
               }
 
-              _context.next = 10;
+              _context.next = 11;
               return inquirer.prompt([{
                 type: 'list',
                 name: 'type',
@@ -82,11 +86,13 @@ module.exports = function (argv) {
                 choices: [{ value: true, name: 'Simulator' }, { value: false, name: 'Real Device' }]
               }]).then(function (value) {
                 // exec(`pakeex ${value.command}`, {cwd: process.cwd()});
+                console.log(1, value);
                 options.isSimulator = value.type;
               });
 
-            case 10:
+            case 11:
 
+              console.log(2, options);
               options.root = process.cwd();
               //
               if (options.oprate === 'run') {
@@ -99,15 +105,11 @@ module.exports = function (argv) {
                 options.debug = false;
               }
 
-              if (options.oprate === "emulate") {
-                options.isSimulator = true;
-              }
-
               options.name = argv.n || "";
 
               resolve(options);
 
-            case 16:
+            case 17:
             case "end":
               return _context.stop();
           }

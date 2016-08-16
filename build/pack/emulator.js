@@ -64,6 +64,7 @@ function ios(release, options) {
     return resolve(1);
   }).then(function () {
 
+    console.log(options);
     var isSimulator = options.isSimulator;
 
     var filename = path.join(rootPath, 'dist/ios/weexapp-' + (release ? 'release' : 'debug') + '-' + (isSimulator ? 'sim' : 'real') + '.' + (isSimulator ? 'app' : 'ipa'));
