@@ -1,8 +1,11 @@
+/*jslint node: true */
 'use strict';
 
 var fs = require('fs'),
   path = require('path'),
   exec = require('sync-exec');
+
+require('colors');
 
 // localpath: 项目工程相对执行文件路径
 // release: 打release还是debug 取值true 或 false
@@ -15,7 +18,7 @@ function run (localpath, release, sdkType, info) {
   }
   sdkType = sdkType || 'sim';
   if(sdkType !== 'normal' && sdkType !== 'sim') {
-    console.log('SDK类型参数错误');
+    console.log('SDK type param not illegal.'.red);
   }
   var name = info.name || 'noName';
   var sdk = getSDKs(localpath);
@@ -24,8 +27,11 @@ function run (localpath, release, sdkType, info) {
   var scheme = iosInfo.scheme;
   var cmd;
 
-  console.log('init pod');
-  console.log(exec('pod install', {cwd: localpath}));
+  console.log('init pod install');
+  var podRes = exec('pod install', {cwd: localpath});
+  if(podRes.stderr) {
+    console.log('pod install failed，please install cocoapods and run pod setup.'.red);
+  }
 
   //清除目标目录
   // var appPath = path.resolve(localpath, './build/real/'+ target +'.app');
@@ -34,20 +40,20 @@ function run (localpath, release, sdkType, info) {
   // var appRealPath = path.resolve(localpath, './build/' + name + 'Real.app');
   var ipaPath = path.resolve(localpath, './build/'+ name + '.ipa');
   if (fs.existsSync(appPath)) {
-    console.log('删除app文件');
+    console.log('delete app file');
     exec('rm -r ' + appPath);
   }
   if (fs.existsSync(ipaPath)) {
-    console.log('删除ipa文件');
+    console.log('delete ipa file');
     exec('rm -r ' + ipaPath);
   }
 
   debugger;
   var result;
-  console.log('正在打包，请稍后...');
+  console.log('pack running，it will take some time...\nplease wait for a while and don\'t cancel.');
   if (sdkType == 'normal') {
     if(!info.codeSignIdentity || !info.provisionProfile){
-      console.log('证书相关信息不完整！');
+      console.log('certification information not completed'.red);
       return;
     }
     result = packReal(target, scheme, config, sdk, localpath, info);
@@ -62,31 +68,29 @@ function run (localpath, release, sdkType, info) {
   if (!packInfo.success) {
     console.log(packInfo.err);
     console.log(result.stderr);
-    console.log('\n打包失败！');
+    console.log('\npack failed!'.red);
     return;
   }
 
   outputPath = packInfo.outputPath;
 
-  console.log('打包完成');
+  console.log('pack completed!'.green);
   debugger;
   if (fs.existsSync(outputPath)) {
 
-    console.log('得到文件位置，准备拷贝文件到build目录下...');
+    console.log('file location obtained, prepare to copy app file to build folder...'.green);
     var mvPath = path.resolve(localpath, './build');
     exec('mkdir build', {cwd: localpath});
     cmd = 'mv ' + outputPath + ' ./build/'+ name +'.app';
     exec(cmd, {cwd: localpath});
-    console.log('拷贝完成！');
+    console.log('copy completed!'.green);
     if(sdkType == 'normal') {
       debugger;
       app2ipa(name, localpath);
     }
   } else {
-    console.log('文件位置不正确');
+    console.log('app file location invalid!'.red);
   }
-
-
   return;
 }
 
@@ -175,7 +179,7 @@ function packSim(target, scheme, config, sdk, localpath) {
 function app2ipa(name, localpath) {
   var abPath = path.resolve(localpath, './build/'+ name + '.ipa');
   var cmd = 'xcrun -sdk iphoneos -v PackageApplication ./build/'+ name +'.app -o ' + abPath;
-  console.log('转换app文件为ipa');
+  console.log('transforming app file into ipa...'.green);
   exec(cmd, {cwd: localpath});
 }
 module.exports = run;

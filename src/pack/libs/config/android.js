@@ -90,7 +90,7 @@ module.exports = function(release, curPath, debugUrl,configFile) {
         } else if (sdkPath) {
           config.sdkdir = sdkPath.replace(/\\/g, '/');
         } else {
-          process.stderr.write('请配置 Android SDK 地址'.red);
+          process.stderr.write('please fill Android SDK adress in configuration file'.red);
           process.exit(1);
         }
         console.log(config.sdkdir)
@@ -175,7 +175,7 @@ module.exports = function(release, curPath, debugUrl,configFile) {
             sha1 = r[1].replace(/:/g, '');
           } else {
             console.error(stdout)
-            reject('证书读取错误，可能是密码或别名有误。');
+            reject('reading certification error, password and aliasname might be incorrect');
             return;
           }
 
