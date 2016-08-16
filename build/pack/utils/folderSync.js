@@ -103,6 +103,7 @@ function syncIncremental(projectPath, buildPath, excludes) {
   }).then(function () {
     process.stdout.write('done\n'.grey);
     var buildKeys = buildFileInfo.keys();
+    process.stdout.write('  removing files...'.grey);
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;
@@ -113,7 +114,7 @@ function syncIncremental(projectPath, buildPath, excludes) {
 
         if (!projectFileInfo.has(key)) {
           var absolutePath = path.resolve(buildPath, key);
-          process.stdout.write(('  remove: ' + absolutePath + '\n').grey);
+          // process.stdout.write(`  remove: ${absolutePath}\n`.grey);
           fs.removeSync(absolutePath);
         }
       }
@@ -131,7 +132,10 @@ function syncIncremental(projectPath, buildPath, excludes) {
         }
       }
     }
+
+    process.stdout.write('done\n'.grey);
   }).then(function () {
+    process.stdout.write('  copying files...'.grey);
     var _iteratorNormalCompletion2 = true;
     var _didIteratorError2 = false;
     var _iteratorError2 = undefined;
@@ -146,7 +150,7 @@ function syncIncremental(projectPath, buildPath, excludes) {
         var buildItem = buildFileInfo.get(key);
         if (buildItem !== md5) {
           var absolutePath = path.resolve(buildPath, key);
-          process.stdout.write(('  copy: ' + absolutePath + '\n').grey);
+          // process.stdout.write(`  copy: ${absolutePath}\n`.grey);
           fs.removeSync(absolutePath);
           fs.copySync(path.resolve(projectPath, key), absolutePath, { clobber: true });
         }
@@ -166,6 +170,7 @@ function syncIncremental(projectPath, buildPath, excludes) {
       }
     }
 
-    process.stdout.write('Folder sync done\n'.grey);
+    process.stdout.write('done\n'.grey);
+    // process.stdout.write('Folder sync done\n'.grey);
   });
 }

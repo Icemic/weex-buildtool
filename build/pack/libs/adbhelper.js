@@ -53,7 +53,7 @@ function getDeviceList() {
       });
     });
   }).catch(function (err) {
-    console.error('Something went wrong:', err.stack);
+    throw 'Something went wrong: \n' + err.stack;
   });
 }
 
@@ -87,7 +87,7 @@ function runApp(apkFile, packageName, activityName) {
       });
     });
   }).then(function (r) {
-    console.info('done'.green);
+    process.stdout.write('done\n'.green);
   }).catch(function (err) {
     if (err.message && err.message.includes('INSTALL_FAILED_UPDATE_INCOMPATIBLE')) {
       throw 'INSTALL_FAILED_UPDATE_INCOMPATIBLE, please uninstall before installing with another sign.';

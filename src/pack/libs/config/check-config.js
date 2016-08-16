@@ -29,7 +29,7 @@ function checkConfig(config, platform,release) {
     npmlog.error('configuration err', 'App version code must be number');
     process.exit(1);
   }
-  console.log(path.resolve(configPath,'../src/main.we'));
+  // console.log(path.resolve(configPath,'../src/main.we'));
   if (!fse.existsSync(path.resolve(configPath,'../src/main.we'))) {
     npmlog.error('exec pack error', 'src/main.we not existed');
     process.exit(1);

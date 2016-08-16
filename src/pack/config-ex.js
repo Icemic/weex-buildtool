@@ -27,7 +27,7 @@ module.exports = function (argv) {
         {
           type: 'list',
           name: 'command',
-          message: '请选择你所需要的操作',
+          message: 'Choose an operation: ',
           choices: [
             `${options.oprate} android`,
             `${options.oprate} ios`,
@@ -54,7 +54,7 @@ module.exports = function (argv) {
         {
           type: 'list',
           name: 'type',
-          message: 'Where would you like to install the app',
+          message: 'Where would you like to install the app: ',
           choices: [
             {value: true, name: 'Simulator'},
             {value: false, name: 'Real Device'}

@@ -51,7 +51,7 @@ export function getDeviceList() {
     })
   })
   .catch(function(err) {
-    console.error('Something went wrong:', err.stack)
+    throw `Something went wrong: \n${err.stack}`;
   })
 }
 
@@ -89,7 +89,7 @@ export function runApp(apkFile, packageName, activityName) {
     }))
   })
   .then((r) => {
-    console.info('done'.green);
+    process.stdout.write('done\n'.green);
   })
   .catch(err => {
     if (err.message && err.message.includes('INSTALL_FAILED_UPDATE_INCOMPATIBLE')) {

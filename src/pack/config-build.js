@@ -29,7 +29,7 @@ module.exports = async function configBuild(argv) {
       {
         type: 'list',
         name: 'command',
-        message: '请选择你所需要的操作',
+        message: 'Choose an operation: ',
         choices: [
           'build init',
           'build android',

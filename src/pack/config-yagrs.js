@@ -7,7 +7,7 @@ const defaultIos = "";
 
 module.exports = async () => {
   var options;
-  console.log(1);
+  // console.log(1);
 
   // yargs
   // .command(
