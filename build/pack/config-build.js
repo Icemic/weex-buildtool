@@ -18,6 +18,7 @@ var sweetAndroid = ["android", "an", "a", "andriod"];
 var sweetPlat = platforms.concat(sweetAndroid);
 var defaultAndroid = "https://github.com/liujiescut/WeexAndroidTemplate/archive/master.zip";
 var defaultIos = "https://github.com/VeHan/Weex-Pakeex-iOS-Template/archive/master.zip";
+var stdlog = require('./utils/stdlog');
 
 module.exports = function () {
   var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(argv) {
@@ -77,6 +78,20 @@ module.exports = function () {
               }
             }
 
+            if (!(process.platform !== 'darwin' && options.platform === 'ios')) {
+              _context.next = 11;
+              break;
+            }
+
+            throw 'Unsupport platform, Mac only!';
+
+          case 11:
+            if (process.platform !== 'darwin' && options.platform === 'all') {
+              stdlog.warnln('iOS building only be supported in macOS, ignored.');
+              options.platform = 'android';
+            }
+
+          case 12:
             options.giturl = {};
             if (options.platform === "android") {
               options.giturl.android = argv.url || defaultAndroid;
@@ -89,22 +104,22 @@ module.exports = function () {
             }
 
             if (!(options.platform === "all")) {
-              _context.next = 17;
+              _context.next = 22;
               break;
             }
 
             if (!argv.url) {
-              _context.next = 15;
+              _context.next = 20;
               break;
             }
 
             throw 'You can only use -u with a specific platform';
 
-          case 15:
+          case 20:
             options.giturl.android = defaultAndroid;
             options.giturl.ios = defaultIos;
 
-          case 17:
+          case 22:
 
             options.root = process.cwd();
             options.toolRoot = path.resolve(__dirname, "..", "..");
@@ -124,7 +139,7 @@ module.exports = function () {
 
             return _context.abrupt('return', options);
 
-          case 22:
+          case 27:
           case 'end':
             return _context.stop();
         }

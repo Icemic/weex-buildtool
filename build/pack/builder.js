@@ -111,6 +111,7 @@ var builder = {
                 } catch (e) {
                   options.configandroid = false;
                 }
+
                 try {
                   builder.existFile(configIosPath);
                   options.configios = true;
@@ -1047,4 +1048,5 @@ var builder = {
     fs.accessSync(path, fs.R_OK);
   }
 };
+
 module.exports = builder;

@@ -72,12 +72,15 @@ var builder = {
       } catch (e) {
         options.configandroid = false;
       }
-      try {
-        builder.existFile(configIosPath);
-        options.configios = true;
-      } catch (e) {
-        options.configios = false;
-      }
+
+        try {
+          builder.existFile(configIosPath);
+          options.configios = true;
+        } catch (e) {
+          options.configios = false;
+        }
+
+
 
       try {
         builder.existFile(projectAndroidPath);
@@ -583,4 +586,6 @@ var builder = {
   }
 
 }
+
+
 module.exports = builder;

@@ -6,7 +6,7 @@ const sweetAndroid = ["android", "an", "a", "andriod"];
 const sweetPlat = platforms.concat(sweetAndroid);
 const defaultAndroid = "https://github.com/liujiescut/WeexAndroidTemplate/archive/master.zip";
 const defaultIos = "https://github.com/VeHan/Weex-Pakeex-iOS-Template/archive/master.zip";
-
+const stdlog = require('./utils/stdlog');
 
 module.exports = async function configBuild(argv) {
 
@@ -62,6 +62,12 @@ module.exports = async function configBuild(argv) {
     }
   }
 
+  if (process.platform !== 'darwin' && options.platform === 'ios') {
+    throw 'Unsupport platform, Mac only!';
+  } else if (process.platform !== 'darwin' && options.platform === 'all') {
+    stdlog.warnln('iOS building only be supported in macOS, ignored.');
+    options.platform = 'android';
+  }
 
   options.giturl = {};
   if (options.platform === "android") {

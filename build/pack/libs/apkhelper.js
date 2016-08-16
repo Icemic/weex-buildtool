@@ -16,6 +16,10 @@ exports.checkSDK = checkSDK;
 exports.installSDK = installSDK;
 exports.pack = pack;
 
+var _userConfig = require('../userConfig');
+
+var _userConfig2 = _interopRequireDefault(_userConfig);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 require('colors');
@@ -37,9 +41,20 @@ function checkSDK() {
 
   return new _promise2.default(function (resolve, reject) {
 
-    var defualtPath = path.resolve(homedir(), 'AppData/Local/Android/sdk');
+    var relativeSDKPath = void 0;
+    switch (process.platform) {
+      case 'win32':
+        relativeSDKPath = 'AppData/Local/Android/sdk';
+        break;
+      case 'darwin':
+      default:
+        relativeSDKPath = 'Library/Android/sdk';
+        break;
+    }
+    var defualtPath = path.resolve(homedir(), relativeSDKPath);
     defualtPath = fs.existsSync(defualtPath) ? defualtPath : '';
     var sdkPath = process.env.ANDROID_HOME ? process.env.ANDROID_HOME : defualtPath;
+    sdkPath = _userConfig2.default.android.sdkDir || sdkPath;
     if (sdkPath) {
       // console.info('installed'.green);
       // process.stdout.write('Check SDK version...'.green);

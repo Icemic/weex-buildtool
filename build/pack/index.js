@@ -31,7 +31,7 @@ var pack = function () {
             options = {};
 
             if (!(argv._[0] === "build")) {
-              _context.next = 22;
+              _context.next = 23;
               break;
             }
 
@@ -71,7 +71,7 @@ var pack = function () {
             return builder.build(options);
 
           case 16:
-            _context.next = 22;
+            _context.next = 23;
             break;
 
           case 18:
@@ -84,45 +84,46 @@ var pack = function () {
             } else {
               stdlog.errorln(_context.t0.stack);
             }
+            process.exit(1);
 
-          case 22:
+          case 23:
             if (!(argv._[0] === "emulate")) {
-              _context.next = 42;
+              _context.next = 44;
               break;
             }
 
-            _context.prev = 23;
-            _context.next = 26;
+            _context.prev = 24;
+            _context.next = 27;
             return configProcess(argv);
 
-          case 26:
+          case 27:
             options = _context.sent;
 
             if (!(options.platform === "html")) {
-              _context.next = 31;
+              _context.next = 32;
               break;
             }
 
             builder.build(options);
-            _context.next = 36;
+            _context.next = 37;
             break;
 
-          case 31:
+          case 32:
             testDarwin(options);
             release = options.release;
-            _context.next = 35;
+            _context.next = 36;
             return emulator.handle(options.platform, release, options);
 
-          case 35:
+          case 36:
             !release && serveForLoad();
 
-          case 36:
-            _context.next = 42;
+          case 37:
+            _context.next = 44;
             break;
 
-          case 38:
-            _context.prev = 38;
-            _context.t1 = _context['catch'](23);
+          case 39:
+            _context.prev = 39;
+            _context.t1 = _context['catch'](24);
 
             stdlog.errorln('');
             if (typeof _context.t1 === 'string') {
@@ -130,50 +131,51 @@ var pack = function () {
             } else {
               stdlog.errorln(_context.t1.stack);
             }
+            process.exit(1);
 
-          case 42:
+          case 44:
             if (!(argv._[0] === "run")) {
-              _context.next = 64;
+              _context.next = 67;
               break;
             }
 
-            _context.prev = 43;
+            _context.prev = 45;
 
             if (!(options.platform === "html")) {
-              _context.next = 48;
+              _context.next = 50;
               break;
             }
 
             builder.build(options);
-            _context.next = 58;
+            _context.next = 60;
             break;
 
-          case 48:
-            _context.next = 50;
+          case 50:
+            _context.next = 52;
             return configProcess(argv);
 
-          case 50:
+          case 52:
             options = _context.sent;
 
             testDarwin(options);
-            _context.next = 54;
+            _context.next = 56;
             return builder.build(options);
 
-          case 54:
+          case 56:
             _release = options.release;
-            _context.next = 57;
+            _context.next = 59;
             return emulator.handle(options.platform, _release, options);
 
-          case 57:
+          case 59:
             !_release && serveForLoad();
 
-          case 58:
-            _context.next = 64;
+          case 60:
+            _context.next = 67;
             break;
 
-          case 60:
-            _context.prev = 60;
-            _context.t2 = _context['catch'](43);
+          case 62:
+            _context.prev = 62;
+            _context.t2 = _context['catch'](45);
 
             stdlog.errorln('');
             if (typeof _context.t2 === 'string') {
@@ -181,13 +183,14 @@ var pack = function () {
             } else {
               stdlog.errorln(_context.t2.stack);
             }
+            process.exit(1);
 
-          case 64:
+          case 67:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, this, [[2, 18], [23, 38], [43, 60]]);
+    }, _callee, this, [[2, 18], [24, 39], [45, 62]]);
   }));
 
   return function pack(_x) {
