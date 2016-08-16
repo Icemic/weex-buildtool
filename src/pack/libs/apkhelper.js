@@ -29,8 +29,8 @@ export function checkSDK() {
       stdlog.info('Check SDK version...');
 
       let lack = [];
-      if (!fs.existsSync(path.resolve(sdkPath, 'platforms/android-24'))) {
-        lack.push('android-24');
+      if (!fs.existsSync(path.resolve(sdkPath, 'platforms/android-23'))) {
+        lack.push('android-23');
       }
       if (!fs.existsSync(path.resolve(sdkPath, 'build-tools/23.0.2'))) {
         lack.push('build-tools-23.0.2');
@@ -68,7 +68,7 @@ export function installSDK(lack, sdkPath) {
   lack = lack.join(',');
   return new Promise((resolve, reject) => {
     let android = childProcess.exec(`${sdkPath}/tools/android update sdk --no-ui --all --filter ${lack}`);
-    stdlog.greyPipe(android.stdout);
+    stdlog.whitePipe(android.stdout);
     stdlog.redPipe(android.stderr);
     // android.stdout.on('data', data => process.stdout.write(data.grey));
     // android.stderr.on('data', data => process.stdout.write(data.red));
@@ -118,7 +118,7 @@ export function pack(buildPath, release) {
         'playground',`gradlew${process.platform === 'win32' ? '.bat' : ''}`), [arg],
         {cwd: path.join(buildPath, 'playground')});
 
-      stdlog.greyPipe(gradlew.stdout);
+      stdlog.greenPipe(gradlew.stdout);
       stdlog.redPipe(gradlew.stderr);
       // gradlew.stdout.on('data', data => process.stdout.write(data.toString().grey));
       // gradlew.stderr.on('data', data => process.stdout.write(data.toString().red));

@@ -64,12 +64,10 @@ module.exports = function (argv) {
         }
       ]).then(function(value) {
         // exec(`pakeex ${value.command}`, {cwd: process.cwd()});
-        console.log(1, value);
         options.isSimulator = value.type;
       });
     }
 
-    console.log(2, options);
     options.root = process.cwd();
     //
     if (options.oprate === 'run') {

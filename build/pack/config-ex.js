@@ -86,13 +86,11 @@ module.exports = function (argv) {
                 choices: [{ value: true, name: 'Simulator' }, { value: false, name: 'Real Device' }]
               }]).then(function (value) {
                 // exec(`pakeex ${value.command}`, {cwd: process.cwd()});
-                console.log(1, value);
                 options.isSimulator = value.type;
               });
 
             case 11:
 
-              console.log(2, options);
               options.root = process.cwd();
               //
               if (options.oprate === 'run') {
@@ -109,7 +107,7 @@ module.exports = function (argv) {
 
               resolve(options);
 
-            case 17:
+            case 16:
             case "end":
               return _context.stop();
           }

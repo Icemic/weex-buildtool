@@ -94,6 +94,7 @@ module.exports = function (release, curPath, debugUrl, configFile) {
         process.stderr.write('please fill Android SDK adress in configuration file'.red);
         process.exit(1);
       }
+      // console.log(config.sdkDir)
       var outString = data.replace(/sdk\.dir.*/, 'sdk.dir=' + path.resolve(configPath, config.sdkDir).replace(/\\/g, '/'));
       fs.writeFileSync(path.resolve(curPath, 'playground/local.properties'), outString);
 
