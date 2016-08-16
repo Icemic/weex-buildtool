@@ -40,7 +40,7 @@ function android(curPath) {
   } else {
     movePic(curPath, androidConfig.icons, 'playground/app/src/main/res/mipmap-', "ic_launcher.png");
   }
-  fse.copySync(path.resolve(configPath, androidConfig.splashscreen), path.resolve(curPath, 'playground/app/src/main/res/mipmap-hdpi/weex_splash.png'));
+  fse.copySync(path.resolve(configPath, androidConfig.splashScreen), path.resolve(curPath, 'playground/app/src/main/res/mipmap-hdpi/weex_splash.png'));
 }
 
 /**
@@ -75,7 +75,7 @@ function ios(curPath) {
   } else {
     movePic(curPath, iosConfig.icons, 'playground/WeexApp/Assets.xcassets/AppIcon.appiconset', "");
   }
-  movePic(curPath, iosConfig.splashscreen, 'playground/WeexApp/Assets.xcassets/LaunchImage.launchimage/', "");
+  movePic(curPath, iosConfig.splashScreen, 'playground/WeexApp/Assets.xcassets/LaunchImage.launchimage/', "");
 }
 module.exports = {
   android: android,

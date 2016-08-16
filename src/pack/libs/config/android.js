@@ -85,41 +85,26 @@ module.exports = function(release, curPath, debugUrl,configFile) {
         defualtPath = fs.existsSync(defualtPath) ? defualtPath : '';
         let sdkPath = process.env.ANDROID_HOME ? process.env.ANDROID_HOME : defualtPath;
 
-        if (config.sdkdir) {
-          config.sdkdir = path.resolve(configPath, config.sdkdir).replace(/\\/g, '/');
+        if (config.sdkDir) {
+          config.sdkDir = path.resolve(configPath, config.sdkDir).replace(/\\/g, '/');
         } else if (sdkPath) {
-          config.sdkdir = sdkPath.replace(/\\/g, '/');
+          config.sdkDir = sdkPath.replace(/\\/g, '/');
         } else {
           process.stderr.write('please fill Android SDK adress in configuration file'.red);
           process.exit(1);
         }
-        console.log(config.sdkdir)
-        let outString = data.replace(/sdk\.dir.*/, 'sdk.dir=' + path.resolve(configPath, config.sdkdir).replace(/\\/g, '/'));
+        console.log(config.sdkDir)
+        let outString = data.replace(/sdk\.dir.*/, 'sdk.dir=' + path.resolve(configPath, config.sdkDir).replace(/\\/g, '/'));
         fs.writeFileSync(path.resolve(curPath, 'playground/local.properties'), outString);
 
         data = fs.readFileSync(path.resolve(curPath, 'playground/app/build.gradle'), { encoding: 'utf8' });
 
-        data = data.replace(/keyAlias.*/, 'keyAlias \'' + config.aliasname + '\'')
-          .replace(/applicationId.*/, 'applicationId \'' + config.packagename + '\'')
+        data = data.replace(/keyAlias.*/, 'keyAlias \'' + config.aliasName + '\'')
+          .replace(/applicationId.*/, 'applicationId \'' + config.packageName + '\'')
           .replace(/keyPassword.*/, 'keyPassword \'' + config.password + '\'')
           .replace(/storePassword.*/, 'storePassword \'' + config.storePassword + '\'')
           .replace(/storeFile.*/, 'storeFile file(\'' + path.resolve(configPath, config.keystore).replace(/\\/g, '/') + '\')');
         fs.writeFileSync(path.resolve(curPath, 'playground/app/build.gradle'), data);
-
-        // data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/res/values/strings.xml'),{encoding: 'utf8'});
-        // data = data.replace(/<string name="app_name">.*</,'<string name="app_name">' + config.name + '<');
-        // fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/res/values/strings.xml'), data);
-
-        // data = fs.readFileSync(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'),{encoding: 'utf8'});
-
-        // var launch_path = config.launch_path;
-        // if(!release){
-        //   launch_path = debugUrl;
-        // }
-        // data = data.replace(/android:versionCode=".*"/,'android:versionCode="' + config.version.code + '"')
-        // .replace(/android:versionName=".*"/,'android:versionName="' + config.version.name + '"')
-        // .replace(/android:name="weex_index"\sandroid:value=".*"/,'android:name="weex_index" android:value="' + launch_path + '"');
-        // fs.writeFileSync(path.resolve(curPath,'playground/app/src/main/AndroidManifest.xml'), data);
       } catch (e) {
         npmlog.error(e);
       }
@@ -168,7 +153,7 @@ module.exports = function(release, curPath, debugUrl,configFile) {
 
           let origin = stdout;
           origin = origin.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-          let re = new RegExp(`^${config.aliasname}.+?$\n^.*?(([0-9A-F]{2}(:)*){20})$`, 'gm');
+          let re = new RegExp(`^${config.aliasName}.+?$\n^.*?(([0-9A-F]{2}(:)*){20})$`, 'gm');
           let r = re.exec(origin);
           let sha1 = '';
           if (r && r.length) {
