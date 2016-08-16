@@ -43,7 +43,7 @@ function serveForLoad() {
 
   HTTP_PORT = '8083';
   // new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath)
-  new Previewer(`./src/main.we`, NO_JSBUNDLE_OUTPUT, undefined, '0.0.0.0', false, false, './src');
+  new Previewer(`./src/main.we`, NO_JSBUNDLE_OUTPUT, false, '0.0.0.0', false, false, './src');
 
 }
 
@@ -241,12 +241,12 @@ class Previewer {
   }
 
   tempDirInit() {
-    fs.removeSync(WEEX_TRANSFORM_TMP)
+    fs.removeSync(`src/${WEEX_TRANSFORM_TMP}`)
 
-    fs.mkdirSync(WEEX_TRANSFORM_TMP)
-    fs.copySync(`${__dirname}/../../node_modules/weex-html5`, `${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
+    fs.mkdirSync(`src/${WEEX_TRANSFORM_TMP}`)
+    fs.copySync(`${__dirname}/../../node_modules/weex-html5`, `src/${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
 
-    fs.mkdirsSync(`${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
+    fs.mkdirsSync(`src/${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
   }
 
   startServer(fileName) {
@@ -277,16 +277,16 @@ class Previewer {
           IP = self.host
         }
         npmlog.info(`we file in local path ${self.transformServerPath} will be transformer to JS bundle\nplease access http://${IP}:${port}/`)
-        return
+        // return
       }
 
 
       if (self.displayQR) {
         self.showQR(fileName)
-        return
+        // return
       }
 
-      var previewUrl = `http://${self.host}:${port}/${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}/?hot-reload_controller&page=${fileName}&loader=xhr`
+      var previewUrl = `http://${nwUtils.getPublicIP()}:${port}/${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}/?hot-reload_controller&page=${fileName}&loader=xhr`
       if (self.shouldOpenBrowser) {
         opener(previewUrl)
       } else {
@@ -294,24 +294,26 @@ class Previewer {
       }
     })
 
-    process.on('SIGINT', function() {
-      npmlog.info("weex  server stoped")
-      fsUtils.deleteFolderRecursive(WEEX_TRANSFORM_TMP)
-      process.exit()
-    })
-
-    process.on('SIGTERM', function() {
-      npmlog.info("weex server stoped")
-      fsUtils.deleteFolderRecursive(WEEX_TRANSFORM_TMP)
-      process.exit()
-    })
+    // process.on('SIGINT', function() {
+    //   npmlog.info("weex  server stoped")
+    //   // fs.emptyDirSync(`src/${WEEX_TRANSFORM_TMP}`);
+    //   // fsUtils.deleteFolderRecursive(`src/${WEEX_TRANSFORM_TMP}`)
+    //   process.exit()
+    // })
+    //
+    // process.on('SIGTERM', function() {
+    //   npmlog.info("weex server stoped")
+    //   // fs.emptyDirSync(`src/${WEEX_TRANSFORM_TMP}`);
+    //   // fsUtils.deleteFolderRecursive(`src/${WEEX_TRANSFORM_TMP}`)
+    //   process.exit()
+    // })
   }
 
   showQR(fileName) {
     let IP = nwUtils.getPublicIP()
-    if (this.host != DEFAULT_HOST) {
-      IP = this.host
-    }
+    // if (this.host != DEFAULT_HOST) {
+    //   IP = this.host
+    // }
     let port = (HTTP_PORT == NO_PORT_SPECIFIED) ? DEFAULT_HTTP_PORT : HTTP_PORT
     let wsport = (WEBSOCKET_PORT == NO_PORT_SPECIFIED) ? DEFAULT_WEBSOCKET_PORT : WEBSOCKET_PORT
     let jsBundleURL = `http://${IP}:${port}/${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}/${fileName}?wsport=${wsport}`
@@ -365,7 +367,7 @@ class Previewer {
     if (outputPath) {
       bundleWritePath = outputPath
     } else {
-      bundleWritePath = `${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}/${filename}.js`
+      bundleWritePath = `src/${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}/${filename}.js`
     }
     inputPath = path.resolve(inputPath)
     var entryValue = `${inputPath}?entry=true`;
