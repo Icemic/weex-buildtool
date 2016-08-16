@@ -363,7 +363,6 @@ var builder = {
         break;
     }
 
-    await this.makeJsbundle();
     if (options.release) {
       await this.makeJsbundle();
     } else {
@@ -552,23 +551,27 @@ var builder = {
     fs.ensureDirSync(bundleOutputPath);
     fs.emptyDirSync(bundleOutputPath);
 
-    await new Promise((resolve, reject) => {
-      stdlog.infoln('Generating JSBundle...');
-      fs.walk(bundleInputPath)
-        .on('data', item => {
-          if (item.stats.isDirectory()) {
-            const inPath = item.path;
-            const outPath = path.resolve(bundleOutputPath, path.relative(bundleInputPath, item.path));
-            fs.ensureDirSync(outPath);
-            stdlog.debugln(inPath);
-            exec(`weex ${inPath} -o ${outPath}`);
-          }
-        })
-        .on('end', () => {
-          stdlog.infoln('Generating JSBundle...done');
-          resolve();
-        });
-    });
+    stdlog.info('Generating JSBundle...');
+    exec(`weex ${bundleInputPath}/main.we -o ${bundleOutputPath}/main.js`);
+    stdlog.infoln('done');
+
+    // await new Promise((resolve, reject) => {
+    //   stdlog.infoln('Generating JSBundle...');
+    //   fs.walk(bundleInputPath)
+    //     .on('data', item => {
+    //       if (item.stats.isDirectory()) {
+    //         const inPath = item.path;
+    //         const outPath = path.resolve(bundleOutputPath, path.relative(bundleInputPath, item.path));
+    //         fs.ensureDirSync(outPath);
+    //         stdlog.debugln(inPath);
+    //         exec(`weex ${inPath} -o ${outPath}`);
+    //       }
+    //     })
+    //     .on('end', () => {
+    //       stdlog.infoln('Generating JSBundle...done');
+    //       resolve();
+    //     });
+    // });
   },
 
   existFile (path) {
