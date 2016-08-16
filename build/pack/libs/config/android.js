@@ -94,6 +94,7 @@ module.exports = function (release, curPath, debugUrl, configFile) {
         process.stderr.write('please fill Android SDK adress in configuration file'.red);
         process.exit(1);
       }
+      // console.log(config.sdkDir)
       var outString = data.replace(/sdk\.dir.*/, 'sdk.dir=' + path.resolve(configPath, config.sdkDir).replace(/\\/g, '/'));
       fs.writeFileSync(path.resolve(curPath, 'playground/local.properties'), outString);
 
@@ -112,19 +113,19 @@ module.exports = function (release, curPath, debugUrl, configFile) {
     var data = void 0;
     if (release) {
       data = fs.readFileSync(path.resolve(curPath, 'playground/settings.gradle'), { encoding: 'utf8' });
-      var outString = data.replace(/\/\*\* release delete head \*\/[\s\S]?\/\*\* release delete tail \*\//m, '');
+      var outString = data.replace(/\/\*\* release delete head \*\/[\s\S]*?\/\*\* release delete tail \*\//g, '');
 
       fs.writeFileSync(path.resolve(curPath, 'playground/settings.gradle'), outString);
       data = fs.readFileSync(path.resolve(curPath, 'playground/app/build.gradle'), { encoding: 'utf8' });
-      data = data.replace(/\/\*\* release delete head \*\/[\s\S]?\/\*\* release delete tail \*\//m, '');
+      data = data.replace(/\/\*\* release delete head \*\/[\s\S]*?\/\*\* release delete tail \*\//g, '');
       fs.writeFileSync(path.resolve(curPath, 'playground/app/build.gradle'), data);
 
       data = fs.readFileSync(path.resolve(curPath, 'playground/app/src/main/java/com/alibaba/weex/https/WXOkHttpDispatcher.java'), { encoding: 'utf8' });
-      data = data.replace(/\/\*\* release delete head \*\/[\s\S]?\/\*\* release delete tail \*\//m, '');
+      data = data.replace(/\/\*\* release delete head \*\/[\s\S]*?\/\*\* release delete tail \*\//g, '');
       fs.writeFileSync(path.resolve(curPath, 'playground/app/src/main/java/com/alibaba/weex/https/WXOkHttpDispatcher.java'), data);
 
       data = fs.readFileSync(path.resolve(curPath, 'playground/app/src/main/java/com/alibaba/weex/IndexActivity.java'), { encoding: 'utf8' });
-      data = data.replace(/\/\*\* release delete head \*\/[\s\S]?\/\*\* release delete tail \*\//m, '');
+      data = data.replace(/\/\*\* release delete head \*\/[\s\S]*?\/\*\* release delete tail \*\//g, '');
       fs.writeFileSync(path.resolve(curPath, 'playground/app/src/main/java/com/alibaba/weex/IndexActivity.java'), data);
     }
   }).then(function () {

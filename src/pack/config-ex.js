@@ -41,15 +41,17 @@ module.exports = function (argv) {
     }
 
 
-
-
     if (sweetAndroid.indexOf(argv1) !== -1) {
       options.platform = "android";
     } else {
       options.platform = argv1;
     }
 
-    if (options.platform ===  "ios" && options.oprate === "run") {
+    if (options.oprate === "emulate") {
+      options.isSimulator = true;
+    }
+
+    if (options.platform ===  "ios") {
       await inquirer.prompt([
         {
           type: 'list',
@@ -66,7 +68,6 @@ module.exports = function (argv) {
       });
     }
 
-
     options.root = process.cwd();
     //
     if (options.oprate === 'run') {
@@ -79,9 +80,7 @@ module.exports = function (argv) {
       options.debug = false;
     }
 
-    if (options.oprate === "emulate") {
-      options.isSimulator = true;
-    }
+
 
 
     options.name = argv.n || "";

@@ -36,7 +36,7 @@ export function android (release) {
 }
 
 export function ios (release, options) {
-  return new Promise( (resolve) => resolve(1)).then(function () {
+  return new Promise((resolve, reject) => {
 
     let isSimulator = options.isSimulator;
 
@@ -46,7 +46,7 @@ export function ios (release, options) {
     if (isSimulator) {
       fs.readdir(filepath, function(err, files) {
         if(err || files.length === 0) {
-          throw "Cannot find file at dist/ios";
+          reject( "Cannot find file at dist/ios");
         } else {
           for (let name of files ) {
             if(name.endsWith('sim.app')){
@@ -56,25 +56,26 @@ export function ios (release, options) {
                 appId: UserConfig.ios.appId,
                 path: filename
               };
-              return simIOS(params);
+
+              return resolve(simIOS(params));
             }
           }
-          throw  "Install failed, no .app file found, may be solved by re-building";
+          reject("Install failed, no .app file found, may be solved by re-building");
         }
       })
 
     } else {
       fs.readdir(filepath, function(err, files) {
         if(err || files.length === 0) {
-          throw "Cannot find file at dist/ios";
+          reject( "Cannot find file at dist/ios");
         } else {
           for (let name of files ) {
             if(name.indexOf('real.ipa') !== -1 && name.endsWith('.ipa')){
               filename = path.join(rootPath, `dist/ios/${name}`);
-              return realIOS(filename);
+              return resolve(realIOS(filename));
             }
           }
-          throw  "Install failed, no .ipa file found, may be solved by re-building";
+          reject("Install failed, no .ipa file found, may be solved by re-building");
         }
       })
     }

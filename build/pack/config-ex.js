@@ -69,12 +69,16 @@ module.exports = function (argv) {
                 options.platform = argv1;
               }
 
-              if (!(options.platform === "ios" && options.oprate === "run")) {
-                _context.next = 10;
+              if (options.oprate === "emulate") {
+                options.isSimulator = true;
+              }
+
+              if (!(options.platform === "ios")) {
+                _context.next = 11;
                 break;
               }
 
-              _context.next = 10;
+              _context.next = 11;
               return inquirer.prompt([{
                 type: 'list',
                 name: 'type',
@@ -85,7 +89,7 @@ module.exports = function (argv) {
                 options.isSimulator = value.type;
               });
 
-            case 10:
+            case 11:
 
               options.root = process.cwd();
               //
@@ -97,10 +101,6 @@ module.exports = function (argv) {
               if (argv.release) {
                 options.release = true;
                 options.debug = false;
-              }
-
-              if (options.oprate === "emulate") {
-                options.isSimulator = true;
               }
 
               options.name = argv.n || "";

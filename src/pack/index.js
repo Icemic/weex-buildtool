@@ -119,7 +119,6 @@ async function pack(argv) {
         await emulator.handle(options.platform, release, options);
         !release && serveForLoad();
       }
-
     } catch (e){
       stdlog.errorln('');
       if (typeof e === 'string') {

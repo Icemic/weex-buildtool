@@ -299,7 +299,7 @@ var builder = {
           }
           break;
         case "ios":
-          if (!options.configios) {
+          if (!options.configios && process.platform !== "darwin") {
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
             stdlog.debugln("config.ios.js...created");
           } else {
@@ -349,7 +349,6 @@ var builder = {
                   fs.ensureDirSync(dirPath);
                   stdlog.infoln('unzip ' + filePath + '...');
                   // process.exit(1);
-                  // exec(`unzip ${filePath} -d ${dirPath}`);
                   return new _promise2.default(function (resolve, reject) {
                     fs.createReadStream(path.resolve(filePath)).pipe(unzip.Extract({ path: path.resolve(dirPath) })).on('close', resolve).on('error', reject);
                   });
@@ -713,7 +712,7 @@ var builder = {
                 break;
               }
 
-              throw "Can't find project";
+              throw "Can't find project! Execute build init android first!";
 
             case 8:
               return _context7.abrupt('break', 15);
@@ -724,7 +723,7 @@ var builder = {
                 break;
               }
 
-              throw "Can't find project";
+              throw "Can't find project! Execute build init ios first!";
 
             case 11:
               return _context7.abrupt('break', 15);
@@ -735,7 +734,7 @@ var builder = {
                 break;
               }
 
-              throw "Can't find projects";
+              throw "Can't find projects! Execute build init first!";
 
             case 14:
               return _context7.abrupt('break', 15);
@@ -903,8 +902,6 @@ var builder = {
     var port = '8083';
     var debugPath = 'http://' + ip + ':' + port + '/main.we';
 
-    fs.removeSync('dist/ios');
-
     return (0, _folderSync2.default)(IOSPATH, BUILDPATH).then(function () {
       if (options.release) {
         var jsBundle = path.resolve(ROOT, 'dist', 'js');
@@ -1004,12 +1001,15 @@ var builder = {
               fs.emptyDirSync(bundleOutputPath);
 
               stdlog.info('Generating JSBundle...');
-              // await new Promise((resolve, reject) => {
-              //   let weex = childProcess.exec(`weex ${bundleInputPath}/main.we -o ${bundleOutputPath}/main.js`);
-              //   weex.on('error', reject);
-              //   weex.on('close', resolve);
-              // })
-              exec('weex ' + bundleInputPath + '/main.we -o ' + bundleOutputPath + '/main.js');
+              _context9.next = 8;
+              return new _promise2.default(function (resolve, reject) {
+                var weex = childProcess.exec('weex ' + bundleInputPath + '/main.we -o ' + bundleOutputPath + '/main.js');
+                weex.on('error', reject);
+                weex.on('close', resolve);
+              });
+
+            case 8:
+              // exec(`weex ${bundleInputPath}/main.we -o ${bundleOutputPath}/main.js`);
               stdlog.infoln('done');
 
               // await new Promise((resolve, reject) => {
@@ -1030,7 +1030,7 @@ var builder = {
               //     });
               // });
 
-            case 8:
+            case 9:
             case 'end':
               return _context9.stop();
           }

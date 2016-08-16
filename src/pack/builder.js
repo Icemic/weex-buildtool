@@ -179,7 +179,7 @@ var builder = {
           }
           break;
         case "ios":
-          if (!options.configios) {
+          if (!options.configios && process.platform !== "darwin") {
             fs.copySync(path.resolve(options.toolRoot, 'package-template/config/config.ios.js'), path.resolve(configPath, 'config.ios.js'));
             stdlog.debugln("config.ios.js...created");
           } else {
@@ -307,7 +307,6 @@ var builder = {
         fs.ensureDirSync(dirPath);
         stdlog.infoln(`unzip ${filePath}...`);
         // process.exit(1);
-        // exec(`unzip ${filePath} -d ${dirPath}`);
         return new Promise((resolve, reject) => {
           fs.createReadStream(path.resolve(filePath))
             .pipe(unzip.Extract({path: path.resolve(dirPath)}))
@@ -357,17 +356,17 @@ var builder = {
     switch (platform) {
       case 'android':
         if( !options.projectandroid ) {
-          throw "Can't find project";
+          throw "Can't find project! Execute build init android first!";
         }
         break;
       case 'ios':
         if( !options.projectios ) {
-          throw "Can't find project";
+          throw "Can't find project! Execute build init ios first!";
         }
         break;
       case 'all':
         if( !options.projectandroid  || !options.projectios) {
-          throw "Can't find projects";
+          throw "Can't find projects! Execute build init first!";
         }
         break;
     }
@@ -458,9 +457,6 @@ var builder = {
     let ip = nwUtils.getPublicIP();
     let port = '8083';
     let debugPath = `http://${ip}:${port}/main.we`;
-
-    fs.removeSync('dist/ios');
-
 
     return folderSync(IOSPATH, BUILDPATH)
       .then(() => {

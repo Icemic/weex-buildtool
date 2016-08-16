@@ -41,11 +41,11 @@ function run(localpath, release, sdkType, info) {
   var ipaPath = path.resolve(localpath, './build/' + name + '.ipa');
   if (fs.existsSync(appPath)) {
     console.log('delete app file');
-    exec('rm -r ' + appPath);
+    // exec('rm -r ' + appPath);
   }
   if (fs.existsSync(ipaPath)) {
     console.log('delete ipa file');
-    exec('rm -r ' + ipaPath);
+    // exec('rm -r ' + ipaPath);
   }
 
   debugger;
