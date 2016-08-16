@@ -1,17 +1,17 @@
 
 module.exports = function () {
     return {
-    "name": "Hello Weex",/*必选，应用名称*/
+    "name": "Hello Weex",/*required, application name*/
     "version": {
-        "name": "1.0",/*必选，版本名称*/
-        "code": "1"/*必选，数字*/
+        "name": "1.0",/*required, version name*/
+        "code": "1"/*required, version code*/
     },
-    "description": "Weex",/*可选，应用描述信息*/
+    "description": "Weex",/*optional, application description*/
     "developer": {
-        "email": "",/*可选，开发者名称*/
-        "name": "",/*可选，开发者邮箱地址*/
-        "url": ""/*可选，开发者自定义地址*/
+        "email": "",/*optional, developer email*/
+        "name": "",/*optional, developer name*/
+        "url": ""/*optional, personal website of developer*/
     },
-    "icon": "../assets/icon/icLauncher.png",/*必选，应用图标*/
+    "icon": "../assets/icon/icLauncher.png",/*required, application icon*/
 };
 };
