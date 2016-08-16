@@ -4,7 +4,7 @@ const path = require('path');
 const childProcess = require('child_process');
 const fs = require('fs-extra');
 const homedir = require('homedir');
-
+import UserConfig from '../userConfig';
 const stdlog = require('../utils/stdlog');
 
 
@@ -19,9 +19,20 @@ export function checkSDK() {
 
   return new Promise((resolve, reject) => {
 
-    let defualtPath = path.resolve(homedir(), 'AppData/Local/Android/sdk');
+    let relativeSDKPath;
+    switch (process.platform) {
+      case 'win32':
+        relativeSDKPath = 'AppData/Local/Android/sdk';
+        break;
+      case 'darwin':
+      default:
+        relativeSDKPath = 'Library/Android/sdk';
+        break;
+    }
+    let defualtPath = path.resolve(homedir(), relativeSDKPath);
     defualtPath = fs.existsSync(defualtPath) ? defualtPath : '';
     let sdkPath = process.env.ANDROID_HOME ? process.env.ANDROID_HOME : defualtPath;
+    sdkPath = UserConfig.android.sdkDir || sdkPath;
     if (sdkPath) {
       // console.info('installed'.green);
       // process.stdout.write('Check SDK version...'.green);
