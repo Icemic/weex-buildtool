@@ -78,6 +78,7 @@ async function pack(argv) {
       } else {
         stdlog.errorln(e.stack);
       }
+      process.exit(1);
     }
   }
 
@@ -102,6 +103,7 @@ async function pack(argv) {
       } else {
         stdlog.errorln(e.stack);
       }
+      process.exit(1);
     }
   }
 
@@ -125,6 +127,7 @@ async function pack(argv) {
       } else {
         stdlog.errorln(e.stack);
       }
+      process.exit(1);
     }
   }
 
