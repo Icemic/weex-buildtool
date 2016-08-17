@@ -30,41 +30,38 @@ var pack = function () {
           case 0:
             options = {};
 
+            testNodeModules();
+
             if (!(argv._[0] === "build")) {
               _context.next = 23;
               break;
             }
 
-            _context.prev = 2;
-            _context.next = 5;
+            _context.prev = 3;
+            _context.next = 6;
             return configBuild(argv);
 
-          case 5:
+          case 6:
             options = _context.sent;
 
             testDarwin(options);
 
             if (!(options.oprate === "init")) {
-              _context.next = 12;
+              _context.next = 13;
               break;
             }
 
-            _context.next = 10;
+            _context.next = 11;
             return builder.init(options);
 
-          case 10:
+          case 11:
             _context.next = 16;
             break;
 
-          case 12:
+          case 13:
             if (!(options.oprate === "build")) {
               _context.next = 16;
               break;
-            }
-
-            if (argv.target) {
-              options.release = argv.target === 'release';
-              options.debug = !options.release;
             }
 
             _context.next = 16;
@@ -76,7 +73,7 @@ var pack = function () {
 
           case 18:
             _context.prev = 18;
-            _context.t0 = _context['catch'](2);
+            _context.t0 = _context['catch'](3);
 
             stdlog.errorln('');
             if (typeof _context.t0 === 'string') {
@@ -190,7 +187,7 @@ var pack = function () {
             return _context.stop();
         }
       }
-    }, _callee, this, [[2, 18], [24, 39], [45, 62]]);
+    }, _callee, this, [[3, 18], [24, 39], [45, 62]]);
   }));
 
   return function pack(_x) {
@@ -250,6 +247,16 @@ function serveForLoad() {
 function testDarwin(options) {
   if (options.platform === "ios" && process.platform !== "darwin") {
     stdlog.errorln("Unsupport platform, Mac only!");
+    process.exit(1);
+  }
+}
+
+function testNodeModules() {
+  var nodePath = path.resolve(process.cwd(), 'node_modules');
+  try {
+    fs.accessSync(nodePath, fs.R_OK);
+  } catch (e) {
+    stdlog.errorln("Execute npm install first");
     process.exit(1);
   }
 }

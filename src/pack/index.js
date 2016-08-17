@@ -49,7 +49,7 @@ function serveForLoad() {
 
 async function pack(argv) {
   var options = {};
-
+  testNodeModules();
   if (argv._[0] === "build"){
 
     try {
@@ -61,10 +61,10 @@ async function pack(argv) {
 
       } else if (options.oprate === "build") {
 
-          if (argv.target) {
-            options.release = (argv.target === 'release');
-            options.debug = !options.release;
-          }
+          // if (argv.target) {
+        //   options.release = (argv.target === 'release');
+        //   options.debug = !options.release;
+        // }
 
           await builder.build(options);
 
@@ -132,6 +132,16 @@ async function pack(argv) {
 function testDarwin(options) {
   if (options.platform=== "ios" && process.platform !== "darwin") {
     stdlog.errorln("Unsupport platform, Mac only!");
+    process.exit(1);
+  }
+}
+
+function testNodeModules() {
+  var nodePath = path.resolve(process.cwd(), 'node_modules');
+  try {
+    fs.accessSync(nodePath, fs.R_OK);
+  } catch (e) {
+    stdlog.errorln( "Execute npm install first");
     process.exit(1);
   }
 }

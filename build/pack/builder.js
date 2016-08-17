@@ -714,7 +714,7 @@ var builder = {
               throw "Can't find project! Execute build init android first!";
 
             case 8:
-              return _context7.abrupt('break', 15);
+              return _context7.abrupt('break', 17);
 
             case 9:
               if (options.projectios) {
@@ -725,7 +725,7 @@ var builder = {
               throw "Can't find project! Execute build init ios first!";
 
             case 11:
-              return _context7.abrupt('break', 15);
+              return _context7.abrupt('break', 17);
 
             case 12:
               if (!(!options.projectandroid || !options.projectios)) {
@@ -736,77 +736,85 @@ var builder = {
               throw "Can't find projects! Execute build init first!";
 
             case 14:
-              return _context7.abrupt('break', 15);
+              return _context7.abrupt('break', 17);
 
             case 15:
-              if (!options.release) {
-                _context7.next = 20;
+              if (options.configbase) {
+                _context7.next = 17;
                 break;
               }
 
-              _context7.next = 18;
+              throw " Execute build init first!";
+
+            case 17:
+              if (!(options.release || options.platform === "html")) {
+                _context7.next = 22;
+                break;
+              }
+
+              _context7.next = 20;
               return this.makeJsbundle();
 
-            case 18:
-              _context7.next = 21;
+            case 20:
+              _context7.next = 23;
               break;
 
-            case 20:
+            case 22:
               stdlog.warnln('Skip JSBundle generation in debug mode');
 
-            case 21:
+            case 23:
               if (!(platform === 'android')) {
-                _context7.next = 26;
+                _context7.next = 28;
                 break;
               }
 
-              _context7.next = 24;
+              _context7.next = 26;
               return this.buildAndroid(options);
 
-            case 24:
-              _context7.next = 41;
+            case 26:
+              _context7.next = 43;
               break;
 
-            case 26:
+            case 28:
               if (!(platform === 'ios')) {
-                _context7.next = 31;
+                _context7.next = 33;
                 break;
               }
 
-              _context7.next = 29;
+              _context7.next = 31;
               return this.buildIos(options);
 
-            case 29:
-              _context7.next = 41;
+            case 31:
+              _context7.next = 43;
               break;
 
-            case 31:
+            case 33:
               if (!(platform === 'html')) {
-                _context7.next = 36;
+                _context7.next = 38;
                 break;
               }
 
-              _context7.next = 34;
+              _context7.next = 36;
               return this.buildHtml(options);
 
-            case 34:
-              _context7.next = 41;
+            case 36:
+              _context7.next = 43;
               break;
 
-            case 36:
+            case 38:
               if (!(platform === 'all')) {
-                _context7.next = 41;
+                _context7.next = 43;
                 break;
               }
 
-              _context7.next = 39;
+              _context7.next = 41;
               return this.buildAll(options);
 
-            case 39:
-              _context7.next = 41;
+            case 41:
+              _context7.next = 43;
               break;
 
-            case 41:
+            case 43:
             case 'end':
               return _context7.stop();
           }
@@ -993,10 +1001,9 @@ var builder = {
               return this.buildAndroid(options);
 
             case 4:
-              _context9.next = 6;
-              return (0, _html2.default)();
+              (0, _html2.default)();
 
-            case 6:
+            case 5:
             case 'end':
               return _context9.stop();
           }

@@ -366,9 +366,13 @@ var builder = {
           throw "Can't find projects! Execute build init first!";
         }
         break;
+      default :
+        if (!options.configbase) {
+        throw " Execute build init first!"
+        }
     }
 
-    if (options.release) {
+    if (options.release || options.platform === "html") {
       await this.makeJsbundle();
     } else {
       stdlog.warnln('Skip JSBundle generation in debug mode');
