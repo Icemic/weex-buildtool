@@ -27,6 +27,7 @@ var path = require('path');
 var childProcess = require('child_process');
 var fs = require('fs-extra');
 var homedir = require('homedir');
+var exec = require('sync-exec');
 
 var stdlog = require('../utils/stdlog');
 
@@ -148,11 +149,19 @@ function installSDK(lack, sdkPath) {
 function pack(buildPath, release) {
 
   return checkSDK().then(function () {
-    if (process.platform !== 'win32' && false) {
+    if (process.platform !== 'win32') {
       return new _promise2.default(function (resolve, reject) {
-        fs.chmodSync(path.join(buildPath, 'playground'), 493);
-        var chmod = childProcess.execFile('chmod -755 ' + path.join(buildPath, 'playground', 'gradlew'), { cwd: path.join(buildPath, 'playground') });
-        chmod.on('close', resolve).on('error', reject);
+        // fs.chmodSync(path.join(buildPath, 'playground'), 0o755);
+        // let chmod = childProcess.execFile('chmod -755 ' + path.join(buildPath, 'playground', 'gradlew'),
+        // {cwd: path.join(buildPath, 'playground')});
+        // chmod.on('close', resolve).on('error', reject);
+        var dirPath = path.resolve(buildPath, 'playground');
+        try {
+          exec('chmod -R 755 ' + dirPath, { cwd: dirPath });
+          resolve(1);
+        } catch (e) {
+          reject(1);
+        }
       });
     } else {
       return _promise2.default.resolve();

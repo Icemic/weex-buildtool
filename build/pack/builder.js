@@ -977,19 +977,42 @@ var builder = {
     (0, _html2.default)();
     (0, _html5Server2.default)();
   },
-  buildAll: function buildAll() {
-    this.buildHtml();
-    this.buildIos();
-    this.buildAndroid();
-  },
 
 
-  makeJsbundle: function () {
-    var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(wePath, jsPath) {
-      var rootPath, bundleInputPath, bundleOutputPath;
+  buildAll: function () {
+    var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(options) {
       return _regenerator2.default.wrap(function _callee9$(_context9) {
         while (1) {
           switch (_context9.prev = _context9.next) {
+            case 0:
+              _context9.next = 2;
+              return this.buildIos(options);
+
+            case 2:
+              _context9.next = 4;
+              return this.buildAndroid(options);
+
+            case 4:
+            case 'end':
+              return _context9.stop();
+          }
+        }
+      }, _callee9, this);
+    }));
+
+    function buildAll(_x7) {
+      return _ref9.apply(this, arguments);
+    }
+
+    return buildAll;
+  }(),
+
+  makeJsbundle: function () {
+    var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(wePath, jsPath) {
+      var rootPath, bundleInputPath, bundleOutputPath;
+      return _regenerator2.default.wrap(function _callee10$(_context10) {
+        while (1) {
+          switch (_context10.prev = _context10.next) {
             case 0:
               rootPath = this.root;
               bundleInputPath = wePath || path.resolve(rootPath, 'src');
@@ -1000,7 +1023,7 @@ var builder = {
               fs.emptyDirSync(bundleOutputPath);
 
               stdlog.info('Generating JSBundle...');
-              _context9.next = 8;
+              _context10.next = 8;
               return new _promise2.default(function (resolve, reject) {
                 var weex = childProcess.exec('weex ' + bundleInputPath + '/main.we -o ' + bundleOutputPath + '/main.js');
                 weex.on('error', reject);
@@ -1031,14 +1054,14 @@ var builder = {
 
             case 9:
             case 'end':
-              return _context9.stop();
+              return _context10.stop();
           }
         }
-      }, _callee9, this);
+      }, _callee10, this);
     }));
 
-    function makeJsbundle(_x7, _x8) {
-      return _ref9.apply(this, arguments);
+    function makeJsbundle(_x8, _x9) {
+      return _ref10.apply(this, arguments);
     }
 
     return makeJsbundle;

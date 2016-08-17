@@ -43,6 +43,7 @@ module.exports = async function configBuild(argv) {
     });
   }
   if (argv1 === "init") {
+
     options.oprate = "init";
     if (argv2 === null) {
       options.platform = "all";
@@ -52,6 +53,28 @@ module.exports = async function configBuild(argv) {
       } else {
         options.platform = argv2;
       }
+    }
+
+    if (sweetPlat.indexOf(options.platform) === -1) {
+      await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'platform',
+          message: 'Choose an operation: ',
+          choices: [{
+            name: "build init android",
+            value: "android"
+          }, {
+            name: "build init ios",
+            value: "ios"
+          }, {
+            name: "build init all",
+            value: "all"
+          }]
+        }
+      ]).then(function(value) {
+        options.platform = value.platform;
+      });
     }
   } else {
     options.oprate = "build";
@@ -65,11 +88,13 @@ module.exports = async function configBuild(argv) {
   if (process.platform !== 'darwin' && options.platform === 'ios') {
     throw 'Unsupport platform, Mac only!';
   } else if (process.platform !== 'darwin' && options.platform === 'all') {
-    stdlog.warnln('iOS building only be supported in macOS, ignored.');
+    stdlog.warnln('iOS building is only supported in macOS, ignored.');
     options.platform = 'android';
   }
 
   options.giturl = {};
+
+
   if (options.platform === "android") {
     options.giturl.android = argv.url || defaultAndroid;
     options.giturl.basename = path.basename(argv.url || defaultAndroid);
@@ -87,6 +112,10 @@ module.exports = async function configBuild(argv) {
       options.giturl.android = defaultAndroid;
       options.giturl.ios = defaultIos;
     }
+  }
+
+  if (sweetPlat.indexOf(options.platform)=== -1) {
+    throw "Unsupported platform, please check your input!"
   }
 
   options.root = process.cwd();

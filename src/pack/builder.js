@@ -538,10 +538,10 @@ var builder = {
     serveHtml();
   },
 
-  buildAll() {
-    this.buildHtml();
-    this.buildIos();
-    this.buildAndroid();
+  buildAll: async function (options) {
+    await this.buildIos(options);
+    await this.buildAndroid(options);
+    await packHtml();
   },
 
   makeJsbundle: async function(wePath, jsPath) {

@@ -4,6 +4,7 @@ const path = require('path');
 const childProcess = require('child_process');
 const fs = require('fs-extra');
 const homedir = require('homedir');
+const exec = require('sync-exec');
 import UserConfig from '../userConfig';
 const stdlog = require('../utils/stdlog');
 
@@ -45,6 +46,9 @@ export function checkSDK() {
       }
       if (!fs.existsSync(path.resolve(sdkPath, 'build-tools/23.0.2'))) {
         lack.push('build-tools-23.0.2');
+      }
+      if (!fs.existsSync(path.resolve(sdkPath, 'extras/android'))) {
+        lack.push('extra-android-m2repository');
       }
       process.stdout.write('done\n'.green);
       if (lack.length) {
@@ -107,12 +111,19 @@ export function pack(buildPath, release) {
 
   return checkSDK()
   .then(() => {
-    if (process.platform !== 'win32' && false) {
+    if (process.platform === 'darwin') {
       return new Promise((resolve, reject) => {
-        fs.chmodSync(path.join(buildPath, 'playground'), 0o755);
-        let chmod = childProcess.execFile('chmod -755 ' + path.join(buildPath, 'playground', 'gradlew'),
-        {cwd: path.join(buildPath, 'playground')});
-        chmod.on('close', resolve).on('error', reject);
+        // fs.chmodSync(path.join(buildPath, 'playground'), 0o755);
+        // let chmod = childProcess.execFile('chmod -755 ' + path.join(buildPath, 'playground', 'gradlew'),
+        // {cwd: path.join(buildPath, 'playground')});
+        // chmod.on('close', resolve).on('error', reject);
+        let dirPath = path.resolve(buildPath, 'playground');
+        try {
+          exec(`chmod -R 755 ${dirPath}`, {cwd: dirPath});
+          resolve(1);
+        } catch (e) {
+          reject(1);
+        }
       });
     } else {
       return Promise.resolve();

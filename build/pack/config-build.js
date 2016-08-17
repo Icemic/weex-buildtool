@@ -58,41 +58,75 @@ module.exports = function () {
             });
 
           case 6:
-            if (argv1 === "init") {
-              options.oprate = "init";
-              if (argv2 === null) {
-                options.platform = "all";
-              } else {
-                if (sweetAndroid.indexOf(argv2) !== -1) {
-                  options.platform = "android";
-                } else {
-                  options.platform = argv2;
-                }
-              }
+            if (!(argv1 === "init")) {
+              _context.next = 14;
+              break;
+            }
+
+            options.oprate = "init";
+            if (argv2 === null) {
+              options.platform = "all";
             } else {
-              options.oprate = "build";
-              if (sweetAndroid.indexOf(argv1) !== -1) {
+              if (sweetAndroid.indexOf(argv2) !== -1) {
                 options.platform = "android";
               } else {
-                options.platform = argv1;
+                options.platform = argv2;
               }
             }
 
+            if (!(sweetPlat.indexOf(options.platform) === -1)) {
+              _context.next = 12;
+              break;
+            }
+
+            _context.next = 12;
+            return inquirer.prompt([{
+              type: 'list',
+              name: 'platform',
+              message: 'Choose an operation: ',
+              choices: [{
+                name: "build init android",
+                value: "android"
+              }, {
+                name: "build init ios",
+                value: "ios"
+              }, {
+                name: "build init all",
+                value: "all"
+              }]
+            }]).then(function (value) {
+              options.platform = value.platform;
+            });
+
+          case 12:
+            _context.next = 16;
+            break;
+
+          case 14:
+            options.oprate = "build";
+            if (sweetAndroid.indexOf(argv1) !== -1) {
+              options.platform = "android";
+            } else {
+              options.platform = argv1;
+            }
+
+          case 16:
             if (!(process.platform !== 'darwin' && options.platform === 'ios')) {
-              _context.next = 11;
+              _context.next = 20;
               break;
             }
 
             throw 'Unsupport platform, Mac only!';
 
-          case 11:
+          case 20:
             if (process.platform !== 'darwin' && options.platform === 'all') {
-              stdlog.warnln('iOS building only be supported in macOS, ignored.');
+              stdlog.warnln('iOS building is only supported in macOS, ignored.');
               options.platform = 'android';
             }
 
-          case 12:
+          case 21:
             options.giturl = {};
+
             if (options.platform === "android") {
               options.giturl.android = argv.url || defaultAndroid;
               options.giturl.basename = path.basename(argv.url || defaultAndroid);
@@ -104,22 +138,30 @@ module.exports = function () {
             }
 
             if (!(options.platform === "all")) {
-              _context.next = 22;
+              _context.next = 31;
               break;
             }
 
             if (!argv.url) {
-              _context.next = 20;
+              _context.next = 29;
               break;
             }
 
             throw 'You can only use -u with a specific platform';
 
-          case 20:
+          case 29:
             options.giturl.android = defaultAndroid;
             options.giturl.ios = defaultIos;
 
-          case 22:
+          case 31:
+            if (!(sweetPlat.indexOf(options.platform) === -1)) {
+              _context.next = 33;
+              break;
+            }
+
+            throw "Unsupported platform, please check your input!";
+
+          case 33:
 
             options.root = process.cwd();
             options.toolRoot = path.resolve(__dirname, "..", "..");
@@ -139,7 +181,7 @@ module.exports = function () {
 
             return _context.abrupt('return', options);
 
-          case 27:
+          case 38:
           case 'end':
             return _context.stop();
         }

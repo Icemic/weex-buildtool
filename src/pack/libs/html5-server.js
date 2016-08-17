@@ -21,7 +21,6 @@ module.exports = function () {
       let IP =  nwUtils.getPublicIP();
 
       npmlog.info(`please access http://${IP}:${DEFAULT_HTTP_PORT}/`);
-      console.log(process.platform);
       if (process.platform === 'darwin'){
         // mac os
         c.exec(`open http://${IP}:${DEFAULT_HTTP_PORT}`);
