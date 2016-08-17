@@ -378,6 +378,8 @@ var builder = {
       stdlog.warnln('Skip JSBundle generation in debug mode');
     }
 
+    // await this.makeJsbundle();
+
     if (platform === 'android') {
 
       await this.buildAndroid(options);
@@ -435,7 +437,7 @@ var builder = {
             } else {
               let pathDir = path.resolve(files[0], '..');
               fs.copySync(pathDir, 'dist/android/');
-              stdlog.infoln('Android package build successful');
+              stdlog.infoln(`Android package build successful. The app is in ${path.resolve(ROOT, 'dist', 'android')} `);
               resolve();
             }
           })
@@ -522,7 +524,7 @@ var builder = {
             } else {
               let pathDir = path.resolve(files[0], '..');
               fs.copySync(pathDir, 'dist/ios/');
-              stdlog.infoln('iOS package build successful');
+              stdlog.infoln(`iOS package build successful. The app is in ${path.resolve(ROOT, 'dist', 'ios')} `);
               resolve();
             }
           })
@@ -559,7 +561,11 @@ var builder = {
 
     stdlog.info('Generating JSBundle...');
     await new Promise((resolve, reject) => {
-      let weex = childProcess.exec(`weex ${bundleInputPath}/main.we -o ${bundleOutputPath}/main.js`);
+      try {
+        var weex = childProcess.exec(`pakeex ${bundleInputPath}/main.we -o ${bundleOutputPath}/main.js`);
+      } catch (e) {
+        weex = childProcess.exec(`weex ${bundleInputPath}/main.we -o ${bundleOutputPath}/main.js`);
+      }
       weex.on('error', reject);
       weex.on('close', resolve);
     })

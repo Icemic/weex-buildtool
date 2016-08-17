@@ -871,7 +871,7 @@ var builder = {
                     } else {
                       var pathDir = path.resolve(files[0], '..');
                       fs.copySync(pathDir, 'dist/android/');
-                      stdlog.infoln('Android package build successful');
+                      stdlog.infoln('Android package build successful. The app is in ' + path.resolve(ROOT, 'dist', 'android') + ' ');
                       resolve();
                     }
                   });
@@ -968,7 +968,7 @@ var builder = {
           } else {
             var pathDir = path.resolve(files[0], '..');
             fs.copySync(pathDir, 'dist/ios/');
-            stdlog.infoln('iOS package build successful');
+            stdlog.infoln('iOS package build successful. The app is in ' + path.resolve(ROOT, 'dist', 'ios') + ' ');
             resolve();
           }
         });
@@ -1036,7 +1036,11 @@ var builder = {
               stdlog.info('Generating JSBundle...');
               _context10.next = 8;
               return new _promise2.default(function (resolve, reject) {
-                var weex = childProcess.exec('weex ' + bundleInputPath + '/main.we -o ' + bundleOutputPath + '/main.js');
+                try {
+                  var weex = childProcess.exec('pakeex ' + bundleInputPath + '/main.we -o ' + bundleOutputPath + '/main.js');
+                } catch (e) {
+                  weex = childProcess.exec('weex ' + bundleInputPath + '/main.we -o ' + bundleOutputPath + '/main.js');
+                }
                 weex.on('error', reject);
                 weex.on('close', resolve);
               });
