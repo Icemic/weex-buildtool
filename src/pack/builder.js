@@ -541,7 +541,7 @@ var builder = {
   buildAll: async function (options) {
     await this.buildIos(options);
     await this.buildAndroid(options);
-    await packHtml();
+    packHtml();
   },
 
   makeJsbundle: async function(wePath, jsPath) {

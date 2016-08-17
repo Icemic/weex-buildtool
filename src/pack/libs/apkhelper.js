@@ -47,7 +47,7 @@ export function checkSDK() {
       if (!fs.existsSync(path.resolve(sdkPath, 'build-tools/23.0.2'))) {
         lack.push('build-tools-23.0.2');
       }
-      if (!fs.existsSync(path.resolve(sdkPath, 'extras/android'))) {
+      if (!fs.existsSync(path.resolve(sdkPath, 'extras/android/m2repository'))) {
         lack.push('extra-android-m2repository');
       }
       process.stdout.write('done\n'.green);

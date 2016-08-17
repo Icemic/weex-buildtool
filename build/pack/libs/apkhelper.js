@@ -69,6 +69,9 @@ function checkSDK() {
       if (!fs.existsSync(path.resolve(sdkPath, 'build-tools/23.0.2'))) {
         lack.push('build-tools-23.0.2');
       }
+      if (!fs.existsSync(path.resolve(sdkPath, 'extras/android/m2repository'))) {
+        lack.push('extra-android-m2repository');
+      }
       process.stdout.write('done\n'.green);
       if (lack.length) {
         // console.info('检测到以下内容尚未安装：\n'.yellow);
@@ -149,7 +152,7 @@ function installSDK(lack, sdkPath) {
 function pack(buildPath, release) {
 
   return checkSDK().then(function () {
-    if (process.platform !== 'win32') {
+    if (process.platform === 'darwin') {
       return new _promise2.default(function (resolve, reject) {
         // fs.chmodSync(path.join(buildPath, 'playground'), 0o755);
         // let chmod = childProcess.execFile('chmod -755 ' + path.join(buildPath, 'playground', 'gradlew'),

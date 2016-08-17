@@ -1,6 +1,6 @@
 {
   "name": "@ali/pakeex-cli",
-  "version": "0.0.27",
+  "version": "0.0.29",
   "description": "Weex package Toolkit",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

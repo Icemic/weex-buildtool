@@ -139,7 +139,7 @@ RawBlameHistory     144 lines (137 sloc)  4.48 KB
       next: function(){
         // -------换成服务器的地址------
         var params = {
-          'url': 'http://30.10.209.26:8083/main.we',
+          'url': 'http://gw.alicdn.com/bao/uploaded/TB1BmYkLpXXXXXrXpXXXXXXXXXX.js?spm=a1z3i.a4.0.0.QlGEMr&file=TB1BmYkLpXXXXXrXpXXXXXXXXXX.js',
           'animated' : 'true',
         }
         var navigator = require('@weex-module/navigator');

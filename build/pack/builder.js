@@ -993,6 +993,10 @@ var builder = {
               return this.buildAndroid(options);
 
             case 4:
+              _context9.next = 6;
+              return (0, _html2.default)();
+
+            case 6:
             case 'end':
               return _context9.stop();
           }
