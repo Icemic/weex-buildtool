@@ -1,9 +1,5 @@
 'use strict';
 
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
@@ -11,6 +7,10 @@ var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 var _createClass2 = require('babel-runtime/helpers/createClass');
 
 var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
 
 var _regenerator = require('babel-runtime/regenerator');
 
@@ -20,6 +20,10 @@ var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
+/*
+ *  Pack 生命周期1: 解析输入 2: 异常拦截 3: 进入处理流程
+ *
+ */
 var pack = function () {
   var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(argv) {
     var options, release, _release;
@@ -28,51 +32,21 @@ var pack = function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            options = {};
+            _context.next = 2;
+            return inputFilter(argv);
 
-            testNodeModules();
-
-            if (!(argv._[0] === "build")) {
-              _context.next = 23;
-              break;
-            }
-
+          case 2:
+            options = _context.sent;
             _context.prev = 3;
             _context.next = 6;
-            return configBuild(argv);
+            return envFilter(options);
 
           case 6:
-            options = _context.sent;
-
-            testDarwin(options);
-
-            if (!(options.oprate === "init")) {
-              _context.next = 13;
-              break;
-            }
-
-            _context.next = 11;
-            return builder.init(options);
-
-          case 11:
-            _context.next = 16;
+            _context.next = 13;
             break;
 
-          case 13:
-            if (!(options.oprate === "build")) {
-              _context.next = 16;
-              break;
-            }
-
-            _context.next = 16;
-            return builder.build(options);
-
-          case 16:
-            _context.next = 23;
-            break;
-
-          case 18:
-            _context.prev = 18;
+          case 8:
+            _context.prev = 8;
             _context.t0 = _context['catch'](3);
 
             stdlog.errorln('');
@@ -83,44 +57,37 @@ var pack = function () {
             }
             process.exit(1);
 
-          case 23:
-            if (!(argv._[0] === "emulate")) {
-              _context.next = 44;
+          case 13:
+            _context.prev = 13;
+
+            if (!(options.oprate === 'init')) {
+              _context.next = 19;
               break;
             }
 
+            _context.next = 17;
+            return builder.init(options);
+
+          case 17:
+            _context.next = 22;
+            break;
+
+          case 19:
+            if (!(options.oprate === 'build')) {
+              _context.next = 22;
+              break;
+            }
+
+            _context.next = 22;
+            return builder.build(options);
+
+          case 22:
+            _context.next = 29;
+            break;
+
+          case 24:
             _context.prev = 24;
-            _context.next = 27;
-            return configProcess(argv);
-
-          case 27:
-            options = _context.sent;
-
-            if (!(options.platform === "html")) {
-              _context.next = 32;
-              break;
-            }
-
-            builder.build(options);
-            _context.next = 37;
-            break;
-
-          case 32:
-            testDarwin(options);
-            release = options.release;
-            _context.next = 36;
-            return emulator.handle(options.platform, release, options);
-
-          case 36:
-            !release && serveForLoad();
-
-          case 37:
-            _context.next = 44;
-            break;
-
-          case 39:
-            _context.prev = 39;
-            _context.t1 = _context['catch'](24);
+            _context.t1 = _context['catch'](13);
 
             stdlog.errorln('');
             if (typeof _context.t1 === 'string') {
@@ -130,49 +97,38 @@ var pack = function () {
             }
             process.exit(1);
 
-          case 44:
-            if (!(argv._[0] === "run")) {
-              _context.next = 67;
+          case 29:
+            if (!(options.oprate === 'emulate')) {
+              _context.next = 46;
               break;
             }
 
-            _context.prev = 45;
+            _context.prev = 30;
 
-            if (!(options.platform === "html")) {
-              _context.next = 50;
+            if (!(options.platform === 'html')) {
+              _context.next = 35;
               break;
             }
 
             builder.build(options);
-            _context.next = 60;
+            _context.next = 39;
             break;
 
-          case 50:
-            _context.next = 52;
-            return configProcess(argv);
+          case 35:
+            release = options.release;
+            _context.next = 38;
+            return emulator.handle(options.platform, release, options);
 
-          case 52:
-            options = _context.sent;
+          case 38:
+            !release && serveForLoad();
 
-            testDarwin(options);
-            _context.next = 56;
-            return builder.build(options);
-
-          case 56:
-            _release = options.release;
-            _context.next = 59;
-            return emulator.handle(options.platform, _release, options);
-
-          case 59:
-            !_release && serveForLoad();
-
-          case 60:
-            _context.next = 67;
+          case 39:
+            _context.next = 46;
             break;
 
-          case 62:
-            _context.prev = 62;
-            _context.t2 = _context['catch'](45);
+          case 41:
+            _context.prev = 41;
+            _context.t2 = _context['catch'](30);
 
             stdlog.errorln('');
             if (typeof _context.t2 === 'string') {
@@ -182,12 +138,57 @@ var pack = function () {
             }
             process.exit(1);
 
-          case 67:
+          case 46:
+            if (!(options.oprate === 'run')) {
+              _context.next = 65;
+              break;
+            }
+
+            _context.prev = 47;
+
+            if (!(options.platform === 'html')) {
+              _context.next = 52;
+              break;
+            }
+
+            builder.build(options);
+            _context.next = 58;
+            break;
+
+          case 52:
+            _context.next = 54;
+            return builder.build(options);
+
+          case 54:
+            _release = options.release;
+            _context.next = 57;
+            return emulator.handle(options.platform, _release, options);
+
+          case 57:
+            !_release && serveForLoad();
+
+          case 58:
+            _context.next = 65;
+            break;
+
+          case 60:
+            _context.prev = 60;
+            _context.t3 = _context['catch'](47);
+
+            stdlog.errorln('');
+            if (typeof _context.t3 === 'string') {
+              stdlog.errorln('Error: ' + _context.t3);
+            } else {
+              stdlog.errorln(_context.t3.stack);
+            }
+            process.exit(1);
+
+          case 65:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, this, [[3, 18], [24, 39], [45, 62]]);
+    }, _callee, this, [[3, 8], [13, 24], [30, 41], [47, 60]]);
   }));
 
   return function pack(_x) {
@@ -195,14 +196,71 @@ var pack = function () {
   };
 }();
 
+var envFilter = function () {
+  var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(options) {
+    return _regenerator2.default.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.next = 2;
+            return testWeex(options);
+
+          case 2:
+            testDarwin(options);
+            testNodeModules();
+
+          case 4:
+          case 'end':
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this);
+  }));
+
+  return function envFilter(_x2) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+var testWeex = function () {
+  var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(options) {
+    return _regenerator2.default.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.next = 2;
+            return new _promise2.default(function (resolve, reject) {
+              glob(options.root + '/src/*.we', function (err, files) {
+                if (err || files.length === 0) {
+                  reject("Please exec weex init && npm install first");
+                } else {
+                  resolve();
+                }
+              });
+            });
+
+          case 2:
+          case 'end':
+            return _context3.stop();
+        }
+      }
+    }, _callee3, this);
+  }));
+
+  return function testWeex(_x3) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var inquirer = require('inquirer');
-var configBuild = require('./config-build');
 var configProcess = require('./config-ex');
+var inputFilter = require('./input-filter');
 var stdlog = require('./utils/stdlog');
 var emulator = require('./emulator');
 var builder = require('./builder');
+var glob = require("glob");
 
 var fs = require('fs-extra'),
     path = require('path'),
@@ -212,7 +270,7 @@ var fs = require('fs-extra'),
     wsServer = require('ws').Server,
     watch = require('node-watch'),
     os = require('os'),
-    _ = require("underscore"),
+    _ = require('underscore'),
     qrcode = require('qrcode-terminal'),
     webpack = require('webpack'),
     nwUtils = require('../../build/nw-utils'),
@@ -220,14 +278,14 @@ var fs = require('fs-extra'),
     commands = require('../../build/commands'),
     exec = require('sync-exec');
 
-var WEEX_FILE_EXT = "we";
-var WEEX_TRANSFORM_TMP = "weex_tmp";
-var H5_Render_DIR = "h5_render";
+var WEEX_FILE_EXT = 'we';
+var WEEX_TRANSFORM_TMP = 'weex_tmp';
+var H5_Render_DIR = 'h5_render';
 var NO_PORT_SPECIFIED = -1;
-var DEFAULT_HTTP_PORT = "8081";
-var DEFAULT_WEBSOCKET_PORT = "8082";
-var NO_JSBUNDLE_OUTPUT = "no JSBundle output";
-var DEFAULT_HOST = "127.0.0.1";
+var DEFAULT_HTTP_PORT = '8081';
+var DEFAULT_WEBSOCKET_PORT = '8082';
+var NO_JSBUNDLE_OUTPUT = 'no JSBundle output';
+var DEFAULT_HOST = '127.0.0.1';
 
 //will update when argvProcess function call
 var HTTP_PORT = NO_PORT_SPECIFIED;
@@ -245,8 +303,8 @@ function serveForLoad() {
 }
 
 function testDarwin(options) {
-  if (options.platform === "ios" && process.platform !== "darwin") {
-    stdlog.errorln("Unsupport platform, Mac only!");
+  if (options.platform === 'ios' && process.platform !== 'darwin') {
+    stdlog.errorln('Your platform is not support now! This is mac only!');
     process.exit(1);
   }
 }
@@ -256,7 +314,7 @@ function testNodeModules() {
   try {
     fs.accessSync(nodePath, fs.R_OK);
   } catch (e) {
-    stdlog.errorln("Execute npm install first");
+    stdlog.errorln('Execute npm install first');
     process.exit(1);
   }
 }
@@ -338,7 +396,7 @@ var Previewer = function () {
           fs.lstatSync(outputPath).isDirectory;
         } catch (e) {
           npmlog.info(yargs.help());
-          npmlog.info("when input path is dir , output path must be dir too");
+          npmlog.info('when input path is dir , output path must be dir too');
           process.exit(1);
         }
 
@@ -361,7 +419,7 @@ var Previewer = function () {
 
       transformP.then(function (jsBundlePathForRender) {
         if (self.serverMark == true) {
-          // typeof jsBundlePathForRender == "string"
+          // typeof jsBundlePathForRender == 'string'
 
           //no js bundle output specified, start server for playgroundApp(now) or H5 renderer.
           self.startServer(jsBundlePathForRender);
@@ -387,8 +445,8 @@ var Previewer = function () {
     key: 'startServer',
     value: function startServer(fileName) {
       var options = {
-        root: ".",
-        cache: "-1",
+        root: '.',
+        cache: '-1',
         showDir: true,
         autoIndex: true
       };
@@ -404,7 +462,7 @@ var Previewer = function () {
       var server = httpServer.createServer(options);
       var port = HTTP_PORT == NO_PORT_SPECIFIED ? DEFAULT_HTTP_PORT : HTTP_PORT;
       //npmlog.info(`http port: ${port}`)
-      server.listen(port, "0.0.0.0", function () {
+      server.listen(port, '0.0.0.0', function () {
         npmlog.info(new Date() + ('http  is listening on port ' + port));
 
         if (self.transformServerPath) {
@@ -430,14 +488,14 @@ var Previewer = function () {
       });
 
       // process.on('SIGINT', function() {
-      //   npmlog.info("weex  server stoped")
+      //   npmlog.info('weex  server stoped')
       //   // fs.emptyDirSync(`src/${WEEX_TRANSFORM_TMP}`);
       //   // fsUtils.deleteFolderRecursive(`src/${WEEX_TRANSFORM_TMP}`)
       //   process.exit()
       // })
       //
       // process.on('SIGTERM', function() {
-      //   npmlog.info("weex server stoped")
+      //   npmlog.info('weex server stoped')
       //   // fs.emptyDirSync(`src/${WEEX_TRANSFORM_TMP}`);
       //   // fsUtils.deleteFolderRecursive(`src/${WEEX_TRANSFORM_TMP}`)
       //   process.exit()
@@ -456,7 +514,7 @@ var Previewer = function () {
       // npmlog output will broken QR in some case ,some we using console.log
       console.log('The following QR encoding url is\n' + jsBundleURL + '\n');
       qrcode.generate(jsBundleURL);
-      console.log("\nPlease download Weex Playground app from https://github.com/alibaba/weex and scan this QR code to run your app, make sure your phone is connected to the same Wi-Fi network as your computer runing weex server.\n");
+      console.log('\nPlease download Weex Playground app from https://github.com/alibaba/weex and scan this QR code to run your app, make sure your phone is connected to the same Wi-Fi network as your computer runing weex server.\n');
     }
   }, {
     key: 'startWebSocket',
@@ -469,7 +527,7 @@ var Previewer = function () {
         ws.on('message', function incoming(message) {
           npmlog.info('received: %s', message);
         });
-        ws.send("ws server ok");
+        ws.send('ws server ok');
         self.wsConnection = ws;
         self.watchForWSRefresh();
       });
@@ -490,7 +548,7 @@ var Previewer = function () {
         if (/\.js$|\.we$/gi.test(fileName)) {
           var transformP = self.transformTarget(self.inputPath, self.outputPath);
           transformP.then(function (fileName) {
-            self.wsConnection.send("refresh");
+            self.wsConnection.send('refresh');
           });
         }
       });
@@ -525,10 +583,10 @@ var Previewer = function () {
           }]
         },
         resolve: {
-          root: [path.dirname(inputPath), path.join(path.dirname(inputPath), "node_modules/"), process.cwd(), path.join(process.cwd(), "node_modules/")]
+          root: [path.dirname(inputPath), path.join(path.dirname(inputPath), 'node_modules/'), process.cwd(), path.join(process.cwd(), 'node_modules/')]
         },
         resolveLoader: {
-          root: [path.join(path.dirname(__dirname), "node_modules/")]
+          root: [path.join(path.dirname(__dirname), 'node_modules/')]
         },
         debug: true,
         bail: true

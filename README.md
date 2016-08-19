@@ -32,11 +32,11 @@ $ tnpm install -g @ali/pakeex-cli
 
 ### Android
 
-To generate a Android `.apk` file, there are several steps you should follow, [SEE MORE](android-env).
+To generate a Android `.apk` file, there are several steps you should follow, [SEE MORE](http://gitlab.alibaba-inc.com/seal/pakeex/wikis/android-env).
 
 ### iOS
 
-To generate a iOS `.ipa` or `.app` file, there are several steps you should follow, [SEE MORE](ios-env).
+To generate a iOS `.ipa` or `.app` file, there are several steps you should follow, [SEE MORE](http://gitlab.alibaba-inc.com/seal/pakeex/wikis/ios-env).
 
 ## Quick Start
 
@@ -78,7 +78,7 @@ $ pakeex emulate [android|ios|html|all] [-d|-r]
 $ pakeex run [android|ios|html] [-d|-r]
 
 # tips: -d, debug | -r, release
-#       -u url, specific a third party template project, 
+#       -u url, specific a third party template project,
 #               see http://xxxxx
 ```
 
@@ -86,21 +86,20 @@ $ pakeex run [android|ios|html] [-d|-r]
 
 You can custom package name, app name, icon, splash, etc. as you want at `config/config.<platform>.js`.
 
-[See more about configuration](user-configure).
+[See more about configuration](http://gitlab.alibaba-inc.com/seal/pakeex/wikis/user-configure).
 
 ### Certificate & Signature
 
-Certificate and signature are supported in release package. 
+Certificate and signature are supported in release package.
 
 Make sure you have owned a valid cert or keystore, and edit `config/config.<platform>.js`.
 
-[See more about configuration](user-configure).
+[See more about configuration](http://gitlab.alibaba-inc.com/seal/pakeex/wikis/user-configure).
 
 ### Custom Android/iOS Native Code
 
 While a default native project are provided, you can also custom it or create a completely new one for more amazing purpose!
 
-However, you must obey some rules, [for Android](Androidtemplateextendproject), [for iOS](Iostemplateextendproject).
+However, you must obey some rules, [for Android](http://gitlab.alibaba-inc.com/seal/pakeex/wikis/AndroidTemplateExtendProject), [for iOS](Iostemplateextendproject).
 
 Our default project are hosting at [Android](https://github.com/liujiescut/WeexAndroidTemplate) [iOS](https://github.com/VeHan/Weex-Pakeex-iOS-Template), you can fork and custom without limitation.
-

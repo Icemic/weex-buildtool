@@ -4,13 +4,13 @@ var _getIterator2 = require('babel-runtime/core-js/get-iterator');
 
 var _getIterator3 = _interopRequireDefault(_getIterator2);
 
-var _regenerator = require('babel-runtime/regenerator');
-
-var _regenerator2 = _interopRequireDefault(_regenerator);
-
 var _promise = require('babel-runtime/core-js/promise');
 
 var _promise2 = _interopRequireDefault(_promise);
+
+var _regenerator = require('babel-runtime/regenerator');
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
 
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
@@ -57,7 +57,7 @@ var nwUtils = require('../nw-utils');
 var builder = {
   root: process.cwd(), // 用户进程运行的目录
 
-  initialization: {
+  initLife: {
     initial: function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(options) {
         var configBasePath, configAndroidPath, configIosPath, projectAndroidPath, projectIosPath;
@@ -65,33 +65,11 @@ var builder = {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
-                return new _promise2.default(function (resolve, reject) {
-                  glob(options.root + '/src/*.we', function (err, files) {
-                    if (err || files.length === 0) {
-                      reject("Please exec weex init && npm install first");
-                    } else {
-                      resolve();
-                    }
-                  });
-                });
+                // 判断是否经过 init
+                // 返回一个对象,保存文件是否存在的信息
 
-              case 2:
 
                 // 判断文件是否存在
-                // const platform = options.platform;
-                // let configs = ['config.base.js'];
-                //
-                // if (platform === 'all') {
-                //   configs.push('config.android.js');
-                //   configs.push('config.ios.js');
-                // } else {
-                //   if (platform !== "html") {
-                //     let c = `config.${platform}.js`;
-                //     configs.push(c);
-                //   }
-                // }
-
 
                 configBasePath = path.resolve(options.root, 'config/config.base.js');
                 configAndroidPath = path.resolve(options.root, 'config/config.android.js');
@@ -111,14 +89,12 @@ var builder = {
                 } catch (e) {
                   options.configandroid = false;
                 }
-
                 try {
                   builder.existFile(configIosPath);
                   options.configios = true;
                 } catch (e) {
                   options.configios = false;
                 }
-
                 try {
                   builder.existFile(projectAndroidPath);
                   options.projectandroid = true;
@@ -133,7 +109,7 @@ var builder = {
                   options.projectios = false;
                 }
 
-              case 12:
+              case 10:
               case 'end':
                 return _context.stop();
             }
@@ -614,8 +590,6 @@ var builder = {
                *  5. end, 清除工作,和用户说 bye
                *
                */
-              // stdlog.infoln('初始化开始'.green);
-
               lifecycle = ["initial", "prompting", "configuring", "install", "clean"];
               _iteratorNormalCompletion3 = true;
               _didIteratorError3 = false;
@@ -631,7 +605,7 @@ var builder = {
 
               life = _step3.value;
               _context6.next = 10;
-              return this.initialization[life](options);
+              return this.initLife[life](options);
 
             case 10:
               _iteratorNormalCompletion3 = true;
@@ -673,9 +647,6 @@ var builder = {
               return _context6.finish(19);
 
             case 27:
-              return _context6.abrupt('return');
-
-            case 28:
             case 'end':
               return _context6.stop();
           }
@@ -697,7 +668,7 @@ var builder = {
           switch (_context7.prev = _context7.next) {
             case 0:
               _context7.next = 2;
-              return this.initialization.initial(options);
+              return this.initLife.initial(options);
 
             case 2:
               platform = options.platform;

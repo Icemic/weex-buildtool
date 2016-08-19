@@ -1,9 +1,12 @@
 const inquirer = require('inquirer');
-const configBuild = require('./config-build');
 const configProcess = require('./config-ex');
+const inputFilter = require('./input-filter');
 const stdlog = require('./utils/stdlog');
 const emulator = require('./emulator');
 const builder = require('./builder');
+const glob = require("glob");
+
+
 
 const fs = require('fs-extra'),
   path = require('path'),
@@ -13,7 +16,7 @@ const fs = require('fs-extra'),
   wsServer = require('ws').Server,
   watch = require('node-watch'),
   os = require('os'),
-  _ = require("underscore"),
+  _ = require('underscore'),
   qrcode = require('qrcode-terminal'),
   webpack = require('webpack'),
   nwUtils = require('../../build/nw-utils'),
@@ -21,14 +24,14 @@ const fs = require('fs-extra'),
   commands = require('../../build/commands'),
   exec = require('sync-exec');
 
-const WEEX_FILE_EXT = "we"
-const WEEX_TRANSFORM_TMP = "weex_tmp"
-const H5_Render_DIR = "h5_render"
+const WEEX_FILE_EXT = 'we'
+const WEEX_TRANSFORM_TMP = 'weex_tmp'
+const H5_Render_DIR = 'h5_render'
 const NO_PORT_SPECIFIED = -1
-const DEFAULT_HTTP_PORT = "8081"
-const DEFAULT_WEBSOCKET_PORT = "8082"
-const NO_JSBUNDLE_OUTPUT = "no JSBundle output"
-const DEFAULT_HOST = "127.0.0.1"
+const DEFAULT_HTTP_PORT = '8081'
+const DEFAULT_WEBSOCKET_PORT = '8082'
+const NO_JSBUNDLE_OUTPUT = 'no JSBundle output'
+const DEFAULT_HOST = '127.0.0.1'
 
 //will update when argvProcess function call
 var HTTP_PORT = NO_PORT_SPECIFIED
@@ -47,47 +50,48 @@ function serveForLoad() {
 }
 
 
+/*
+ *  Pack 生命周期1: 解析输入 2: 异常拦截 3: 进入处理流程
+ *
+ */
 async function pack(argv) {
-  var options = {};
-  testNodeModules();
-  if (argv._[0] === "build"){
 
-    try {
-      options = await configBuild(argv);
-      testDarwin(options);
-      if (options.oprate === "init") {
+  var options = await inputFilter(argv);
 
-          await builder.init(options);
-
-      } else if (options.oprate === "build") {
-
-          // if (argv.target) {
-        //   options.release = (argv.target === 'release');
-        //   options.debug = !options.release;
-        // }
-
-          await builder.build(options);
-
-      }
-
-    } catch (e) {
-      stdlog.errorln('');
-      if (typeof e === 'string') {
-        stdlog.errorln(`Error: ${e}`);
-      } else {
-        stdlog.errorln(e.stack);
-      }
-      process.exit(1);
+  try {
+    await envFilter(options);
+  } catch (e) {
+    stdlog.errorln('');
+    if (typeof e === 'string') {
+      stdlog.errorln(`Error: ${e}`);
+    } else {
+      stdlog.errorln(e.stack);
     }
+    process.exit(1);
   }
 
-  if (argv._[0] === "emulate") {
+  try {
+    if (options.oprate === 'init') {
+      await builder.init(options);
+    } else if(options.oprate === 'build') {
+      await builder.build(options);
+    }
+  } catch (e) {
+    stdlog.errorln('');
+    if (typeof e === 'string') {
+      stdlog.errorln(`Error: ${e}`);
+    } else {
+      stdlog.errorln(e.stack);
+    }
+    process.exit(1);
+  }
+
+
+  if (options.oprate === 'emulate') {
     try {
-      options = await configProcess(argv);
-      if (options.platform === "html") {
+      if (options.platform === 'html') {
         builder.build(options);
       } else {
-        testDarwin(options);
         let release = options.release;
         await emulator.handle(options.platform, release, options);
         !release && serveForLoad();
@@ -104,13 +108,11 @@ async function pack(argv) {
     }
   }
 
-  if (argv._[0] === "run") {
+  if (options.oprate === 'run') {
     try {
-      if (options.platform === "html") {
+      if (options.platform === 'html') {
         builder.build(options);
       } else {
-        options = await configProcess(argv);
-        testDarwin(options);
         await builder.build(options);
         let release = options.release;
         await emulator.handle(options.platform, release, options);
@@ -130,10 +132,16 @@ async function pack(argv) {
 }
 
 function testDarwin(options) {
-  if (options.platform=== "ios" && process.platform !== "darwin") {
-    stdlog.errorln("Unsupport platform, Mac only!");
+  if (options.platform=== 'ios' && process.platform !== 'darwin') {
+    stdlog.errorln('Your platform is not support now! This is mac only!');
     process.exit(1);
   }
+}
+
+async function envFilter(options) {
+  await testWeex(options);
+  testDarwin(options);
+  testNodeModules();
 }
 
 function testNodeModules() {
@@ -141,9 +149,21 @@ function testNodeModules() {
   try {
     fs.accessSync(nodePath, fs.R_OK);
   } catch (e) {
-    stdlog.errorln( "Execute npm install first");
+    stdlog.errorln( 'Execute npm install first');
     process.exit(1);
   }
+}
+
+async function testWeex(options) {
+  await new Promise((resolve, reject)=> {
+    glob(`${options.root}/src/*.we`, function(err, files) {
+      if (err || files.length === 0) {
+        reject("Please exec weex init && npm install first");
+      } else {
+        resolve();
+      }
+    })
+  });
 }
 
 class Previewer {
@@ -218,7 +238,7 @@ class Previewer {
         fs.lstatSync(outputPath).isDirectory
       } catch (e) {
         npmlog.info(yargs.help())
-        npmlog.info("when input path is dir , output path must be dir too")
+        npmlog.info('when input path is dir , output path must be dir too')
         process.exit(1)
       }
 
@@ -236,7 +256,7 @@ class Previewer {
     }
 
     transformP.then(function(jsBundlePathForRender) {
-      if (self.serverMark == true) {  // typeof jsBundlePathForRender == "string"
+      if (self.serverMark == true) {  // typeof jsBundlePathForRender == 'string'
 
         //no js bundle output specified, start server for playgroundApp(now) or H5 renderer.
         self.startServer(jsBundlePathForRender)
@@ -260,8 +280,8 @@ class Previewer {
 
   startServer(fileName) {
     let options = {
-      root: ".",
-      cache: "-1",
+      root: '.',
+      cache: '-1',
       showDir: true,
       autoIndex: true
     }
@@ -277,7 +297,7 @@ class Previewer {
     let server = httpServer.createServer(options)
     let port = (HTTP_PORT == NO_PORT_SPECIFIED) ? DEFAULT_HTTP_PORT : HTTP_PORT
     //npmlog.info(`http port: ${port}`)
-    server.listen(port, "0.0.0.0", function() {
+    server.listen(port, '0.0.0.0', function() {
       npmlog.info((new Date()) + `http  is listening on port ${port}`)
 
       if (self.transformServerPath) {
@@ -304,14 +324,14 @@ class Previewer {
     })
 
     // process.on('SIGINT', function() {
-    //   npmlog.info("weex  server stoped")
+    //   npmlog.info('weex  server stoped')
     //   // fs.emptyDirSync(`src/${WEEX_TRANSFORM_TMP}`);
     //   // fsUtils.deleteFolderRecursive(`src/${WEEX_TRANSFORM_TMP}`)
     //   process.exit()
     // })
     //
     // process.on('SIGTERM', function() {
-    //   npmlog.info("weex server stoped")
+    //   npmlog.info('weex server stoped')
     //   // fs.emptyDirSync(`src/${WEEX_TRANSFORM_TMP}`);
     //   // fsUtils.deleteFolderRecursive(`src/${WEEX_TRANSFORM_TMP}`)
     //   process.exit()
@@ -329,7 +349,7 @@ class Previewer {
     // npmlog output will broken QR in some case ,some we using console.log
     console.log(`The following QR encoding url is\n${jsBundleURL}\n`)
     qrcode.generate(jsBundleURL)
-    console.log("\nPlease download Weex Playground app from https://github.com/alibaba/weex and scan this QR code to run your app, make sure your phone is connected to the same Wi-Fi network as your computer runing weex server.\n")
+    console.log('\nPlease download Weex Playground app from https://github.com/alibaba/weex and scan this QR code to run your app, make sure your phone is connected to the same Wi-Fi network as your computer runing weex server.\n')
   }
 
   startWebSocket() {
@@ -341,7 +361,7 @@ class Previewer {
       ws.on('message', function incoming(message) {
         npmlog.info('received: %s', message);
       });
-      ws.send("ws server ok")
+      ws.send('ws server ok')
       self.wsConnection = ws
       self.watchForWSRefresh()
     })
@@ -359,7 +379,7 @@ class Previewer {
       if (/\.js$|\.we$/gi.test(fileName)) {
         let transformP = self.transformTarget(self.inputPath, self.outputPath)
         transformP.then(function(fileName) {
-          self.wsConnection.send("refresh")
+          self.wsConnection.send('refresh')
         })
       }
     });
@@ -395,10 +415,10 @@ class Previewer {
         ]
       },
       resolve: {
-        root: [path.dirname(inputPath), path.join(path.dirname(inputPath), "node_modules/"), process.cwd(), path.join(process.cwd(), "node_modules/")]
+        root: [path.dirname(inputPath), path.join(path.dirname(inputPath), 'node_modules/'), process.cwd(), path.join(process.cwd(), 'node_modules/')]
       },
       resolveLoader: {
-        root: [path.join(path.dirname(__dirname), "node_modules/")]
+        root: [path.join(path.dirname(__dirname), 'node_modules/')]
       },
       debug: true,
       bail: true

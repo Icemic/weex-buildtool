@@ -26,34 +26,13 @@ import folderSync from './utils/folderSync';
 var builder = {
   root: process.cwd(),  // 用户进程运行的目录
 
-  initialization: {
+  initLife: {
     initial: async function(options) {
       // 判断是否经过 init
       // 返回一个对象,保存文件是否存在的信息
-      await new Promise((resolve, reject)=> {
-        glob(`${options.root}/src/*.we`, function(err, files) {
-          if (err || files.length === 0) {
-            reject("Please exec weex init && npm install first");
-          } else {
-            resolve();
-          }
-        })
-      });
+
 
       // 判断文件是否存在
-      // const platform = options.platform;
-      // let configs = ['config.base.js'];
-      //
-      // if (platform === 'all') {
-      //   configs.push('config.android.js');
-      //   configs.push('config.ios.js');
-      // } else {
-      //   if (platform !== "html") {
-      //     let c = `config.${platform}.js`;
-      //     configs.push(c);
-      //   }
-      // }
-
 
       var configBasePath = path.resolve(options.root, 'config/config.base.js');
       var configAndroidPath = path.resolve(options.root, 'config/config.android.js');
@@ -72,16 +51,12 @@ var builder = {
       } catch (e) {
         options.configandroid = false;
       }
-
-        try {
-          builder.existFile(configIosPath);
-          options.configios = true;
-        } catch (e) {
-          options.configios = false;
-        }
-
-
-
+      try {
+        builder.existFile(configIosPath);
+        options.configios = true;
+      } catch (e) {
+        options.configios = false;
+      }
       try {
         builder.existFile(projectAndroidPath);
         options.projectandroid = true;
@@ -95,7 +70,6 @@ var builder = {
       } catch (e) {
         options.projectios = false;
       }
-
 
     },
     prompting: async function(options) {
@@ -332,21 +306,18 @@ var builder = {
      *  5. end, 清除工作,和用户说 bye
      *
      */
-    // stdlog.infoln('初始化开始'.green);
-
     const lifecycle = ["initial", "prompting", "configuring", "install", "clean"];
 
     for (let life of lifecycle) {
-      await this.initialization[life](options);
+      await this.initLife[life](options);
     }
 
-    return;
   },
 
   async build (options) {
 
     // build 初始化判断
-    await this.initialization.initial(options);
+    await this.initLife.initial(options);
 
     const platform = options.platform;
 
@@ -377,8 +348,6 @@ var builder = {
     } else {
       stdlog.warnln('Skip JSBundle generation in debug mode');
     }
-
-    // await this.makeJsbundle();
 
     if (platform === 'android') {
 
