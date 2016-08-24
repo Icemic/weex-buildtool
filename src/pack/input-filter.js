@@ -264,6 +264,8 @@ async function getPlatform(o, p) {
       platform = p;
     }
 
+  } else if( o==="init" && p == null ){
+    platform = "all";
   } else {
     await inquirer.prompt([
       {

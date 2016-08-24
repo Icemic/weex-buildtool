@@ -1,6 +1,6 @@
 {
   "name": "@ali/pakeex-cli",
-  "version": "0.0.38",
+  "version": "0.0.39",
   "description": "Weex package Toolkit",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -15,6 +15,8 @@
   "dependencies": {
     "adbkit": "^2.5.1",
     "async": "^2.0.1",
+    "babel-plugin-transform-runtime": "^6.7.5",
+    "babel-runtime": "^6.6.1",
     "bluebird": "^3.4.1",
     "co": "^4.6.0",
     "colors": "^1.1.2",
