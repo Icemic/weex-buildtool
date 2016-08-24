@@ -1,9 +1,11 @@
+require('harmony-reflect');
+const program = require('commander');
 const inquirer = require('inquirer');
-const configProcess = require('./config-ex');
-const inputFilter = require('./input-filter');
-const stdlog = require('./utils/stdlog');
-const emulator = require('./emulator');
-const builder = require('./builder');
+const configProcess = require('../build/config-ex');
+const inputFilter = require('../build/input-filter');
+const stdlog = require('../build/utils/stdlog');
+const emulator = require('../build/emulator');
+const builder = require('../build/builder');
 const glob = require("glob");
 
 
@@ -19,9 +21,8 @@ const fs = require('fs-extra'),
   _ = require('underscore'),
   qrcode = require('qrcode-terminal'),
   webpack = require('webpack'),
-  nwUtils = require('../../build/nw-utils'),
-  fsUtils = require('../../build/fs-utils'),
-  commands = require('../../build/commands'),
+  nwUtils = require('../build/nw-utils'),
+  fsUtils = require('../build/fs-utils'),
   exec = require('sync-exec');
 
 const WEEX_FILE_EXT = 'we'
@@ -49,12 +50,39 @@ function serveForLoad() {
 
 }
 
+program
+  .command('build [cmd] [cmd2]')
+  .option('-r, --release', 'Generate release package')
+  .option('-d, --debug', 'Generate debug package')
+  .option('-u, --url [urlString]', 'Use 3rd party iOS/Android project')
+  .action((cmd, cmd2, options) => pack('build', cmd, cmd2, options));
+program
+  .command('emulate [cmd]')
+  .option('-r, --release', 'Generate release package')
+  .option('-d, --debug', 'Generate debug package')
+  .action((cmd, options) => pack('emulate', cmd, null, options));
+program
+  .command('run [cmd]')
+  .option('-r, --release', 'Generate release package')
+  .option('-d, --debug', 'Generate debug package')
+  .action((cmd, options) => pack('run', cmd, null, options));
+
+program
+  .command('*')
+  .action(function(command){
+    stdlog.errorln(`Error: Unrecognized command <${command}>`);
+  });
+
+program.parse(process.argv);
 
 /*
  *  Pack 生命周期1: 解析输入 2: 异常拦截 3: 进入处理流程
  *
  */
-async function pack(argv) {
+async function pack(base, cmd, cmd2, options) {
+  let argv = Object.assign({}, {
+    _: [base, cmd, cmd2]
+  }, options);
 
   var options = await inputFilter(argv);
 
@@ -273,7 +301,7 @@ class Previewer {
     fs.removeSync(`src/${WEEX_TRANSFORM_TMP}`)
 
     fs.mkdirSync(`src/${WEEX_TRANSFORM_TMP}`)
-    fs.copySync(`${__dirname}/../../node_modules/weex-html5`, `src/${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
+    fs.copySync(`${__dirname}/../node_modules/weex-html5`, `src/${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
 
     fs.mkdirsSync(`src/${WEEX_TRANSFORM_TMP}/${H5_Render_DIR}`)
   }
@@ -442,4 +470,4 @@ class Previewer {
 }
 
 
-module.exports = pack;
+// module.exports = pack;

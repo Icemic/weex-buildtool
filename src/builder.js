@@ -1,4 +1,3 @@
-const prompt = require('prompt');
 const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
@@ -14,7 +13,7 @@ const packIos = require('./libs/pack-ios');
 const icons = require("./libs/config/icons.js");
 const androidConfig = require("./libs/config/android.js");
 const iosConfig = require("./libs/config/ios.js");
-const nwUtils = require('../nw-utils');
+const nwUtils = require('./nw-utils');
 
 
 import * as packAndorid from "./libs/apkhelper";

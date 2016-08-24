@@ -1,3 +1,5 @@
+#!/usr/bin/env node --harmony_proxies
+
 'use strict';
 
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
@@ -16,6 +18,10 @@ var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
@@ -25,29 +31,32 @@ var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
  *
  */
 var pack = function () {
-  var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(argv) {
-    var options, release, _release;
+  var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(base, cmd, cmd2, options) {
+    var argv, release, _release;
 
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.next = 2;
+            argv = (0, _assign2.default)({}, {
+              _: [base, cmd, cmd2]
+            }, options);
+            _context.next = 3;
             return inputFilter(argv);
 
-          case 2:
+          case 3:
             options = _context.sent;
-            _context.prev = 3;
-            _context.next = 6;
+            _context.prev = 4;
+            _context.next = 7;
             return envFilter(options);
 
-          case 6:
-            _context.next = 13;
+          case 7:
+            _context.next = 14;
             break;
 
-          case 8:
-            _context.prev = 8;
-            _context.t0 = _context['catch'](3);
+          case 9:
+            _context.prev = 9;
+            _context.t0 = _context['catch'](4);
 
             stdlog.errorln('');
             if (typeof _context.t0 === 'string') {
@@ -57,37 +66,37 @@ var pack = function () {
             }
             process.exit(1);
 
-          case 13:
-            _context.prev = 13;
+          case 14:
+            _context.prev = 14;
 
             if (!(options.oprate === 'init')) {
-              _context.next = 19;
+              _context.next = 20;
               break;
             }
 
-            _context.next = 17;
+            _context.next = 18;
             return builder.init(options);
 
-          case 17:
-            _context.next = 22;
+          case 18:
+            _context.next = 23;
             break;
 
-          case 19:
+          case 20:
             if (!(options.oprate === 'build')) {
-              _context.next = 22;
+              _context.next = 23;
               break;
             }
 
-            _context.next = 22;
+            _context.next = 23;
             return builder.build(options);
 
-          case 22:
-            _context.next = 29;
+          case 23:
+            _context.next = 30;
             break;
 
-          case 24:
-            _context.prev = 24;
-            _context.t1 = _context['catch'](13);
+          case 25:
+            _context.prev = 25;
+            _context.t1 = _context['catch'](14);
 
             stdlog.errorln('');
             if (typeof _context.t1 === 'string') {
@@ -97,38 +106,38 @@ var pack = function () {
             }
             process.exit(1);
 
-          case 29:
+          case 30:
             if (!(options.oprate === 'emulate')) {
-              _context.next = 46;
+              _context.next = 47;
               break;
             }
 
-            _context.prev = 30;
+            _context.prev = 31;
 
             if (!(options.platform === 'html')) {
-              _context.next = 35;
+              _context.next = 36;
               break;
             }
 
             builder.build(options);
-            _context.next = 39;
+            _context.next = 40;
             break;
 
-          case 35:
+          case 36:
             release = options.release;
-            _context.next = 38;
+            _context.next = 39;
             return emulator.handle(options.platform, release, options);
 
-          case 38:
+          case 39:
             !release && serveForLoad();
 
-          case 39:
-            _context.next = 46;
+          case 40:
+            _context.next = 47;
             break;
 
-          case 41:
-            _context.prev = 41;
-            _context.t2 = _context['catch'](30);
+          case 42:
+            _context.prev = 42;
+            _context.t2 = _context['catch'](31);
 
             stdlog.errorln('');
             if (typeof _context.t2 === 'string') {
@@ -138,42 +147,42 @@ var pack = function () {
             }
             process.exit(1);
 
-          case 46:
+          case 47:
             if (!(options.oprate === 'run')) {
-              _context.next = 65;
+              _context.next = 66;
               break;
             }
 
-            _context.prev = 47;
+            _context.prev = 48;
 
             if (!(options.platform === 'html')) {
-              _context.next = 52;
+              _context.next = 53;
               break;
             }
 
             builder.build(options);
-            _context.next = 58;
+            _context.next = 59;
             break;
 
-          case 52:
-            _context.next = 54;
+          case 53:
+            _context.next = 55;
             return builder.build(options);
 
-          case 54:
+          case 55:
             _release = options.release;
-            _context.next = 57;
+            _context.next = 58;
             return emulator.handle(options.platform, _release, options);
 
-          case 57:
+          case 58:
             !_release && serveForLoad();
 
-          case 58:
-            _context.next = 65;
+          case 59:
+            _context.next = 66;
             break;
 
-          case 60:
-            _context.prev = 60;
-            _context.t3 = _context['catch'](47);
+          case 61:
+            _context.prev = 61;
+            _context.t3 = _context['catch'](48);
 
             stdlog.errorln('');
             if (typeof _context.t3 === 'string') {
@@ -183,15 +192,15 @@ var pack = function () {
             }
             process.exit(1);
 
-          case 65:
+          case 66:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, this, [[3, 8], [13, 24], [30, 41], [47, 60]]);
+    }, _callee, this, [[4, 9], [14, 25], [31, 42], [48, 61]]);
   }));
 
-  return function pack(_x) {
+  return function pack(_x, _x2, _x3, _x4) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -217,7 +226,7 @@ var envFilter = function () {
     }, _callee2, this);
   }));
 
-  return function envFilter(_x2) {
+  return function envFilter(_x5) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -247,19 +256,21 @@ var testWeex = function () {
     }, _callee3, this);
   }));
 
-  return function testWeex(_x3) {
+  return function testWeex(_x6) {
     return _ref3.apply(this, arguments);
   };
 }();
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+require('harmony-reflect');
+var program = require('commander');
 var inquirer = require('inquirer');
-var configProcess = require('./config-ex');
-var inputFilter = require('./input-filter');
-var stdlog = require('./utils/stdlog');
-var emulator = require('./emulator');
-var builder = require('./builder');
+var configProcess = require('../build/config-ex');
+var inputFilter = require('../build/input-filter');
+var stdlog = require('../build/utils/stdlog');
+var emulator = require('../build/emulator');
+var builder = require('../build/builder');
 var glob = require("glob");
 
 var fs = require('fs-extra'),
@@ -273,9 +284,8 @@ var fs = require('fs-extra'),
     _ = require('underscore'),
     qrcode = require('qrcode-terminal'),
     webpack = require('webpack'),
-    nwUtils = require('../../build/nw-utils'),
-    fsUtils = require('../../build/fs-utils'),
-    commands = require('../../build/commands'),
+    nwUtils = require('../build/nw-utils'),
+    fsUtils = require('../build/fs-utils'),
     exec = require('sync-exec');
 
 var WEEX_FILE_EXT = 'we';
@@ -301,6 +311,22 @@ function serveForLoad() {
   // new Previewer(inputPath, outputPath, transformWatch, host, shouldOpenBrowser, displayQR, transformServerPath)
   new Previewer('./src/main.we', NO_JSBUNDLE_OUTPUT, false, '0.0.0.0', false, false, './src');
 }
+
+program.command('build [cmd] [cmd2]').option('-r, --release', 'Generate release package').option('-d, --debug', 'Generate debug package').option('-u, --url [urlString]', 'Use 3rd party iOS/Android project').action(function (cmd, cmd2, options) {
+  return pack('build', cmd, cmd2, options);
+});
+program.command('emulate [cmd]').option('-r, --release', 'Generate release package').option('-d, --debug', 'Generate debug package').action(function (cmd, options) {
+  return pack('emulate', cmd, null, options);
+});
+program.command('run [cmd]').option('-r, --release', 'Generate release package').option('-d, --debug', 'Generate debug package').action(function (cmd, options) {
+  return pack('run', cmd, null, options);
+});
+
+program.command('*').action(function (command) {
+  stdlog.errorln('Error: Unrecognized command <' + command + '>');
+});
+
+program.parse(process.argv);
 
 function testDarwin(options) {
   if (options.platform === 'ios' && process.platform !== 'darwin') {
@@ -437,7 +463,7 @@ var Previewer = function () {
       fs.removeSync('src/' + WEEX_TRANSFORM_TMP);
 
       fs.mkdirSync('src/' + WEEX_TRANSFORM_TMP);
-      fs.copySync(__dirname + '/../../node_modules/weex-html5', 'src/' + WEEX_TRANSFORM_TMP + '/' + H5_Render_DIR);
+      fs.copySync(__dirname + '/../node_modules/weex-html5', 'src/' + WEEX_TRANSFORM_TMP + '/' + H5_Render_DIR);
 
       fs.mkdirsSync('src/' + WEEX_TRANSFORM_TMP + '/' + H5_Render_DIR);
     }
@@ -611,4 +637,4 @@ var Previewer = function () {
   return Previewer;
 }();
 
-module.exports = pack;
+// module.exports = pack;
