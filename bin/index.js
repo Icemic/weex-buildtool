@@ -26,13 +26,9 @@ var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-/*
- *  Pack 生命周期1: 解析输入 2: 异常拦截 3: 进入处理流程
- *
- */
 var pack = function () {
-  var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(base, cmd, cmd2, options) {
-    var argv, release, _release;
+  var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(base, cmd, cmd2, opts) {
+    var argv, options, release, _release;
 
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
@@ -40,7 +36,7 @@ var pack = function () {
           case 0:
             argv = (0, _assign2.default)({}, {
               _: [base, cmd, cmd2]
-            }, options);
+            }, opts);
             _context.next = 3;
             return inputFilter(argv);
 
@@ -266,7 +262,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 require('harmony-reflect');
 var program = require('commander');
 var inquirer = require('inquirer');
-var configProcess = require('../build/config-ex');
 var inputFilter = require('../build/input-filter');
 var stdlog = require('../build/utils/stdlog');
 var emulator = require('../build/emulator');

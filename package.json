@@ -10,7 +10,14 @@
     "type": "git",
     "url": "https://github.com/Icemic/weex-buildtool"
   },
-  "author": "873111137@qq.com",
+  "author": "xuxinxin(zhiqian) <873111137@qq.com> ",
+  "contributors": [
+    "VeHan <android_xiaowei@163.com>",
+    "ankokuji <moritaka325@163.com>",
+    "liujiescut <969343185@qq.com>",
+    "shujiewz <rememberwz@gmail.com>",
+    "Icemic <bingfeng.web@gmail.com>"
+  ],
   "license": "GPL-3.0+",
   "dependencies": {
     "adbkit": "^2.5.1",
@@ -72,8 +79,5 @@
   },
   "bin": {
     "weex-buildtool": "bin/index.js"
-  },
-  "publishConfig": {
-    "registry": "http://registry.npm.alibaba-inc.com"
   }
 }
