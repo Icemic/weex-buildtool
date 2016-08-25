@@ -25,16 +25,14 @@ function run(params, devicePolymer) {
   var iOSCurrentDeviceInfo = devicePolymer.iOSCurrentDevice,
       iOSDevices = devicePolymer.iOSDevice;
 
-    // 选择模拟器
+  // select simulator type
   return iOSimulatorSelect(iOSCurrentDeviceInfo, iOSDevices, params)
     .then(function(currentDevice) {
-      // 打开模拟器
-      // debug(':::iOS simulator start open :::');
+      // open simulator
       iOSCurrentDeviceInfo = currentDevice;
       return iOSimulatorOpen(currentDevice, params);
     })
     .then(function() {
-      // debug(':::iOS simulator start install :::');
       return installiOSApp(params);
     })
     .then(function(url) {
@@ -47,7 +45,7 @@ function run(params, devicePolymer) {
 
 }
 
-// 判断当前运行设备
+// detect running device
 function currentSimulator () {
   return new Promise(function(resolve){
     var devicePolymer = {};
@@ -55,29 +53,21 @@ function currentSimulator () {
     getDevicesList(null)
     .then(function(device){
       var currentDevice = findCurrentDevice(device.devices);
-
       devicePolymer.iOSDevice = device;
-
-      // if(currentDevice && currentDevice.name.indexOf('simctl') > -1){
-
-        // debug('iOS simulator running:::' + JSON.stringify(currentDevice,null,2));
-        // 确定iOS模拟器已经启动
-        // callback(false, 'iOS', currentDevice, device);
-        devicePolymer.iOSCurrentDevice = currentDevice;
-        devicePolymer.iOS = true;
-        devicePolymer.simulator = 'iOS';
-        resolve(devicePolymer);
+      devicePolymer.iOSCurrentDevice = currentDevice;
+      devicePolymer.iOS = true;
+      devicePolymer.simulator = 'iOS';
+      resolve(devicePolymer);
     });
   });
   
 }
 
-//ios
+// ios device list
 function getDevicesList(device) {
   return new Promise(function(resolve, reject) {
 
     if(device){
-      // 已经执行过
       resolve(device);
       return;
     }
@@ -106,8 +96,6 @@ function getDevicesList(device) {
                   itemDeviceInfo[4] && 
                   (itemDeviceInfo[4].indexOf('unavailable') > -1);
               
-              //console.log(itemDeviceInfo && !isUnavailable);
-
               if(itemDeviceInfo && !isUnavailable){
                 var deviceName = itemDeviceInfo[1].trim() + ' (' + osVersion + ')';
                 var tempDevices = {
@@ -115,9 +103,7 @@ function getDevicesList(device) {
                   'uuid': itemDeviceInfo[2],
                   'status': itemDeviceInfo[3]
                 };
-
                 devices[deviceName] = tempDevices;
-
                 devicesType.push(deviceName); 
               }
             });
@@ -138,7 +124,6 @@ function getDevicesList(device) {
 
 function iOSimulatorOpen(currentDevice, params) {
   var fullPath;
-  // var simulatorPath = path.join(config.XCODE_PATH, '/Applications/iOS Simulator.app');
   var simulatorPath = path.join(config.XCODE_PATH, '/Applications/Simulator.app');
   var cycle = 0;
   var MAXCOUNET = 20;
@@ -202,8 +187,7 @@ function iOSimulatorSelect(currentDeviceParam, device, params) {
 
     getDevicesList(device, params)
       .then(function(device) {
-        // debug(JSON.stringify(device.devices, null, 2));
-        // 选择模拟器
+        // select device
         return selectDevices(device, params).then(resolve);
       }, function(err) {
         reject(err);
@@ -214,7 +198,7 @@ function iOSimulatorSelect(currentDeviceParam, device, params) {
 function selectDevices(device, params, callback) {
   var currentDevice,
     defaultType;
-  // 过滤设备
+  // filter devices
   var devicesType = selected(device.devicesType, [
     'iPhone 4s',
     'iPhone 5',
@@ -269,9 +253,9 @@ function selected(devicesType, names) {
 //install app
 function installiOSApp(params) {
   return new Promise(function(resolve, reject) {
+
     /**
-     * 未执行install操作 && 非第一次创建模拟器
-     * 否则将执行安装操作
+     * uninstall app and reinstall
      */
     var appIdentifier = params.appId,
         appPath = params.path;
@@ -312,7 +296,6 @@ function iOSAppOpen(currentDeviceInfo, params) {
       var cmd;
 
       cmd = 'xcrun simctl launch booted ' + params.appId;
-      // cmd = 'xcrun simctl launch booted ' + url;
       var result = syncExec(cmd);
       if(result.stderr) {
         console.log('bundle id invalid'.red);
