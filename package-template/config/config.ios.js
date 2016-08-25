@@ -16,8 +16,8 @@ module.exports = function () {
       "Default-Portrait~ipad.png": "../assets/splash/Default-Portrait~ipad.png"/*required, 768*1024, splash screen*/
     },
     "certificate":{
-      "codeSignIdentity": "iPhone Developer: zhuiqian wu (22RMUQ2DWW)",/*required，code sign identity of developer certification*/
-      "provisionProfile": "603293e6-841f-4488-a720-94f399ecb07f"/*required，provision profile of developer certification*/
+      "codeSignIdentity": "",/*required，code sign identity of developer certification*/
+      "provisionProfile": ""/*required，provision profile of developer certification*/
     }
   };
   return Object.assign(baseConfig,iosCfg);
