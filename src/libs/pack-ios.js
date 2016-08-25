@@ -7,9 +7,13 @@ var fs = require('fs'),
 
 require('colors');
 
-// localpath: 项目工程相对执行文件路径
-// release: 打release还是debug 取值true 或 false
-// sdkType: sim包还是正规包 取值sim 或 normal
+/**
+ * @param  {string} localpath: path of target ios project
+ * @param  {bool} release: release app or debug app 
+ * @param  {string} sdkType: choose sdk, simulator sdk or real divice sdk
+ * @param  {object} info: contains app name and cetification informations
+ * @return {promise}
+ */
 function run (localpath, release, sdkType, info) {
 
   var config = 'Debug';
@@ -34,10 +38,7 @@ function run (localpath, release, sdkType, info) {
   }
 
   //清除目标目录
-  // var appPath = path.resolve(localpath, './build/real/'+ target +'.app');
-  // var appSimPath = path.resolve(localpath, './build/sim/'+ target +'.app');
   var appPath = path.resolve(localpath, './build/'+ name + '.app');
-  // var appRealPath = path.resolve(localpath, './build/' + name + 'Real.app');
   var ipaPath = path.resolve(localpath, './build/'+ name + '.ipa');
   if (fs.existsSync(appPath)) {
     console.log('delete app file');
@@ -60,8 +61,6 @@ function run (localpath, release, sdkType, info) {
   } else if (sdkType == 'sim') {
     result = packSim(target, scheme, config, sdk, localpath);
   }
-  // cmd = 'xcodebuild -workspace '+ target +'.xcworkspace -scheme '+ scheme +' -sdk ' + sdk.realSDK + ' -configuration '+ config +' -archivePath build';
-  // var result = exec(cmd, {cwd: localpath}).stdout;
   var packInfo = findOutputPath(result.stdout);
   var outputPath, errMessage;
 
@@ -94,6 +93,10 @@ function run (localpath, release, sdkType, info) {
   return;
 }
 
+/**
+ * @param  {string} localpath: path of target ios project 
+ * @return {object} info: contains target and scheme params
+ */
 function findPackInfo(localpath) {
   var info = {};
   var cmd = 'xcodebuild -list';
@@ -110,6 +113,10 @@ function findPackInfo(localpath) {
   return info;
 }
 
+/**
+ * @param  {string} localpath: path of target ios project 
+ * @return {object} sdk: sdk names include real device sdk and simulator sdk
+ */
 function getSDKs(localpath) {
   var sdk = {};
   var cmd = 'xcodebuild -showsdks';
@@ -129,6 +136,10 @@ function getSDKs(localpath) {
   return sdk;
 }
 
+/**
+ * @param  {string} result: string of xcodebuild stdout from console log
+ * @return {object} packInfo: include output path of app named outputPath and parse result message
+ */
 function findOutputPath (result) {
   debugger;
   var packInfo = {};
@@ -155,7 +166,9 @@ function findOutputPath (result) {
   return packInfo;
 }
 
-//config: 真机包还是模拟器包, sdk 模拟器还是真机sdk, localpath: 工程目录
+/**
+ * execute real device sdk packing
+ */
 function packReal(target, scheme, config, sdk, localpath, info) {
   debugger;
   var cmd;
@@ -166,6 +179,9 @@ function packReal(target, scheme, config, sdk, localpath, info) {
   return result;
 }
 
+/**
+ * execute simulator sdk packing
+ */
 function packSim(target, scheme, config, sdk, localpath) {
   debugger;
   var cmd;
@@ -175,7 +191,12 @@ function packSim(target, scheme, config, sdk, localpath) {
   console.log('output sim pack');
   return result;
 }
-
+/**
+ * transform app file into ipa
+ * @param  {string} name: name of app file
+ * @param  {string} localpath: path of ios project
+ * @return {undefined}
+ */
 function app2ipa(name, localpath) {
   var abPath = path.resolve(localpath, './build/'+ name + '.ipa');
   var cmd = 'xcrun -sdk iphoneos -v PackageApplication ./build/'+ name +'.app -o ' + abPath;
