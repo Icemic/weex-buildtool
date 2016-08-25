@@ -1,7 +1,6 @@
 require('harmony-reflect');
 const program = require('commander');
 const inquirer = require('inquirer');
-const configProcess = require('../build/config-ex');
 const inputFilter = require('../build/input-filter');
 const stdlog = require('../build/utils/stdlog');
 const emulator = require('../build/emulator');
@@ -75,14 +74,11 @@ program
 
 program.parse(process.argv);
 
-/*
- *  Pack 生命周期1: 解析输入 2: 异常拦截 3: 进入处理流程
- *
- */
-async function pack(base, cmd, cmd2, options) {
+
+async function pack(base, cmd, cmd2, opts) {
   let argv = Object.assign({}, {
     _: [base, cmd, cmd2]
-  }, options);
+  }, opts);
 
   var options = await inputFilter(argv);
 
